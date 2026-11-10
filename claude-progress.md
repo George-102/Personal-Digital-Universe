@@ -1,8 +1,8 @@
 # Claude Progress — Personal Digital Universe
 
-## 当前阶段（2026-11-10）
+## 当前阶段（2026-11-11）
 
-开发前准备完成：需求、技术决策、验收体系、质量指标门禁、功能追踪均已落盘。**尚无应用代码**，下一步是 T-001 初始化 Next.js 骨架。
+开发前准备完成，**尚无应用代码**。2026-11-11 经用户确认：工作区 feature_list.json 曾被模板样例覆盖，按用户决定**以模板 schema 重建**（旧版 23 故事 + 6 任务清单保留在 git 提交 5a8d051 中可查）。首个开发需求确定为 **US-001（3D 首页）**，连同前置 T-001/T-002 拆分为 11 个小任务（T-001a/b/c → T-002a/b/c → US-001a/b/c/d/e），其余故事保留在 roadmap 字段。T-006 质量门禁维持 passing（证据见下）。下一步是 T-001a 初始化 Next.js 骨架。
 
 ## 已验证（有真实运行证据）
 
@@ -13,7 +13,7 @@
 ## 已落盘文件
 
 - 需求：`PRD.md`；技术论证：`Tech.md`；完成定义：`docs/DoD.md`
-- 功能追踪：`feature_list.json`（23 用户故事 + 6 技术任务；T-006 已完成，其余 pending；迭代1 = P0）
+- 功能追踪：`feature_list.json`（模板 schema 重建：11 个拆分小任务 + T-006 passing + 25 条 roadmap；首个需求 US-001）
 - 技术准备决策：`docs/Development.md`（含准备状态总览、构建脚本表、四层测试 + 质量指标门禁）
 - 验收：`playwright.config.ts`、`e2e/`（9 文件）、`lighthouserc.js`、`.github/workflows/verify.yml`（含 metrics 步骤）
 - 质量指标：`scripts/check-i18n.mjs` + `check-i18n.test.mjs`（node:test）、`.size-limit.json`、package.json（audit/check:i18n/size/verify:metrics/test 脚本 + overrides）
@@ -21,15 +21,17 @@
 
 ## 下一步（按序）
 
-1. **T-001** 初始化 Next.js 应用骨架（最高优先级，见 feature_list.json tasks）
-2. **T-002** content/ 内容数据架构（messages/ 双语文件建立后 check:i18n 开始实测）
-3. **T-003** Vitest 单元测试设施（npm test 从 node:test 迁移）
-4. 之后按 feature_list.json 顺序实现迭代1故事（US-023 → US-001 → US-004 → …）
+1. **T-001a** 初始化 Next.js 应用骨架（最高优先级，见 feature_list.json features）
+2. **T-001b** 静态导出 + next-intl 双语路由（messages/ 建立后 check:i18n 开始实测）
+3. **T-001c** README 初版
+4. **T-002a/b/c** content/ 类型、profile 真实数据、public 过滤与容错
+5. **US-001a→e** 3D 首页五个小任务，US-001e 通过即 US-001 完成
+6. 之后按 roadmap 顺序（T-003 → T-004 → US-004 → …），轮到每个故事时先拆分为小任务写入 features
 
 ## 风险与注意事项
 
 - `npm run verify` 目前不可运行：依赖 T-001 产出 `out/`。`npm run size` 同理。这是预期状态，不是 blocker。
 - T-001 注意：create-next-app 会与现有 package.json 冲突，需手动初始化或合并模板；合并时保留 overrides 与 verify 系列脚本。
-- 仓库尚未 git init；首次提交前确认 .gitignore 生效。package-lock.json 已生成，CI 的 npm ci 可用。
+- 仓库已 git init 并完成首次提交（5a8d051）；工作区尚有 AGENTS.md（用户新增目录说明）与本次重建的 feature_list.json / claude-progress.md 未提交，等用户指示再提交。
 - CI 尚未首次运行：需 GitHub 公开仓库建立后触发。
 - 未决：无。
