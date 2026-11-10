@@ -5,5 +5,6 @@ playwright-report/
 test-results/
 .lighthouseci/
 *.log
+*.tsbuildinfo
 .DS_Store
 .env*

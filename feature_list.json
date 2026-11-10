@@ -21,7 +21,7 @@
       "area": "基础骨架",
       "title": "初始化 Next.js 应用骨架",
       "user_visible_behavior": "开发者运行 npm run dev 可本地打开网站；npm run build 构建成功。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "手动初始化 Next.js 15 App Router + TypeScript + Tailwind CSS（create-next-app 会与现有 package.json 冲突，用模板合并方式）。",
         "合并 package.json：保留现有 overrides（basic-ftp/compression）与 verify/audit/check:i18n/size/test 脚本，新增 dev/build/start。",
@@ -29,7 +29,9 @@
         "npm run build 成功退出。",
         "bash init.sh 仍然通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：RED 观察到 npm run build 报 Missing script: build（exit 1）；手动初始化 Next.js 15.5.29 + React 19 + Tailwind v4 后 build 成功（4 静态页，First Load JS 103kB）；npm run dev 后 curl http://localhost:3000/ 返回 HTTP 200 且含标题；bash init.sh exit 0（npm ci 663 包，192 测试可列出）；npm run lint / typecheck exit 0；node:test 4/4 通过。overrides 与 verify 系列脚本保留。"
+      ],
       "notes": "对应旧 T-001 第 1 部分。纯静态导出与双语路由在 T-001b 落地。"
     },
     {
