@@ -94,13 +94,15 @@
       "area": "内容数据",
       "title": "profile 真实数据与首页消费",
       "user_visible_behavior": "首页姓名、身份描述、当前状态全部来自 content/profile.ts；修改数据文件后重新构建，页面随之更新。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "填写真实 profile 数据：笔名/英文名、身份行（Computer Scientist · Researcher · Developer · Writer · Explorer）、状态行（Building, Researching, Creating.）、社交链接、email；全站不使用真实姓名（DoD 人工验收项）。",
         "首页文字从 content/ 读取渲染，不硬编码在组件里。",
         "修改 profile.ts 任一文案后重新构建，页面对应变化的验证截图或 HTML 对比留证。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：用户确认展示名 苏子豪/Christopher Chang、邮箱 zhangchaowen@stu.scu.edu.cn、社交链接暂不配置；RED 观察到 3 个 profile 测试失败（占位数据+产物未含姓名）；填入真实数据并让 / 与 /en/ 页面从 content/profile.ts 渲染后 14/14 测试通过；传播性实测——临时改 status.zh 为 TEMP-CHANGE-VERIFY 重建后 out/index.html grep 命中 1 次，恢复后命中 0 次；i18n E2E 四项目 12/12、check:i18n（2 键）、lint/typecheck 通过。品牌标语留在 messages，身份/状态/姓名以 content 为唯一来源。"
+      ],
       "notes": "对应旧 T-002 第 2 部分。真实内容由用户提供，缺失时先用 PRD 文案占位并标注待确认。"
     },
     {
