@@ -40,7 +40,7 @@
       "area": "基础骨架",
       "title": "静态导出与中英双语路由",
       "user_visible_behavior": "构建产出纯静态 out/ 目录；访客访问 / 看到中文页面，访问 /en/ 看到英文页面。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "next.config 设置 output: 'export' + trailingSlash: true。",
         "接入 next-intl，建立 messages/zh.json 与 messages/en.json，路由用 generateStaticParams 全量预生成（静态导出无 middleware）。",
@@ -48,7 +48,9 @@
         "npx serve out -l 4173 后访问 / 与 /en/ 分别显示中文与英文文案。",
         "npm run check:i18n 首次实测通过（zh/en 键覆盖率 100%）。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：RED 观察到 check:i18n 报 messages/zh.json ENOENT、E2E webServer 因无 out/ 超时；实现 next-intl 4.14 + output:'export' + trailingSlash 后 build 产出 out/index.html（lang=zh，含中文文案）与 out/en/index.html（lang=en）；[locale] 仅预生成 en，中文由根路由承载避免 /zh 重复内容；check:i18n 通过（zh/en 各 4 键 100%）；size 首次实测 220.37kB brotli ≤1MB；e2e/i18n.spec.ts 四项目 12/12 通过（补装 Playwright WebKit 后 mobile-safari 通过）。"
+      ],
       "notes": "对应旧 T-001 第 2 部分，同时让 T-006 的 check:i18n 与 size 门禁开始实测。"
     },
     {
@@ -207,7 +209,8 @@
         "size-limit 配置与脚本接入 verify 链和 CI。"
       ],
       "evidence": [
-        "2026-11-10：npm run audit 通过（found 0 vulnerabilities，官方 registry）；node --test 4/4 通过（先观察到 MODULE_NOT_FOUND 失败再实现）；serve 14.2.7 / lhci 0.16.0 / size-limit CLI 冒烟正常；init.sh（npm ci 路径）exit 0，192 测试可列出。依赖修复：@lhci/cli 升级 0.16.0，overrides 固定 basic-ftp ^6.2.6、compression ^1.8.2。见 claude-progress.md。"
+        "2026-11-10：npm run audit 通过（found 0 vulnerabilities，官方 registry）；node --test 4/4 通过（先观察到 MODULE_NOT_FOUND 失败再实现）；serve 14.2.7 / lhci 0.16.0 / size-limit CLI 冒烟正常；init.sh（npm ci 路径）exit 0，192 测试可列出。依赖修复：@lhci/cli 升级 0.16.0，overrides 固定 basic-ftp ^6.2.6、compression ^1.8.2。见 claude-progress.md。",
+        "2026-11-11：T-001b 落地后首次实测——check:i18n 通过（zh/en 各 4 键 100%），size 通过（220.37kB brotli ≤1MB）。"
       ],
       "notes": "check:i18n 与 size 的首次实测分别随 T-001b 落地。本条为已完成基础设施，不是当前活跃任务。"
     }
