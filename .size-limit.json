@@ -1,0 +1,7 @@
+[
+  {
+    "name": "JS 总量（gzip）",
+    "path": "out/_next/static/chunks/**/*.js",
+    "limit": "1 MB"
+  }
+]

@@ -1,0 +1,475 @@
+{
+  "project": "Personal Digital Universe",
+  "updated": "2026-11-10",
+  "source": "PRD.md（用户故事与验收标准）、Tech.md（技术约束）",
+  "status_values": ["pending", "in_progress", "completed", "blocked"],
+  "iterations": {
+    "1": "P0 核心体验和核心内容（PRD 第七章，13 个用户故事 + 技术准备任务）",
+    "2": "P1 增强视觉和完整内容（10 个用户故事）",
+    "backlog": "P2 后续增强（复杂 3D 场景、多语言扩展、CMS 等，见 PRD 第七章，暂无用户故事）"
+  },
+  "order_note": "tasks 与 features 的数组顺序为建议实现顺序；功能状态以 status 字段为唯一事实来源，完成必须附 evidence。",
+  "tasks": [
+    {
+      "id": "T-001",
+      "category": "技术",
+      "title": "初始化 Next.js 应用骨架",
+      "description": "Next.js 15 App Router + TypeScript + Tailwind CSS + next-intl 中英双语路由（/ 中文，/en 英文），output: 'export' + trailingSlash: true，generateStaticParams 预生成全部路由。合并现有 package.json（注意 create-next-app 冲突，手动初始化或移入模板），补齐 dev/build/start 脚本与 README 初版。",
+      "acceptance_criteria": [
+        "npm run dev 可本地启动",
+        "npm run build 产出 out/ 静态目录，out/en/index.html 存在",
+        "README 包含本地启动、内容维护、部署、验收命令、降级说明"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "T-002",
+      "category": "技术",
+      "title": "内容数据架构（content/）",
+      "description": "建立 content/ 目录与 TypeScript 类型：profile/journey/research/publications/projects/products/writing/reading/interests。每条数据含 zh/en 双语字段与 public 开关；论文状态严格 Published | Preprint | In Progress。GitHub 数据在 CI 构建时抓取写入 content/github-cache.json，Token 只存在于 Actions secrets，API 失败时用缓存或手写 fallback。",
+      "acceptance_criteria": [
+        "新增一条数据后页面自动展示",
+        "字段缺失不导致页面崩溃，有默认值或条件渲染",
+        "public: false 的条目构建时被过滤",
+        "GitHub Token 不出现在前端 bundle"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "T-003",
+      "category": "技术",
+      "title": "单元测试与集成测试基础设施",
+      "description": "配置 Vitest（+ Testing Library），添加 test 脚本并接入 verify 链与 CI。遵循 TDD：后续每个功能先写测试。首批测试覆盖 content/ 数据校验与工具函数。",
+      "acceptance_criteria": [
+        "npm test 本地跑通",
+        "CI 中执行单元测试且作为门禁一部分",
+        "content 数据校验有测试覆盖（缺字段、public 过滤、论文状态枚举）"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "T-004",
+      "category": "技术",
+      "title": "CI 验收流水线跑通",
+      "description": "提交 package-lock.json，使 .github/workflows/verify.yml 在公开仓库全绿：next build → Playwright 4 个项目 → Lighthouse CI。README 添加 CI 状态徽章（CI 监视器）。",
+      "acceptance_criteria": [
+        "GitHub Actions 免费运行且全部通过",
+        "npm run verify 本地与 CI 结果一致",
+        "README 有 CI 徽章"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "T-005",
+      "category": "技术",
+      "title": "发布流水线、监控与许可证",
+      "description": "Cloudflare Pages Git 集成：main 分支自动部署，构建命令 next build，输出目录 out，使用 *.pages.dev 免费子域名。接入 Cloudflare Web Analytics 与 UptimeRobot 免费监控。落地许可证：LICENSE（PolyForm Noncommercial 1.0.0）+ LICENSE-CONTENT（CC BY-NC-ND 4.0）+ Footer 版权声明。",
+      "acceptance_criteria": [
+        "合并到 main 后自动部署，*.pages.dev 可访问",
+        "UptimeRobot 监控生效，Web Analytics 开始收集数据",
+        "两个许可证文件存在，Footer 有版权声明",
+        "发布前 docs/DoD.md 人工验收逐项打勾"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "T-006",
+      "category": "技术",
+      "title": "质量指标自动化门禁",
+      "description": "接入三个可脚本化质量指标：npm audit --audit-level=high（0 高危及以上漏洞）、scripts/check-i18n.mjs（zh/en 键覆盖率 100%）、size-limit（JS 体积预算，初始 1MB gzip）。全部接入 npm run verify 链与 GitHub Actions。TS/ESLint 门禁随 T-001、单测覆盖率随 T-003 落地，不在本任务范围。",
+      "acceptance_criteria": [
+        "npm run audit 本地真实运行通过（0 高危及以上漏洞）",
+        "i18n 检查脚本有 node:test 测试，先观察到失败再实现通过（一致/缺键/多键/文件缺失四种情况）",
+        "size-limit 配置与脚本接入 verify 链和 CI（首次实测待 T-001 产出 out/）",
+        "verify 链与 CI 包含 verify:metrics 步骤"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "completed",
+      "evidence": "2026-11-10：npm run audit 通过（found 0 vulnerabilities，官方 registry）；node --test 4/4 通过（先观察到 MODULE_NOT_FOUND 失败再实现）；serve 14.2.7 / lhci 0.16.0 / size-limit CLI 冒烟正常；init.sh（npm ci 路径）exit 0，192 测试可列出。size-limit 首次实测待 T-001 产出 out/。依赖修复：@lhci/cli 升级 0.16.0，overrides 固定 basic-ftp ^6.2.6、compression ^1.8.2。"
+    }
+  ],
+  "features": [
+    {
+      "id": "US-023",
+      "category": "功能",
+      "title": "内容维护与扩展",
+      "story": "作为网站所有者，我希望通过结构化数据文件更新个人介绍、成果、项目和作品，以便长期低成本维护网站而不需要修改页面代码。",
+      "acceptance_criteria": [
+        "内容与展示逻辑分离，使用 content/ 下 TS/JSON/Markdown 结构化数据",
+        "新增一条项目数据后列表自动展示；支持首页精选与 public 公开状态设置",
+        "某条数据字段缺失时页面不崩溃，有默认值或条件渲染",
+        "链接或图片资源不可用时提供合理降级显示"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-001",
+      "category": "交互",
+      "title": "3D 首页与沉浸式入口",
+      "story": "作为首次访问的游客，我希望进入网站时获得有沉浸感和视觉冲击力的 3D 体验，以便快速了解网站所有者的定位并产生探索兴趣。",
+      "acceptance_criteria": [
+        "打开网站可见完整 3D 首页场景、姓名及身份描述",
+        "几何体、粒子和光效持续但不过度；3D 不遮挡姓名和重要文字",
+        "有明确的 Explore 入口，点击可进入后续内容",
+        "页面适应不同分辨率",
+        "WebGL 不可用时自动显示静态或 CSS 动态背景，核心内容可见",
+        "3D 资源加载失败不导致白屏或文字无法显示"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-004",
+      "category": "交互",
+      "title": "全局空间化导航",
+      "story": "作为访客，我希望通过直观的导航系统快速访问不同模块，以便在沉浸式 3D 网站中仍能高效获取信息。",
+      "acceptance_criteria": [
+        "导航含 Home/About/Journey/Research/Projects/Writing/Interests/Contact，固定顶部、玻璃质感",
+        "点击导航平滑到达对应模块；滚动时激活状态同步变化",
+        "导航在不同背景下始终可读",
+        "移动端折叠菜单可触摸展开和关闭",
+        "目标模块不存在时不产生无效跳转"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-006",
+      "category": "功能",
+      "title": "个人介绍",
+      "story": "作为首次访问的游客，我希望了解所有者的背景、身份定位和发展方向，以便建立完整的个人认知。",
+      "acceptance_criteria": [
+        "About 区域展示姓名、个人形象与叙事性自我介绍（大三、考研与实习准备、LLM/MARL/DAC 研究、开源、独立软件、《法渊》、跨领域兴趣）",
+        "Download CV 可下载已配置简历；未配置时不显示无效入口",
+        "头像或 3D 模型加载失败时文字内容仍正常显示"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-002",
+      "category": "交互",
+      "title": "3D 场景交互",
+      "story": "作为访客，我希望通过鼠标或触摸与 3D 场景交互，以便获得参与感和空间探索体验。",
+      "acceptance_criteria": [
+        "鼠标移动产生平滑带惯性的视差，快速移动不抖动",
+        "悬停指定物体有克制反馈（高亮/放大/旋转变化/辅助文字）",
+        "可拖动旋转指定物体；点击物体触发正确跳转",
+        "不强制操作 3D 场景才能访问内容",
+        "触摸设备无悬停时仍能通过点击完成对应操作"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-003",
+      "category": "交互",
+      "title": "电影级页面转场",
+      "story": "作为访客，我希望浏览不同模块时体验有电影感和空间感的转场，以便网站像一个连续的数字世界。",
+      "acceptance_criteria": [
+        "滚动触发相机运动、背景渐变、粒子聚散、面板展开等空间转场，相邻模块视觉连续",
+        "不劫持滚轮；进入视口的内容可立即阅读",
+        "快速上下滚动时动画正确中断衔接，无冲突状态",
+        "动画执行失败时内容仍可正常访问",
+        "开启减少动态效果时自动使用简化转场"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-008",
+      "category": "功能",
+      "title": "个人成长时间线",
+      "story": "作为访客，我希望通过交互式时间线了解所有者的重要经历，以便理解其成长轨迹。",
+      "acceptance_criteria": [
+        "时间线覆盖教育、科研、开源、产品发布、竞赛、实习、文学创作节点",
+        "节点含时间/标题/简介/分类/详情入口；悬停显示摘要，点击展开详情",
+        "不强制旋转 3D 才能阅读；移动端转换为触摸友好布局",
+        "没有详细信息的节点仍展示基本内容"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-010",
+      "category": "功能",
+      "title": "科研方向展示",
+      "story": "作为科研人员或潜在合作伙伴，我希望了解所有者的科研方向和内容，以便判断学术交流或合作的可能性。",
+      "acceptance_criteria": [
+        "展示 DAC、动态空域扇区划分、LLM、MARL、Agentic AI、AI for ATM 方向及核心问题，重点呈现 LLM+MARL 结合",
+        "展示研究使用的算法、仿真平台、数据和关键技术",
+        "3D 空域可视化明确标注 Conceptual illustration, not simulation data",
+        "每个研究方向可进入独立详情页；未完成研究正确标记 In Progress",
+        "3D 可视化加载失败时文字介绍仍可见"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-012",
+      "category": "功能",
+      "title": "GitHub 开源项目",
+      "story": "作为开发者或技术招聘人员，我希望直观了解所有者的 GitHub 项目，以便评估其工程能力和开源贡献。",
+      "acceptance_criteria": [
+        "精选项目卡片含名称/简介/图片/技术栈/GitHub 地址/Star 数/状态，按类型分类",
+        "悬停有克制的 3D 倾斜、抬升、高亮；快速经过多个卡片无动画冲突",
+        "点击卡片展开完整介绍，可跳转 GitHub 仓库",
+        "GitHub API 失败时使用本地缓存或手写 fallback 数据"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-013",
+      "category": "功能",
+      "title": "独立软件产品",
+      "story": "作为潜在用户或商业合作伙伴，我希望了解所有者开发并发布的软件产品，以便认识其独立开发和产品实践能力。",
+      "acceptance_criteria": [
+        "产品含名称/Logo/封面/介绍/核心功能/技术栈/状态/访问地址",
+        "状态真实：Released / Beta / In Development / Discontinued",
+        "点击产品展开详情面板；体验入口可访问对应产品",
+        "产品链接不可用时不导致整个网站报错；未配置图片用统一默认占位"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-014",
+      "category": "功能",
+      "title": "文学作品展示",
+      "story": "作为文学爱好者，我希望通过有氛围感的视觉展示了解所有者的文学创作，以便认识其技术工作之外的创造力。",
+      "acceptance_criteria": [
+        "展示《法渊》等作品的名称/封面/类型/简介/创作时间/状态/阅读入口",
+        "悬停书籍有旋转、抬升或翻页效果；点击进入详情页（世界观、人物、创作理念）",
+        "未完成作品标记 Writing / In Progress",
+        "3D 书籍加载失败时用普通封面图片代替；3D 效果不妨碍名称和简介可读性"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-018",
+      "category": "功能",
+      "title": "联系方式与合作方向",
+      "story": "作为潜在招聘人员、研究人员或合作伙伴，我希望快速联系所有者，以便开展技术、科研或商业合作。",
+      "acceptance_criteria": [
+        "展示已配置的公开联系方式（Email/GitHub/博客等）；未配置的不显示无效入口",
+        "Copy Email 可复制邮箱；复制功能不可用时仍可手动复制",
+        "点击 Email 调用系统邮件客户端；GitHub 等外链可打开",
+        "展示合作方向（科研/开源/软件开发/创业/技术讨论）"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-021",
+      "category": "交互",
+      "title": "多设备自适应体验",
+      "story": "作为使用不同设备的访客，我希望网站按设备性能和屏幕尺寸自适应调整，以便在不同设备上都有良好体验。",
+      "acceptance_criteria": [
+        "桌面完整 3D 与鼠标交互；平板适当简化；移动端降低粒子、简化模型、触摸交互，必要时静态背景",
+        "移动端单列布局、无横向溢出，不是桌面端的简单缩放",
+        "低性能设备自动降低渲染质量",
+        "设备不支持 WebGL 时自动使用降级视觉方案"
+      ],
+      "priority": "P0",
+      "iteration": 1,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-005",
+      "category": "交互",
+      "title": "动态滚动反馈",
+      "story": "作为访客，我希望滚动时获得连续视觉反馈，以便感知浏览进度和当前位置。",
+      "acceptance_criteria": [
+        "滚动进度指示器同步更新",
+        "进入不同模块时视觉状态正确切换",
+        "快速滚动时进度指示器无明显延迟或错位",
+        "滚动效果不影响正常页面操作"
+      ],
+      "priority": "P1",
+      "iteration": 2,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-007",
+      "category": "功能",
+      "title": "技术能力展示",
+      "story": "作为招聘人员或潜在合作伙伴，我希望了解所有者的技术能力和专业领域，以便判断其技术背景。",
+      "acceptance_criteria": [
+        "技能按领域分类：CS/软件工程/全栈/AI/科研计算/工具技术",
+        "悬停或点击技能节点可查看对应信息或关联项目",
+        "不使用缺乏客观依据的熟练度百分比",
+        "未配置关联项目时技能仍正常展示"
+      ],
+      "priority": "P1",
+      "iteration": 2,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-009",
+      "category": "功能",
+      "title": "教育背景",
+      "story": "作为学术导师或招聘人员，我希望了解所有者的教育背景，以便了解其专业基础和学术经历。",
+      "acceptance_criteria": [
+        "展示学校、学院、专业、学历阶段、入学和预计毕业时间",
+        "考研状态表述为 Preparing for Graduate Entrance Examination，不得显示为研究生在读或已获硕士学历",
+        "信息未配置时不显示空字段"
+      ],
+      "priority": "P1",
+      "iteration": 2,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-011",
+      "category": "功能",
+      "title": "学术论文与成果",
+      "story": "作为学术导师或研究人员，我希望查看所有者参与的论文和成果，以便评估其科研能力。",
+      "acceptance_criteria": [
+        "每项成果含标题/作者/时间/状态/摘要/关键词/链接/PDF 入口",
+        "状态严格 Published / Preprint / In Progress；未发表不得标记 Published，未公开内容不展示",
+        "支持按年份和研究领域筛选；点击标题进入详情"
+      ],
+      "priority": "P1",
+      "iteration": 2,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-015",
+      "category": "功能",
+      "title": "个人文章与思想记录",
+      "story": "作为感兴趣的访客，我希望阅读所有者的技术博客、读书笔记和思考，以便了解其知识体系和观点。",
+      "acceptance_criteria": [
+        "文章含标题/摘要/发布时间/分类/阅读入口，支持分类和时间筛选",
+        "详情页以阅读体验优先，不用过多动效干扰正文",
+        "文章链接失效时不影响其他文章展示"
+      ],
+      "priority": "P1",
+      "iteration": 2,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-016",
+      "category": "功能",
+      "title": "兴趣阅读与跨领域探索",
+      "story": "作为访客，我希望了解所有者在计算机科学之外的兴趣，以便认识其多元特质。",
+      "acceptance_criteria": [
+        "展示数学/物理/哲学/经济学/文学/AI/科技创业等兴趣领域",
+        "点击兴趣节点查看介绍或学习记录；未配置详情的兴趣仍正常展示",
+        "展示在读与推荐书籍（书名、作者、个人评价）"
+      ],
+      "priority": "P1",
+      "iteration": 2,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-017",
+      "category": "功能",
+      "title": "当前状态与未来目标",
+      "story": "作为关注所有者发展的访客，我希望了解其当前在做什么和未来目标，以便认识其规划与方向。",
+      "acceptance_criteria": [
+        "Now 区域展示考研准备、实习寻找、LLM+MARL 研究、开源、产品、写作阅读",
+        "未来目标（深造/科研/产品/创业/跨学科探索）与当前状态明确视觉区分",
+        "已结束的事项及时更新"
+      ],
+      "priority": "P1",
+      "iteration": 2,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-019",
+      "category": "交互",
+      "title": "明暗主题切换",
+      "story": "作为访客，我希望按喜好切换网站主题，以便获得舒适的浏览体验。",
+      "acceptance_criteria": [
+        "支持 Dark/Light 切换，默认跟随系统设置，推荐 Dark",
+        "切换时背景、文字、卡片、光效和 3D 场景同步变化",
+        "主题选择保存，刷新后保持；localStorage 不可用时回退系统主题"
+      ],
+      "priority": "P1",
+      "iteration": 2,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-020",
+      "category": "交互",
+      "title": "统一动态视觉系统",
+      "story": "作为访客，我希望网站不同区域有统一且丰富的动画效果，以便获得连贯的沉浸式体验。",
+      "acceptance_criteria": [
+        "各区域动画风格一致、有明确目的、克制使用",
+        "动画不遮挡或干扰文字阅读，滚动和交互流畅",
+        "动画资源加载失败时页面主体内容不受影响"
+      ],
+      "priority": "P1",
+      "iteration": 2,
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "US-022",
+      "category": "交互",
+      "title": "动态效果控制",
+      "story": "作为访客，我希望按设备和使用偏好控制动态效果，以便减少视觉干扰和资源消耗。",
+      "acceptance_criteria": [
+        "识别 prefers-reduced-motion，关闭非必要持续运动和复杂转场",
+        "提供简化动画模式或暂停部分背景动画的能力",
+        "保留必要的导航、按钮和交互反馈；无高频闪烁",
+        "简化模式下所有核心内容和导航功能仍可用"
+      ],
+      "priority": "P1",
+      "iteration": 2,
+      "status": "pending",
+      "evidence": null
+    }
+  ]
+}
