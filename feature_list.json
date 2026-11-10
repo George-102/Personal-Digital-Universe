@@ -59,13 +59,15 @@
       "area": "基础骨架",
       "title": "README 初版",
       "user_visible_behavior": "新会话的开发者或 agent 读 README 即可无猜测地启动、维护和验证项目。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "README 包含五节：本地启动、内容维护方式、部署方式、验收命令、降级说明。",
         "按 README 的本地启动步骤实际操作一遍可成功。",
         "验收命令一节与 package.json 实际脚本一致。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：README.md 五节齐全（脚本校验）；所列命令本会话均实际运行——init.sh exit 0、npm run dev HTTP 200、npm run build 产出 out/、serve out 由 Playwright webServer 实测；14 个命令与 package.json 逐一核对一致（npm test 为 node:test 现状已注明）。部署与许可证章节标注随 T-005 落地。"
+      ],
       "notes": "对应旧 T-001 第 3 部分；DoD D 组要求 README 存在，部署细节随 T-005 更新。"
     },
     {
