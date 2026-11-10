@@ -76,14 +76,16 @@
       "area": "内容数据",
       "title": "content/ 类型与 schema 定义",
       "user_visible_behavior": "所有内容类别有 TypeScript 类型约束；非法数据（如错误的论文状态）在构建期被拒绝。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "建立 content/ 九类数据的 TS 类型：profile/journey/research/publications/projects/products/writing/reading/interests（字段约定见 docs/Development.md §2）。",
         "简介类字段双语 {zh,en}；每条数据含 public: boolean；论文状态严格 Published | Preprint | In Progress，产品状态严格 Released | Beta | In Development | Discontinued。",
         "TDD：先用 node:test 写校验测试并观察到失败（缺字段、非法状态枚举、public 过滤），再实现校验使其通过。",
         "npm test 与 npx tsc --noEmit 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：RED 观察到 content-validate.test.mjs 报 ERR_MODULE_NOT_FOUND（content/validate.ts 缺失）；实现 content/types.ts（九类）+ validate.ts 后 7 个新测试通过（合计 11/11）；构建期拒绝实测——临时注入 status:'Accepted' 的论文条目后 npm run build 在 prebuild 报「publications: status 非法值」失败，恢复后 build exit 0；Node 26 原生类型剥离直接运行 .ts；typecheck/lint exit 0。GitHub 数据抓取随 US-012 落地。"
+      ],
       "notes": "对应旧 T-002 第 1 部分。Vitest 迁移（roadmap T-003）之前沿用现有 node:test。GitHub 数据抓取（github-cache.json）随 US-012 落地，Token 只进 Actions secrets。"
     },
     {
