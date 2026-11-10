@@ -111,13 +111,15 @@
       "area": "内容数据",
       "title": "public 过滤与缺字段容错",
       "user_visible_behavior": "public: false 的条目不出现在网站上；任何一条数据缺少可选字段时页面不崩溃。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "TDD：测试 public: false 条目被构建期过滤、可选字段缺失时有默认值或条件渲染，先失败后通过。",
         "npm run build 后在 out/ 产物中 grep 确认非公开条目文案不存在。",
         "构造一条缺可选字段的临时数据，构建与页面渲染不报错（验证后移除临时数据）。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：RED 观察到 content-public.test.mjs 报 ERR_MODULE_NOT_FOUND（content/index.ts 缺失）；实现统一公开出口 content/index.ts（所有列表经 filterPublic，页面只从此入口取数）后 18/18 测试通过；实测注入 public:false 的 TEMP-HIDDEN-PROJECT 与缺可选字段的 TEMP-MINIMAL-PROJECT 后 build exit 0、out/ 全量 grep 无隐藏条目泄漏，验证后移除并重建恢复；lint/typecheck 通过。注：列表渲染页尚未存在，产物级过滤复验随 US-012 落地时执行。"
+      ],
       "notes": "对应旧 T-002 第 3 部分，同时覆盖 US-023 的核心验收（其余 US-023 验收随各内容区块落地时复验）。"
     },
     {
