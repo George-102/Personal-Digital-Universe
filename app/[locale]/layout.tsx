@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
+import { profile } from '@/content/profile';
 import '../globals.css';
 
 export function generateStaticParams() {
@@ -8,10 +9,24 @@ export function generateStaticParams() {
   return [{ locale: 'en' }];
 }
 
-export const metadata: Metadata = {
-  title: 'Personal Digital Universe',
-  description: '3D 沉浸式个人数字空间',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const lang = locale === 'zh' ? 'zh' : 'en';
+  const title = `${profile.name[lang]} — Personal Digital Universe`;
+  return {
+    title,
+    description: `${profile.tagline[lang]} ${profile.status[lang]}`,
+    openGraph: {
+      title,
+      description: profile.tagline[lang],
+      type: 'profile',
+    },
+  };
+}
 
 export default async function LocaleLayout({
   children,

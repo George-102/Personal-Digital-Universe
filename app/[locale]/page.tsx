@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { profile } from '@/content/profile';
+import HomeSections from '@/components/HomeSections';
+import PersonJsonLd from '@/components/PersonJsonLd';
 
 export default async function Home({
   params,
@@ -13,12 +14,14 @@ export default async function Home({
   const lang = locale === 'zh' ? 'zh' : 'en';
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-4">
-      <h1 className="text-3xl font-bold">{profile.name[lang]}</h1>
-      <p>{profile.tagline[lang]}</p>
-      <p className="font-mono text-sm">{profile.status[lang]}</p>
-      <p className="text-sm opacity-70">{t('tagline')}</p>
-      <Link href={locale === 'zh' ? '/en/' : '/'}>{t('languageName')}</Link>
-    </main>
+    <>
+      <PersonJsonLd />
+      <main>
+        <HomeSections lang={lang} />
+      </main>
+      <footer className="px-6 py-8 text-center text-sm opacity-60">
+        <Link href={locale === 'zh' ? '/en/' : '/'}>{t('languageName')}</Link>
+      </footer>
+    </>
   );
 }

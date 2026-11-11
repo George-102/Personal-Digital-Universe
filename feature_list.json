@@ -128,14 +128,16 @@
       "area": "3D 首页",
       "title": "首页文字层先行（无 3D 依赖）",
       "user_visible_behavior": "即使 JavaScript 或 WebGL 不可用，访客仍能看到姓名（h1）、身份描述、当前状态和 Explore 入口。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "首页语义化 HTML：单一 h1 姓名、身份行、状态行、Explore 链接（指向 #about 占位 section，About 正文由 US-006 填充）。",
         "配置独立 title、meta description、Open Graph（DoD C 组）。",
         "npm run build 后 out/index.html 的静态 HTML 中含姓名与身份文案（不依赖客户端 JS）。",
         "npx serve out -l 4173 后运行 npx playwright test e2e/core.spec.ts --project=chromium -g '首页显示姓名' 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：RED 观察到 core/seo 共 14 项失败与 home-text.test.mjs 3 项失败；实现共享 HomeSections（h1 姓名/身份/状态/Explore→#about 占位）+ 双语 metadata/OG + Person JSON-LD + sitemap/robots（占位域名待 T-005 替换）后：21/21 单元测试通过；core『首页显示姓名』与『CTA 不被遮挡』在 chromium/no-webgl 通过；seo 首页/en/sitemap/robots/Person 5 项通过；check:i18n（4 键）、lint/typecheck 通过。/research 等路由 SEO 失败属后续故事预期状态。"
+      ],
       "notes": "开发红线：文字先于 3D，Canvas 不得成为 LCP 元素。占位 #about 同时让 core.spec 的 CTA 遮挡测试有目标。"
     },
     {
