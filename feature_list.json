@@ -821,7 +821,7 @@
       "area": "滚动转场",
       "title": "US-003 整体验收与回归",
       "user_visible_behavior": "PRD US-003 五条验收逐条可核对，转场不影响已有行为与现有质量门禁；reduced-motion 自动使用简化转场。",
-      "status": "in_progress",
+      "status": "passing",
       "verification": [
         "逐条核对五条验收：滚动触发空间转场、动画后目标模块清晰呈现、快速滚动不乱、动画失败内容可访问、reduced-motion 简化转场；证据写入 evidence。",
         "reduced-motion E2E：断言转场为简化形式（进度瞬时/无相机运动）且内容完整（PRD 验收 5）。",
@@ -834,9 +834,10 @@
         "2026-11-11：reduced-motion E2E『自动使用简化转场』四项目通过——滚动后 200ms 内进度瞬时到位（>0.9，非 damp 渐近）、data-transition/data-camera-z 恒为 0.000（无相机运动）、.about-panel transform:none / opacity:1（不做展开动画）、h1 与 #about 完整可见（PRD 验收 5）。",
         "2026-11-11：全套 E2E 四项目 316 tests 239 passed / 77 skipped / 0 failed（--workers=2，exit 0；77 skipped = 28 项 roadmap fixme + WebGL/条件跳过；未新增 fixme、未删断言、未降阈值）。全量负载下曾暴露 mobile-safari 相机用例时序 flake（behavior:'auto' 平滑滚动动画慢于 500ms 采样点），程序化跳转统一改 behavior:'instant' 后复跑 0 失败。",
         "2026-11-11：Lighthouse 复验 CI=1 npm run verify:lighthouse exit 0——/ 与 /en/ 各 3 run 共 6 报告 All results processed!，lighthouserc 阈值全部达标；LCP 元素实测为 <p> 文字元素、非 CANVAS（PerformanceObserver 实测 LCP_ELEMENT=P，临时用例四项目通过后清理）。",
-        "2026-11-11：npm run verify:local exit 0（npm test 73/73、lint/typecheck 干净、size 475.75kB ≤1MB、i18n 100%、audit 0 high）。**云端 verify run URL 待 push main 后回写，届时本任务转 passing**。"
+        "2026-11-11：npm run verify:local exit 0（npm test 73/73、lint/typecheck 干净、size 475.75kB ≤1MB、i18n 100%、audit 0 high）。",
+        "2026-11-12：push main 后云端 Verify workflow run `43025954251`（https://github.com/George-102/Personal-Digital-Universe/actions/runs/43025954251）全绿——verify job 7m30s success：Playwright 四项目 239 passed / 77 skipped / 0 failed（4.3m，与本地全套数字一致）、Lighthouse CI 达标（Healthcheck passed）；deploy job 32s success，生产已发布。CI run URL 与 passed 数已回写 claude-progress.md，本任务转 passing。"
       ],
-      "notes": "本任务通过即 US-003 完成。导航激活态属 US-004，滚动进度指示器属 US-005，不在本故事范围。2026-11-11 本地验证全部完成，按 AGENTS 约定待 push main 云端 verify 全绿并回写 CI run URL 后才可标记 passing。"
+      "notes": "本任务通过即 US-003 完成。导航激活态属 US-004，滚动进度指示器属 US-005，不在本故事范围。**已 passing（2026-11-12）**：本地验证 + 云端 run 43025954251 证据齐备。"
     }
   ],
   "roadmap": [
