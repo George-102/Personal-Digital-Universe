@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { profile } from '@/content/profile';
-import '../globals.css';
 
 export function generateStaticParams() {
   // 中文由根路由 / 承载，这里只预生成英文，避免 /zh 与 / 内容重复

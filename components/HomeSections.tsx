@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { profile } from '@/content/profile';
 import HeroBackground from '@/components/HeroBackground';
+import HeroCanvas from '@/components/three/HeroCanvas';
 
 export default async function HomeSections({ lang }: { lang: 'zh' | 'en' }) {
   const t = await getTranslations({ locale: lang, namespace: 'Home' });
@@ -9,6 +10,7 @@ export default async function HomeSections({ lang }: { lang: 'zh' | 'en' }) {
     <>
       <section className="relative flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
         <HeroBackground />
+        <HeroCanvas />
         <div className="relative flex flex-col items-center gap-4">
           <h1 className="text-4xl font-bold tracking-wide">{profile.name[lang]}</h1>
           <p className="text-lg opacity-90">{profile.tagline[lang]}</p>

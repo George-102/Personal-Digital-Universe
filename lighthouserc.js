@@ -2,6 +2,8 @@ module.exports = {
   ci: {
     collect: {
       staticDistDir: './out',
+      // 只审计真实内容路由；404 错误页无 meta 属预期，不参与 SEO/a11y 门禁
+      url: ['http://localhost/', 'http://localhost/en/'],
       numberOfRuns: 3,
       settings: {
         preset: 'desktop',

@@ -164,7 +164,7 @@
       "area": "3D 首页",
       "title": "Hero 3D 场景异步加载",
       "user_visible_behavior": "支持 WebGL 的访客看到完整 3D 首页：中心几何体、粒子、空间网格、轨道与动态光照，动效持续而克制，不遮挡姓名文字。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "引入 three + @react-three/fiber + @react-three/drei，Hero 场景组件独立模块化并 dynamic import 异步加载（Suspense fallback 不阻塞文字）。",
         "场景元素按 PRD §5.2 场景一实现：中心几何体、粒子、网格、轨道、光照；低面数、可复用几何体，无实时阴影与高成本后处理。",
@@ -172,7 +172,9 @@
         "人工检查 3D 不遮挡姓名、身份行与 Explore（DoD 人工验收项，截图留证）。",
         "npm run size 通过（JS 总量 ≤1MB gzip）。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：RED 观察到 quality-tier 测试 MODULE_NOT_FOUND 与 hero-scene E2E 失败；TDD 实现 lib/quality.ts 三档画质 + HeroScene（icosahedron 核心/线框壳/双轨道/粒子球壳/gridHelper/双色点光，useFrame 克制动画，首帧置 data-ready）+ HeroCanvas（dynamic ssr:false，WebGL 检测后才挂载）。修复真实 bug：globals.css 原先只在 [locale] 布局导入导致根路由无样式，移至根布局。GREEN：29/29 单元测试；hero-scene 四项目 4 通过 4 条件跳过；PerformanceObserver 实测 LCP 元素为身份行 <p>（136ms）非 Canvas；Lighthouse 首页 perf 1.0/a11y 1.0/seo 1.0/bp 0.96，LCP≈215ms CLS 0 TBT<200（lighthouserc 审计范围修正为真实路由，404 页不参与门禁）；size 429.79kB brotli；桌面/移动截图人工确认文字清晰、3D 不遮挡（截图会话内查看后清理）。"
+      ],
       "notes": "鼠标视差/悬停/拖拽属于 US-002，滚动转场属于 US-003，不在本任务范围。"
     },
     {

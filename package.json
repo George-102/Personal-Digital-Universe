@@ -21,10 +21,13 @@
     "test": "node --test scripts/"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
     "next": "^15.5.0",
     "next-intl": "^4.14.10",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "three": "^0.187.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",
@@ -35,6 +38,7 @@
     "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.187.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "^15.5.0",
     "serve": "^14.2.0",
