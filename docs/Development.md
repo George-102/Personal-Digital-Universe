@@ -10,12 +10,12 @@
 | 技术 | 基础 | 技术架构 | ✅ 已决策 | Tech.md、本文 §1 |
 | 技术 | 数据库 | 数据库表结构 | ✅ 无数据库决策 + content/ schema | 本文 §2、T-002 |
 | 技术 | 数据库 | 数据库迁移 | ✅ 不适用（见决策） | 本文 §2 |
-| 技术 | 持续集成 | 持续集成服务器 | ✅ 方案已定稿，待跑通 | .github/workflows/verify.yml、T-004a/b |
-| 技术 | 持续集成 | 持续集成监视器 | ⏳ 待落地 | T-004b（CI 徽章）、T-005b（UptimeRobot） |
+| 技术 | 持续集成 | 持续集成服务器 | ✅ 已跑通（Verify 全量门禁全绿） | .github/workflows/verify.yml、T-004a/b |
+| 技术 | 持续集成 | 持续集成监视器 | ⏳ 部分落地（1/2） | T-004b（CI 徽章 ✅）、T-005b（UptimeRobot 5 分钟监控待配置） |
 | 技术 | 持续集成 | 构建脚本 | ✅ 已建 | package.json（verify 系列 + dev/build/start）；Node 26 固定随 T-004a |
 | 技术 | 测试 | 单元测试和集成测试 | ⏳ 待落地 | T-003（Vitest，未提前） |
-| 技术 | 测试 | 端到端测试 | ✅ 已建并运行 | playwright.config.ts、e2e/（11 个 spec） |
-| 技术 | 发布 | 发布脚本 | ⏳ 待落地 | T-005a（Actions + Wrangler 直传） |
+| 技术 | 测试 | 端到端测试 | ✅ 已建并运行 | playwright.config.ts、e2e/（12 个 spec） |
+| 技术 | 发布 | 发布脚本 | ✅ 已落地 | T-005a（deploy + preview job，Wrangler 直传） |
 
 ---
 
@@ -175,10 +175,12 @@
 - **许可证分层**：代码 `LICENSE` = PolyForm Noncommercial 1.0.0；内容 `LICENSE-CONTENT` = CC BY-NC-ND 4.0；作品页与 Footer 版权声明。字体用开源可商用（Inter / Noto Sans SC / JetBrains Mono）。
 - **费用**：0 元/月。前提：免费子域名、不升级付费计划、不接付费服务。独立域名（约 50–100 元/年）是唯一可能的未来费用，不在当前范围。
 
-### 现状与待办
+### 现状（2026-11-11）
 
-- 现状：平台与方案已决策并写入文档，未配置；远端仓库为空、本地未关联 remote。
-- 待办：**T-005a**（Pages 项目 + secrets + deploy job + 预览部署）、**T-005b**（监控接入、许可证文件、Footer 版权、SITE_URL 真实域名）。
+- **T-004a / T-004b / T-005a 均已 passing**：Node 26 前置修复；`verify` 全量门禁（lint / typecheck / build / 单测 / 质量指标 / Playwright / Lighthouse）；首次推送与分支保护、README 徽章实测 passing；`deploy` + `preview` job 用 Wrangler Direct Upload 上传被验证的同一份 `out/`。生产 `https://personal-digital-universe.pages.dev` 实测 HTTP 200。
+- **T-005b 代码部分已落地**：`LICENSE`（PolyForm Noncommercial 1.0.0）、`LICENSE-CONTENT`（CC BY-NC-ND 4.0）、双语 Footer 版权、`lib/site.ts` 真实域名与 sitemap/robots、`scripts/sync-licenses.mjs`、`docs/DoD.md` D 组已验证项打勾。
+- **监控**：Cloudflare Web Analytics 在 Pages 项目 → Metrics 一键开启，Cloudflare 在下次部署自动注入 beacon，不需要改代码；UptimeRobot 5 分钟 HTTPS 监控在账号侧配置，宕机邮件告警。两项证据与最终状态见 `feature_list.json` T-005b。
+- **后续**：T-003（Vitest 基础设施）→ US-004 → 其余 roadmap。
 
 ---
 
@@ -187,3 +189,4 @@
 - 2026-11-10：初版。记录五类技术准备决策；无数据库决策；测试四层体系；发布流程。
 - 2026-11-10：T-006 质量指标门禁落地（audit / i18n 覆盖率 / size-limit），修复依赖漏洞（@lhci/cli 0.16 + overrides）。
 - 2026-11-11：用户确认 CI/CD 方案 A（Actions + Wrangler 直传）及 T-004/T-005 提前到 US-004 之前；同步 §1 架构图、§3 持续集成、§5 发布决策；记录五处 CI 必红前置、公开仓库地址与 Node 26 要求。
+- 2026-11-11：修正准备状态总览与 §5「现状与待办」的滞后描述——T-004a/b、T-005a 已 passing、T-005b 代码部分已落地；记录 Cloudflare Web Analytics 的 Pages 一键开启（下次部署自动注入 beacon）与 UptimeRobot 账号侧配置方式。
