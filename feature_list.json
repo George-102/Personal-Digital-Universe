@@ -183,14 +183,16 @@
       "area": "3D 首页",
       "title": "3D 容错与 GPU 资源管理",
       "user_visible_behavior": "3D 资源加载失败或 WebGL 上下文丢失时，首页不白屏、文字始终可读；场景离开视口暂停渲染，卸载时释放 GPU 资源。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "资源加载失败降级为 CSS/图片占位：npx playwright test e2e/degradation.spec.ts -g '3D 资源 404' 通过。",
         "上下文丢失尝试恢复一次，失败转静态模式，无未捕获异常（DevTools 模拟 webglcontextlost 留证）。",
         "组件卸载显式 dispose geometry/material/texture；IntersectionObserver 离开视口暂停渲染循环（代码审查 + 性能面板留证）。",
         "npx playwright test e2e/degradation.spec.ts 全部项目通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：RED 观察到 context-loss 两测试失败（强化断言 isContextLost 后）；实现 onCreated 上下文丢失监听（preventDefault + 250ms 尝试恢复一次 + 2s 未恢复转静态）、SceneErrorBoundary、DisposeOnUnmount（遍历 dispose geometry/material/texture + gl.dispose）、IntersectionObserver 驱动 frameloop。GREEN：context-loss 恢复/转静态 2/2 且 pageerror 为空；degradation+context-loss+hero-scene 四项目 15 通过 9 条件跳过；RAF 计数实测视口内 109 次/2s → 视口外 0 次/2s（排查中确认此前『未暂停』假象系页面过短 hero 无法滚出视口，非代码缺陷）；29/29 单元测试、lint/typecheck/size 通过。"
+      ],
       "notes": "对应 PRD §6.2/§6.4 与开发红线 2/3。"
     },
     {

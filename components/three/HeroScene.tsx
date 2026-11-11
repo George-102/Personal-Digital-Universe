@@ -1,8 +1,32 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useEffect, useMemo, useRef } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+
+function DisposeOnUnmount() {
+  const scene = useThree((s) => s.scene);
+  const gl = useThree((s) => s.gl);
+  useEffect(
+    () => () => {
+      scene.traverse((obj) => {
+        const mesh = obj as THREE.Mesh;
+        if (mesh.geometry) mesh.geometry.dispose();
+        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        for (const material of materials) {
+          if (!material) continue;
+          for (const value of Object.values(material)) {
+            if (value instanceof THREE.Texture) value.dispose();
+          }
+          material.dispose();
+        }
+      });
+      gl.dispose();
+    },
+    [scene, gl],
+  );
+  return null;
+}
 
 function Particles({ count }: { count: number }) {
   const ref = useRef<THREE.Points>(null);
@@ -85,6 +109,7 @@ export default function HeroScene({ particles }: { particles: number }) {
 
   return (
     <>
+      <DisposeOnUnmount />
       <ambientLight intensity={0.5} />
       <pointLight position={[4, 3, 5]} intensity={30} color="#7c6cff" />
       <pointLight position={[-5, -2, 3]} intensity={16} color="#22d3ee" />
