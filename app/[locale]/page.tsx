@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import HomeSections from '@/components/HomeSections';
 import PersonJsonLd from '@/components/PersonJsonLd';
+import SiteNav from '@/components/SiteNav';
 
 export default async function Home({
   params,
@@ -16,6 +17,7 @@ export default async function Home({
   return (
     <>
       <PersonJsonLd />
+      <SiteNav lang={lang} />
       <main>
         <HomeSections lang={lang} />
       </main>

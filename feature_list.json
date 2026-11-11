@@ -146,14 +146,16 @@
       "area": "3D 首页",
       "title": "深色视觉基调、响应式与 CSS 降级背景",
       "user_visible_behavior": "首页呈深色科技风；无 WebGL 的设备看到 CSS 动态或静态背景，核心内容完整可见；各尺寸屏幕无横向溢出。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "落地深色基调（蓝紫主色、青色强调，PRD §5.1）与 CSS 变量体系，为后续主题切换留接口。",
         "WebGL 能力检测工具：不可用时首页渲染 CSS 背景而非 Canvas。",
         "npx playwright test e2e/degradation.spec.ts --project=chromium-no-webgl 通过。",
         "npx playwright test e2e/overflow.spec.ts 在 390px 与桌面视口通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：RED 观察到降级 2 项失败（无 nav、Explore 文案不匹配）；TDD 实现 lib/webgl.ts 检测（4 测试先 MODULE_NOT_FOUND 后通过）+ @theme 深色变量（space/glow/accent）+ HeroBackground CSS 星空背景（reduced-motion 时停动画）+ 最小 SiteNav；Explore 采用 PRD 原文品牌词 Explore My Universe。GREEN：25/25 单元测试、degradation no-webgl 2/2、overflow 首页 5 视口×双语 10/10、core/a11y/i18n 回归 8/8、lint/typecheck/check:i18n/size（221kB）通过。完整导航（8 项+移动菜单）属 US-004。"
+      ],
       "notes": "对应 US-001 验收的分辨率适应与 WebGL 降级两条异常场景。"
     },
     {

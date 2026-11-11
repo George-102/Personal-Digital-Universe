@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import HomeSections from '@/components/HomeSections';
 import PersonJsonLd from '@/components/PersonJsonLd';
+import SiteNav from '@/components/SiteNav';
 import { profile } from '@/content/profile';
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default async function RootPage() {
     <html lang="zh">
       <body>
         <PersonJsonLd />
+        <SiteNav lang="zh" />
         <main>
           <HomeSections lang="zh" />
         </main>
