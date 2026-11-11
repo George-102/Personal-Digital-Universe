@@ -21,6 +21,8 @@
 
 - **T-004a CI 前置基础修复**（2026-11-11）：Node 26 固定（.nvmrc / engines 26.x / setup-node node-version-file / README）；`init.ps1` 重写加 UTF-8 BOM 与共用 `scripts/smoke-config.mjs`，`init.sh` WSL 无 node 时委托 Windows PowerShell，两入口均 exit 0；`lighthouserc.js` CI 下 filesystem（`CI=1 lhci autorun` 全绿、6 报告落盘 `lhci-report/`）；28 项 `test.fixme()` 绑定 US-004 / US-019 / US-010 / 012 / 014 / 018。实测 `npm test` 29/29、lint、typecheck、build、verify:metrics（audit 0 high / i18n 100% / size 430.66kB）通过，Playwright 四项目 183 passed / 37 skipped / 0 failed。
 
+- **T-004b CI 验收流水线**（2026-11-11）：workflow 全量门禁 + concurrency/permissions/timeout；首次推送 main；run 42976080859 暴露「产物级单测需 out/」缺陷，把 build 提前到 npm test 后 run 42976363844 全绿（6m28s，183 passed / 37 skipped）；branch protection 要求 `verify`，README 徽章实测 passing。
+
 ## 已落盘文件
 
 - 需求：`docs/PRD.md`；技术论证：`docs/Tech.md`；完成定义：`docs/DoD.md`；开发决策：`docs/Development.md`
@@ -34,7 +36,7 @@
 ## 下一步（按序）
 
 1. ~~**T-004a** CI 前置基础修复~~（2026-11-11 passing，见已验证）
-2. **T-004b** CI 验收流水线跑通（关联并首次推送公开仓库、Actions 全绿、README 徽章、分支保护）
+2. ~~**T-004b** CI 验收流水线跑通~~（2026-11-11 passing，run 42976363844 全绿、徽章 passing、分支保护 verify）
 3. **T-005a** CD 发布流水线（Pages 项目 + 2 个 secrets + deploy job + 预览部署）
 4. **T-005b** 监控与许可证（UptimeRobot / Web Analytics / LICENSE / SITE_URL）
 5. **T-003** Vitest 单元/集成测试基础设施（未提前；迁移时同步改 CI 的 `npm test`）

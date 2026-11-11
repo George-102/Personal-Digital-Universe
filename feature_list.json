@@ -13,7 +13,7 @@
     "passing": "要求的验证已经通过，并且证据已经记录。"
   },
   "source": "docs/PRD.md（用户故事与验收标准）、docs/Tech.md 与 docs/Development.md（技术决策）、docs/DoD.md（完成定义）",
-  "scope_note": "首个开发需求为 US-001（3D 首页与沉浸式入口，PRD P0 首位），已连同前置任务 T-001/T-002 拆分为 11 个小任务，按 priority 顺序执行，一次只做一个。其余用户故事保留在 roadmap 中，轮到该故事时再拆分为小任务写入 features。2026-11-11 经用户确认以模板 schema 重建本文件；旧版完整清单见 git 提交 5a8d051。2026-11-11 用户确认 CI/CD 方案 A（GitHub Actions + Wrangler Direct Upload，关闭 Pages Git 自动构建）并要求尽早集成：T-004/T-005 从 roadmap 提升为 features 中 priority 13-16 的四个任务，排在所有 roadmap 故事（含 US-004）之前；T-003 保持原位不提前。方案细节见 docs/Development.md §3/§5、docs/Tech.md §6。2026-11-11 用户确认 US-002（访客与 3D 场景交互）为下一开发需求，队友并行推进 CI/CD T-004/T-005 不受影响；已拆分为 8 个小任务 US-002a..h 写入 features（priority 17-24，排在 CI/CD 之后）并从 roadmap 移除；一次只做一个。",
+  "scope_note": "首个开发需求为 US-001（3D 首页与沉浸式入口，PRD P0 首位），已连同前置任务 T-001/T-002 拆分为 11 个小任务，按 priority 顺序执行，一次只做一个。其余用户故事保留在 roadmap 中，轮到该故事时再拆分为小任务写入 features。2026-11-11 经用户确认以模板 schema 重建本文件；旧版完整清单见 git 提交 5a8d051。2026-11-11 用户确认 CI/CD 方案 A（GitHub Actions + Wrangler Direct Upload，关闭 Pages Git 自动构建）并要求尽早集成：T-004/T-005 从 roadmap 提升为 features 中 priority 13-16 的四个任务，排在所有 roadmap 故事（含 US-004）之前；T-003 保持原位不提前。方案细节见 docs/Development.md §3/§5、docs/Tech.md §6。",
   "features": [
     {
       "id": "T-001a",
@@ -238,7 +238,7 @@
       "area": "CI/CD",
       "title": "CI 前置基础修复",
       "user_visible_behavior": "本地与 CI 使用同一 Node 版本；init.sh 与 init.ps1 两个入口都能跑通；全套 E2E 不再因未实现的故事而红灯，且断言一条不少；CI 不产生公开的 Lighthouse 报告。",
-      "status": "passing",
+      "status": "not_started",
       "verification": [
         "把 Node 26 固定到 .nvmrc、package.json engines、.github/workflows/verify.yml 的 setup-node 与 README，消除 Node 20 与 TS 原生类型剥离不兼容（TDD：先观察到 Node 20 下 prebuild 失败）。",
         "修复 init.sh 在 WSL 下无 node 与 init.ps1 中文编码损坏，使两个入口等价且均 exit 0。",
@@ -246,14 +246,8 @@
         "为 28 个未实现故事的 E2E 断言加 test.fixme()：US-004 移动菜单 ×4、US-019 主题 ×4、未来路由 SEO ×20；逐条绑定 roadmap ID，保留全部断言与阈值，不得用 grep 过滤。",
         "本地实测：npm test / lint / typecheck / Playwright 四项目 0 失败 / npm run verify:metrics 通过。"
       ],
-      "evidence": [
-        "2026-11-11 RED：Node 20.20.2 下 scripts/validate-content.mjs 报 ERR_UNKNOWN_FILE_EXTENSION(.ts)；bash init.sh 在 WSL 报 node: command not found；init.ps1 在 Windows PowerShell 5.1 中文乱码触发 ParserError；theme.spec chromium 实测 1 项超时失败。",
-        "2026-11-11 GREEN：.nvmrc=26、package.json engines=26.x、workflow setup-node 改用 node-version-file、README 同步；init.ps1 重写为与 init.sh 等价并加 UTF-8 BOM，共用 scripts/smoke-config.mjs 规避 PowerShell 剥离 node -e 双引号；init.sh 在 WSL 无 node 时委托 Windows PowerShell。两入口均 exit 0（Node v26.10.0、npm ci 740 包、220 tests listed）。",
-        "2026-11-11：lighthouserc.js 在 CI 下 upload 改 filesystem；CI=1 npx lhci autorun 全绿，6 份报告落盘 lhci-report/（已 gitignore），无 temporary-public-storage 公开链接。",
-        "2026-11-11：28 项断言用 test.fixme() 逐条绑定 roadmap（US-004 移动菜单×4、US-019 主题×4、US-010/012/014/018 未来路由 SEO×20），断言与阈值原样保留，未用 grep 过滤；全套四项目 183 passed / 37 skipped / 0 failed（37 = 28 fixme + 9 WebGL 条件跳过）。",
-        "2026-11-11：npm test 29/29、lint、typecheck、npm run build（7 静态页）、verify:metrics（audit 0 high / i18n 100% / size 430.66kB brotli）均通过。"
-      ],
-      "notes": "AGENTS.md 要求先修坏起点，本任务是 T-004b/T-005a 的前置。本机 IDE 注入的 NODE_OPTIONS safe-delete shim 会使 npm ci 删除 node_modules 失败，验证时仅在本机命令中移除注入，脚本保持标准 npm ci，CI 环境无此问题。"
+      "evidence": [],
+      "notes": "AGENTS.md 要求先修坏起点，本任务是 T-004b/T-005a 的前置。2026-11-11 已定位五处必红项与两个启动路径 blocker，见 claude-progress.md。"
     },
     {
       "id": "T-004b",
@@ -261,7 +255,7 @@
       "area": "CI/CD",
       "title": "CI 验收流水线跑通",
       "user_visible_behavior": "向公开仓库 push 或提 PR 会触发 GitHub Actions，全部质量门禁绿灯；README 徽章显示状态；main 分支未过门禁不能合并。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "重构 .github/workflows/verify.yml 的 verify job：npm ci → lint / typecheck / npm test → build → verify:metrics → npx playwright install --with-deps chromium webkit → playwright test 四项目 → lhci autorun → 上传 out/ artifact 与报告。",
         "配置 concurrency 取消同分支旧运行、permissions: contents: read、timeout-minutes: 25。",
@@ -269,8 +263,13 @@
         "首次 Actions 运行全绿，运行链接与结果记入 evidence；README 徽章显示 passing。",
         "main 分支保护勾选 required status check verify。"
       ],
-      "evidence": [],
-      "notes": "对应原 roadmap T-004。T-003 未提前，CI 内 npm test 暂用 node:test；迁移 Vitest 时同步改工作流。"
+      "evidence": [
+        "2026-11-11：重构 .github/workflows/verify.yml 的 verify job（npm ci → lint / typecheck → build → npm test → verify:metrics → playwright install --with-deps chromium webkit → 四项目 E2E → lhci autorun → 上传 out/ 与 reports artifact），配置 concurrency 取消同分支旧运行、permissions: contents: read、timeout-minutes: 25。",
+        "2026-11-11：关联 remote 并首次推送 main（远端此前为空仓库），提交 dc89e1a / 925d1e2。首次 run 42976080859 在 Unit tests 红灯，日志显示 scripts/home-text.test.mjs 与 profile-data.test.mjs 依赖 out/（CI 全新 checkout 无产物）；窄范围修复为把 build 提前到 npm test 之前，未改动任何断言与阈值，并在 README 注明该前置依赖。",
+        "2026-11-11：修复后 run 42976363844 全绿（6m28s，全部 14 个步骤 ✓），E2E 183 passed / 37 skipped / 0 failed；链接 https://github.com/George-102/Personal-Digital-Universe/actions/runs/42976363844 。",
+        "2026-11-11：branch protection API 返回 required_status_checks.contexts = ['verify']；README 徽章 badge.svg 实测含 passing。"
+      ],
+      "notes": "对应原 roadmap T-004。T-003 未提前，CI 内 npm test 暂用 node:test；迁移 Vitest 时同步改工作流。产物级单测依赖 out/，故 build 必须早于 npm test。"
     },
     {
       "id": "T-005a",
@@ -304,142 +303,12 @@
       ],
       "evidence": [],
       "notes": "对应原 roadmap T-005 的监控与许可证部分。github-cache.json 构建期抓取仍随 US-012。"
-    },
-    {
-      "id": "US-002a",
-      "priority": 17,
-      "area": "3D 交互",
-      "title": "指针视差基础（相机视差 + 平滑惯性）",
-      "user_visible_behavior": "访客移动鼠标时，3D 相机或核心物体产生轻微、平滑的视差变化；快速甩动鼠标不会出现画面抖动或跳变。",
-      "status": "not_started",
-      "verification": [
-        "TDD：新增 lib/parallax.ts 暴露平滑阻尼函数（输入目标值，逐帧收敛、无跳变），先用 node:test 写 scripts/parallax.test.mjs 观察到失败再实现。",
-        "在 HeroScene/HeroCanvas 接入指针追踪（window 或首屏 section 级 pointermove，归一化到 [-1,1]），以阻尼后的值驱动相机轻微位移或核心 group 轻微旋转。",
-        "把视差状态暴露为可观察量（如 canvas/容器的 data-parallax 属性），供 E2E 断言。",
-        "npx playwright test e2e/parallax.spec.ts --project=chromium 通过：mouse.move 后视差状态变化，快速连续移动后最终收敛且无 NaN、无跳变。",
-        "npm test、npx tsc --noEmit、npm run lint 通过。"
-      ],
-      "evidence": [],
-      "notes": "对应 PRD US-002 详述 1、8 与验收『移动鼠标产生空间反馈』『快速移动不抖动』。视差只读、不强制操作；reduced-motion 的完整关闭属 US-022，但本任务不得引入高频闪烁。单元测试沿用现有 node:test（T-003 Vitest 未落地）。"
-    },
-    {
-      "id": "US-002b",
-      "priority": 18,
-      "area": "3D 交互",
-      "title": "粒子跟随 / 排斥交互",
-      "user_visible_behavior": "鼠标移动到粒子附近时，粒子产生克制的跟随或排斥偏移，营造空间深度感。",
-      "status": "not_started",
-      "verification": [
-        "把指针的世界坐标传入 Particles 组件，在 useFrame 中对靠近指针的粒子施加轻微排斥（CPU 或 shader 均可，粒子数受 quality-tier 约束）。",
-        "粒子响应仅作用于局部半径内，超出半径的粒子保持原运动，避免整体漂移。",
-        "把粒子交互状态暴露为可观察量（如 data-particle-follow 属性或统一的交互状态），供 E2E 断言。",
-        "npx playwright test e2e/parallax.spec.ts --project=chromium -g '粒子' 通过：鼠标进入场景后粒子交互状态发生变化。",
-        "npm run size 通过（不新增超预算依赖）；lint/typecheck 通过。"
-      ],
-      "evidence": [],
-      "notes": "对应 PRD US-002 详述 2。复用 US-002a 的指针追踪结果，不重复建第二套指针系统；排斥幅度保持克制（DoD 人工验收『动画克制』）。"
-    },
-    {
-      "id": "US-002c",
-      "priority": 19,
-      "area": "3D 交互",
-      "title": "3D 可交互物体的指针命中管线",
-      "user_visible_behavior": "指定的 3D 物体能被鼠标命中（悬停可检测），同时姓名、Explore 等关键文字与 CTA 仍可正常点击、不被 Canvas 遮挡。",
-      "status": "not_started",
-      "verification": [
-        "把 Core（中心几何体）标记为可交互物体，HeroCanvas 接收指针事件（移除/调整 wrapper 的 pointer-events-none），文字层容器改为 pointer-events-none 并对 Explore 链接等交互子元素单独 pointer-events-auto。",
-        "R3F 的 onPointerOver/onPointerOut 能命中 Core；把 hover 状态暴露为 data 属性（如容器 data-hover=1）供断言。",
-        "回归：helpers.expectCtaNotCovered 断言 Explore CTA 仍可点击（elementFromPoint 命中 CTA 而非 canvas）。",
-        "npx playwright test e2e/interaction.spec.ts --project=chromium 通过：悬停 Core 命中、CTA 不被遮挡；core.spec 回归通过。",
-        "无 WebGL 项目（chromium-no-webgl）不渲染 Canvas，降级与文字点击不受影响（degradation.spec 回归通过）。"
-      ],
-      "evidence": [],
-      "notes": "对应 PRD US-002 详述 3 的前置与详述 7（不强制操作 3D 才能访问内容）。这是悬停/拖拽/点击共用的命中基础，后续任务复用。"
-    },
-    {
-      "id": "US-002d",
-      "priority": 20,
-      "area": "3D 交互",
-      "title": "悬停视觉反馈（高亮 / 放大 / 旋转速度变化）",
-      "user_visible_behavior": "悬停核心几何体时，物体出现明显但克制的反馈：轻微高亮发光、轻微放大、旋转速度变化，并显示可点击光标。",
-      "status": "not_started",
-      "verification": [
-        "在 Core 上接入 onPointerOver/onPointerOut，驱动 emissiveIntensity 增强、scale 轻微放大（约 1.05）、旋转速度变化，悬停时切换 document cursor 为 pointer。",
-        "反馈幅度克制且可逆：移出后恢复原值，不残留高亮/缩放；不触发高频闪烁。",
-        "E2E：npx playwright test e2e/interaction.spec.ts --project=chromium -g '悬停' 通过，断言 hover 前后 data 属性变化与 cursor 变化。",
-        "移动项目（mobile-chrome/mobile-safari）下 hover 无副作用（触摸不触发悬停残留），整体不红。"
-      ],
-      "evidence": [],
-      "notes": "对应 PRD US-002 详述 3 与验收『悬停指定物体出现明显但克制的反馈』。辅助文字单独在 US-002e 落地。"
-    },
-    {
-      "id": "US-002e",
-      "priority": 21,
-      "area": "3D 交互",
-      "title": "悬停辅助文字标签",
-      "user_visible_behavior": "悬停核心几何体时，出现辅助文字（如 Explore My Universe / 探索我的宇宙），说明该物体可点击，且不遮挡姓名与 CTA。",
-      "status": "not_started",
-      "verification": [
-        "悬停 Core 时显示辅助文字标签（drei Html 或 DOM overlay），中英双语取自 messages/（新增 Home.* 键），随 locale 切换。",
-        "标签只覆盖物体附近，不遮挡 h1 姓名与 Explore CTA；reduced-motion 下标签淡入不闪烁。",
-        "npm run check:i18n 通过（新增 zh/en 键 100% 覆盖）。",
-        "npx playwright test e2e/interaction.spec.ts --project=chromium -g '辅助文字' 通过：悬停出现、移出消失、不遮挡 CTA。"
-      ],
-      "evidence": [],
-      "notes": "对应 PRD US-002 详述 3『显示辅助文字』。辅助文字是提示而非新内容入口，点击行为由 US-002g 承载。"
-    },
-    {
-      "id": "US-002f",
-      "priority": 22,
-      "area": "3D 交互",
-      "title": "拖拽旋转核心物体（含惯性）",
-      "user_visible_behavior": "访客拖动核心几何体可旋转它，松手后带平滑惯性衰减停下；点击（未拖动）不误触旋转。",
-      "status": "not_started",
-      "verification": [
-        "在 Core 上接入 onPointerDown/Move/Up，拖拽时按指针位移增量旋转物体，松手后以惯性衰减（区分拖拽与点击的位移阈值）。",
-        "拖拽期间不触发点击跳转；与 US-002d 悬停反馈不冲突。",
-        "E2E：npx playwright test e2e/interaction.spec.ts --project=chromium -g '拖拽' 通过：拖拽后旋转量变化、松手后停止且无异常。",
-        "移动项目（mobile-chrome/mobile-safari）用触摸拖拽可完成旋转（R3F pointer 事件统一处理 touch）。"
-      ],
-      "evidence": [],
-      "notes": "对应 PRD US-002 详述 4。惯性复用 US-002a 的阻尼函数；点击 vs 拖拽用位移阈值区分，避免误触 US-002g 的跳转。"
-    },
-    {
-      "id": "US-002g",
-      "priority": 23,
-      "area": "3D 交互",
-      "title": "点击交互物体触发跳转",
-      "user_visible_behavior": "点击核心几何体时平滑滚动到对应内容区域（当前为 #about），与顶部 Explore 入口行为一致。",
-      "status": "not_started",
-      "verification": [
-        "在 Core 上接入 onClick（在拖拽阈值内未移动时判定为点击），触发 #about 的平滑滚动（scrollIntoView behavior:smooth，reduced-motion 回退 auto）。",
-        "点击行为与 Explore 链接并存：不强制操作 3D 才能进入内容（详述 7）。",
-        "npx playwright test e2e/interaction.spec.ts --project=chromium -g '点击跳转' 通过：#about 进入视口。",
-        "hero-entry.spec 回归通过（Explore 仍可用）。"
-      ],
-      "evidence": [],
-      "notes": "对应 PRD US-002 详述 5、6 与验收『点击指定物体执行正确跳转』。当前唯一内容区为 #about 占位，更多内容区随 US-006/US-008 落地后扩展点击目标。"
-    },
-    {
-      "id": "US-002h",
-      "priority": 24,
-      "area": "3D 交互",
-      "title": "触摸适配与 US-002 整体验收",
-      "user_visible_behavior": "触摸设备不依赖悬停，通过点击/拖拽完成对应操作；不强制操作 3D 也能访问内容；桌面快速移动鼠标无抖动。",
-      "status": "not_started",
-      "verification": [
-        "npx playwright test e2e/interaction.spec.ts e2e/parallax.spec.ts 四个项目全绿（含 mobile-chrome/mobile-safari 触摸路径）。",
-        "core.spec / hero-entry.spec / hero-scene.spec / degradation.spec / overflow.spec 回归通过（不破坏 US-001 既有验收）。",
-        "npm run size / check:i18n / lint / typecheck 通过；npm run verify:metrics 通过。",
-        "对照 PRD US-002 五条验收逐条核对，证据记入本条 evidence；3D 不遮挡文字、动画克制、触摸目标合理等人工验收项截图留证。"
-      ],
-      "evidence": [],
-      "notes": "本任务通过即 US-002 完成。触摸悬停缺失由点击兜底（PRD 验收）；更完整的 reduced-motion 控制属 US-022。"
     }
   ],
   "roadmap": [
     { "id": "T-003", "title": "Vitest 单元/集成测试基础设施（npm test 从 node:test 迁移，接入 verify 与 CI）", "group": "P0-技术", "status": "not_started" },
     { "id": "US-004", "title": "全局导航与空间化导航系统", "group": "P0", "status": "not_started" },
+    { "id": "US-002", "title": "3D 场景交互（视差/悬停/拖拽/点击）", "group": "P0", "status": "not_started" },
     { "id": "US-003", "title": "电影级滚动转场", "group": "P0", "status": "not_started" },
     { "id": "US-006", "title": "个人介绍 About Me（填充 #about 占位）", "group": "P0", "status": "not_started" },
     { "id": "US-008", "title": "成长时间线 Journey", "group": "P0", "status": "not_started" },
