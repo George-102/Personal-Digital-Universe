@@ -147,7 +147,7 @@ checkout → setup-node 20 → npm ci → next build → 质量指标（audit + 
 | 质量指标门禁 | npm audit / check-i18n.mjs / size-limit | 0 高危漏洞；zh/en 键覆盖率 100%；JS 总量 ≤1MB gzip | ✅ T-006 已建（size 实测待 T-001） |
 | 人工验收 | docs/DoD.md 末尾清单 | 视觉质量、内容真实性、笔名一致性、版权 | 每次发布前逐项打勾 |
 
-注：audit 脚本指定官方 registry（npmmirror 无 audit 端点）；basic-ftp / compression 经 package.json overrides 固定至修复版（^6.2.6 / ^1.8.2），均为 CI 工具链间接依赖，不进前端 bundle。
+注：audit 脚本指定官方 registry（npmmirror 无 audit 端点）；basic-ftp / compression / postcss 经 package.json overrides 固定至修复版（^6.2.6 / ^1.8.2 / ^8.5.32），均为工具链间接依赖，不进前端 bundle。postcss override 于 2026-11-11 加入（three 依赖链引入 high 漏洞 GHSA-qx2v-qp2m-jg93 等）。@typescript-eslint 的 6 个 moderate 暂无修复版，仅 dev 依赖，门禁卡 high 不受影响。
 
 **TDD 原则（AGENTS.md）：每个功能先写失败测试，再实现。** 单元测试随 T-003 基础设施落地后成为默认流程；E2E 验收标准已先行存在，功能实现以通过对应 spec 为准。
 
