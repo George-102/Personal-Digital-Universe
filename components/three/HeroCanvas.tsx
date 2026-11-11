@@ -156,6 +156,11 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
     put('dragY', f(report.dragRotation.y));
     put('ndcX', f(report.ndc.x));
     put('ndcY', f(report.ndc.y));
+    put('transition', f(report.transitionProgress));
+    put('cameraZ', f(report.cameraZ));
+    put('coreOffsetY', f(report.coreOffsetY));
+    put('coreSpinOffset', f(report.coreSpinOffset));
+    put('particleShell', f(report.particleShell));
     put('hitCore', `${Math.round(report.hitCore.x)},${Math.round(report.hitCore.y)}`);
     put('hitOrbitNode', `${Math.round(report.hitOrbitNode.x)},${Math.round(report.hitOrbitNode.y)}`);
 

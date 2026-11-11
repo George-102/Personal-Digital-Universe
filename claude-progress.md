@@ -44,9 +44,10 @@
 3. ~~**T-005a** CD 发布流水线~~（2026-11-11 passing：rerun deploy 成功、生产 URL HTTP 200、产物即 verify 的 out/）
 4. ~~**T-005b** 监控与许可证~~（2026-11-11 passing：UptimeRobot `status=2`、beacon 实测注入、run 42999448346 全绿、DoD D 组打勾）
 5. ~~**T-007** 本地轻验证分工~~（2026-11-11 passing：run 42999448346 verify 全绿 201 passed / 75 skipped / 0 failed，CI run URL + passed 数已回写本文件与 T-007.evidence，状态转 passing）
-6. **T-003** Vitest 单元/集成测试基础设施（未提前；迁移时同步改 CI 的 `npm test`）
-7. **US-004** 全局导航（8 项 + 激活态 + 移动折叠菜单——core.spec『移动端菜单』断言在此执行，同时移除对应 fixme）
-8. 之后按 roadmap：US-003 → US-006 → US-008 → US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 已完成）
+6. ~~**US-003** 电影级页面转场（US-003a~h，用户指定提前）~~ 本地验证全部完成（2026-11-11，US-003a~g passing、US-003h 本地证据齐）；**待回写 CI run URL**：用户 push main 后云端 verify 全绿，把 run URL 与 passed 数写回 US-003h.evidence 并转 passing
+7. **T-003** Vitest 单元/集成测试基础设施（迁移时同步改 CI 的 `npm test`）
+8. **US-004** 全局导航（8 项 + 激活态 + 移动折叠菜单——core.spec『移动端菜单』断言在此执行，同时移除对应 fixme）
+9. 之后按 roadmap：US-006 → US-008 → US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 / US-003 已完成）
 
 ## 风险与注意事项
 
@@ -71,6 +72,16 @@
 - 验证：RED 单测观察到 `ERR_MODULE_NOT_FOUND` 后实现；注入非法 `clickTarget: /about` 实测 `npm run build` exit 1、恢复后 exit 0。最终全套四项目 E2E **201 passed / 75 skipped / 0 failed**（exit 0）；`npm test` 54/54、`lint`、`typecheck`、`check:i18n` 100%、`size` 432.94kB、`audit` 0 high、`build` exit 0、`CI=1 verify:lighthouse` exit 0（中文 perf 0.98-0.99 / a11y 1 / seo 1 / bp 0.96，LCP 213-332ms、CLS 0、TBT 83-130ms）；PerformanceObserver 实测 LCP 元素非 CANVAS。
 - 环境注意：本机默认 Node 22 与 `engines: 26.x` 不符，验证命令统一前置 PATH 到 scoop `nodejs/26.10.0` 并清空注入的 `NODE_OPTIONS`；默认并行度下 WebGL 上下文争抢会让全套 E2E 超时，本机用 `--workers=2`，`interaction.spec.ts` 内 describe 串行 + 重交互集中在 chromium + WebGL 条件跳过（CI/Linux 未复现该限制，断言与阈值未削弱）。
 - 下一步（按 feature_list）：T-005b 已由本轮会话收尾（passing）→ T-003 → US-004 → US-003 → US-006 → …；US-002 已从 roadmap 移除。
+
+## US-003 迭代（2026-11-11，本地验证完成，待 CI 回写）
+
+**US-003（访客体验电影级页面转场）8 个任务：US-003a~g 全部 passing，US-003h 本地验证全部完成、待 push 后云端 verify 全绿回写 CI run URL 转 passing。** 用户确认四项决策：①提前到 T-003/US-004 之前执行；②滚动驱动动画按 Tech.md 既定采用 GSAP ScrollTrigger；③五种转场效果（相机推拉/背景渐变/物体移动旋转/粒子聚散/面板展开）全做；④hero→#about 单段完整转场 + 通用滚动进度注册机制。逐条证据在 feature_list.json US-003a~h。
+
+- 新增：`lib/scroll.ts`（ScrollState 单一进度源 + attachScrollDriver GSAP 绑定，加载失败/绑定异常回退静态）、`lib/transitions.ts`（TransitionSegment 注册表 + cameraTargets/shellFactor 纯函数 + 构建期校验）、`components/ScrollDriver.tsx`、`e2e/scroll-transition.spec.ts`（10 用例×4 项目）、`scripts/scroll.test.mjs` / `transitions.test.mjs`（TDD 先行，RED 均留证）。
+- 改造：`components/three/HeroScene.tsx`（相机 z 推进 + 核心物体位移/旋转 + 粒子壳层缩放，全部叠加式施加、参数零硬编码）、`HeroCanvas.tsx`（FrameReport 增补 transition/cameraZ/coreOffsetY/coreSpinOffset/particleShell → dataset）、`HeroBackground.tsx`（注册表渐变色 + --scroll-progress 驱动 .hero-bg-tint 叠加层）、`HomeSections.tsx`（ScrollDriver 挂载 + .about-panel 展开）、`app/globals.css`、`scripts/validate-content.mjs`（transitions prebuild 校验）。依赖：gsap@3.15.1 --save-exact。
+- 验证：npm test 73/73；全套 E2E 四项目 316 tests **239 passed / 77 skipped / 0 failed**（--workers=2）；CI=1 verify:lighthouse exit 0（6 报告，LCP 元素实测 `<p>` 非 CANVAS）；verify:local exit 0（size 475.75kB brotli ≤1MB）；构建期拒绝非法转场配置实测（minOpacity 0.5 → build exit 1）。
+- 排坑记录：①页面过短滚不到 end 点时进度封顶 0.69——end clamp 到可达 maxScroll；②`-0` vs `0` 符号零坑（strict deepEqual）；③CSS smooth 使程序化 `behavior:'auto'` 滚动动画排队互扰（scrollY 卡 441/496），程序化跳转统一 `behavior:'instant'`；④进度源每帧重写 CSS 变量抢跑 fallback 断言——writeDom 去重守卫 + 断言单次 evaluate 同步读取；⑤mobile-WebKit 不支持注入滚轮（等价滚动断言，断言未删）；⑥移动端 350 粒子属低画质档，粒子壳层计算按设计关闭（E2E 双分支断言）。
+- **下一步**：用户 push main → 云端 verify 全绿 → CI run URL + passed 数回写 US-003h.evidence 与本文件 → US-003h 转 passing。
 
 ## T-007 本地轻验证 / 云端重验证分工（2026-11-11）
 

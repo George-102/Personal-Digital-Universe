@@ -49,6 +49,27 @@ html {
     linear-gradient(180deg, #05060f 0%, #0b0e1f 55%, #05060f 100%);
 }
 
+/* US-003e：滚动转场背景渐变——目标色叠加层，透明度由 --scroll-progress 驱动；
+   无 JS / reduced-motion 下 var 回退 0，保持静态背景 */
+.hero-bg-tint {
+  position: absolute;
+  inset: 0;
+  background: var(--hero-bg-to, #151d3a);
+  opacity: calc(var(--scroll-progress, 0) * 0.6);
+}
+
+/* US-003f：#about 面板随滚动从空间中展开（位移/倾斜/透明度由 --scroll-progress 驱动）；
+   var 回退 1（无 JS）→ 默认完整可见；透明度下限由 --panel-min-opacity 保证立即可读 */
+.about-panel {
+  transform: perspective(900px)
+    translateY(calc((1 - var(--scroll-progress, 1)) * var(--panel-rise, 24px)))
+    rotateX(calc((1 - var(--scroll-progress, 1)) * var(--panel-tilt, 2.5deg)));
+  transform-origin: 50% 0%;
+  opacity: calc(
+    var(--panel-min-opacity, 0.9) + (1 - var(--panel-min-opacity, 0.9)) * var(--scroll-progress, 1)
+  );
+}
+
 .hero-bg::before {
   content: '';
   position: absolute;
@@ -121,5 +142,10 @@ html {
   }
   .interaction-tooltip {
     transition: none;
+  }
+  /* US-003f：减少动态效果时面板不做展开动画，直接完整呈现（简化转场） */
+  .about-panel {
+    transform: none;
+    opacity: 1;
   }
 }

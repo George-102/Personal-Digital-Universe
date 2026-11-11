@@ -13,7 +13,7 @@
     "passing": "要求的验证已经通过，并且证据已经记录。"
   },
   "source": "docs/PRD.md（用户故事与验收标准）、docs/Tech.md 与 docs/Development.md（技术决策）、docs/DoD.md（完成定义）",
-  "scope_note": "首个开发需求为 US-001（3D 首页与沉浸式入口，PRD P0 首位），已连同前置任务 T-001/T-002 拆分为 11 个小任务，按 priority 顺序执行，一次只做一个。其余用户故事保留在 roadmap 中，轮到该故事时再拆分为小任务写入 features。2026-11-11 经用户确认以模板 schema 重建本文件；旧版完整清单见 git 提交 5a8d051。2026-11-11 用户确认 CI/CD 方案 A（GitHub Actions + Wrangler Direct Upload，关闭 Pages Git 自动构建）并要求尽早集成：T-004/T-005 从 roadmap 提升为 features 中 priority 13-16 的四个任务，排在所有 roadmap 故事（含 US-004）之前；T-003 保持原位不提前。方案细节见 docs/Development.md §3/§5、docs/Tech.md §6。2026-11-11 用户指定 US-002（访客与 3D 场景进行交互）为下一个需求，按 PRD 拆为 US-002a~q 共 17 个任务，priority 17-33，紧接 CI/CD（13-16）之后执行，roadmap 中 US-004 及其他故事顺延；用户确认三项决策：①点击交互物体默认平滑滚动到 #about，目标配置化、后续故事替换，不新建占位路由；②交互范围限 Hero 场景，但建立通用可交互物体注册表供后续 3D 场景复用；③队友正在进行的 CI/CD 任务（T-004a/b、T-005a/b）的编号、优先级、状态与证据一律不动。2026-11-11 用户确认本地/云端验证分工：本地默认只跑 `npm run verify:local`（lint / typecheck / build / npm test / verify:metrics，零浏览器），Playwright 四项目与 Lighthouse 重验证固定在云端 CI（push main / PR 自动触发），证据以 CI run URL 回写；`.github/workflows/verify.yml` 不改动，重验证覆盖与阈值 100% 保留。",
+  "scope_note": "首个开发需求为 US-001（3D 首页与沉浸式入口，PRD P0 首位），已连同前置任务 T-001/T-002 拆分为 11 个小任务，按 priority 顺序执行，一次只做一个。其余用户故事保留在 roadmap 中，轮到该故事时再拆分为小任务写入 features。2026-11-11 经用户确认以模板 schema 重建本文件；旧版完整清单见 git 提交 5a8d051。2026-11-11 用户确认 CI/CD 方案 A（GitHub Actions + Wrangler Direct Upload，关闭 Pages Git 自动构建）并要求尽早集成：T-004/T-005 从 roadmap 提升为 features 中 priority 13-16 的四个任务，排在所有 roadmap 故事（含 US-004）之前；T-003 保持原位不提前。方案细节见 docs/Development.md §3/§5、docs/Tech.md §6。2026-11-11 用户指定 US-002（访客与 3D 场景进行交互）为下一个需求，按 PRD 拆为 US-002a~q 共 17 个任务，priority 17-33，紧接 CI/CD（13-16）之后执行，roadmap 中 US-004 及其他故事顺延；用户确认三项决策：①点击交互物体默认平滑滚动到 #about，目标配置化、后续故事替换，不新建占位路由；②交互范围限 Hero 场景，但建立通用可交互物体注册表供后续 3D 场景复用；③队友正在进行的 CI/CD 任务（T-004a/b、T-005a/b）的编号、优先级、状态与证据一律不动。2026-11-11 用户确认本地/云端验证分工：本地默认只跑 `npm run verify:local`（lint / typecheck / build / npm test / verify:metrics，零浏览器），Playwright 四项目与 Lighthouse 重验证固定在云端 CI（push main / PR 自动触发），证据以 CI run URL 回写；`.github/workflows/verify.yml` 不改动，重验证覆盖与阈值 100% 保留。2026-11-11 用户指定 US-003（电影级页面转场）提前到 T-003/US-004 之前执行，并确认四项决策：①滚动驱动动画按 Tech.md 既定采用 GSAP ScrollTrigger；②五种转场效果（相机推拉/背景渐变/3D 物体移动旋转/粒子聚散/内容面板展开）全做、幅度克制；③范围为 hero→#about 单段完整转场 + 通用滚动进度注册机制（后续模块接入只需配置）；④拆为 US-003a~h 共 8 个任务 priority 35-42，roadmap 中 US-003 已移除。",
   "features": [
     {
       "id": "T-001a",
@@ -663,12 +663,185 @@
         "2026-11-11：push main 后云端 Verify workflow run `42999448346`（https://github.com/George-102/Personal-Digital-Universe/actions/runs/42999448346）全绿：verify job 6m6s success——Playwright 四项目 201 passed / 75 skipped / 0 failed（3.1m）、npm test 54/54、lint / typecheck / build / verify:metrics 逐段通过；Lighthouse CI 对 / 与 /en/ 各 3 run（6 报告）All results processed!，lighthouserc.js 阈值全部达标；deploy job 1m12s success。CI run URL 与 passed 数已回写 claude-progress.md。"
       ],
       "notes": "重验证 100% 保留，仅执行主体固定在云端 CI（push main / PR 自动触发）；本地默认零浏览器。不新增/删除/削弱任何断言与阈值，不引入 Vitest（T-003 仍 not_started），不提供一键触发云端重测试的脚本。US-002q:636 等历史 verification 字段保留原文，其「四项目 0 失败」的执行主体按本条 scope 理解为云端 CI。**已 passing（2026-11-11）**：五条 verification 全部满足，云端证据由用户触发的 run 42999448346 回写并实测核对。"
+    },
+    {
+      "id": "US-003a",
+      "priority": 35,
+      "area": "滚动转场",
+      "title": "滚动进度源与 GSAP ScrollTrigger 基础设施",
+      "user_visible_behavior": "页面滚动驱动统一的 0~1 转场进度；滚动保持原生浏览器行为（不劫持滚轮），进度变化平滑无突跳。",
+      "status": "passing",
+      "verification": [
+        "gsap 以固定版本进入 dependencies 并纳入 package-lock.json（与 wrangler 同样 --save-exact 或锁定 minor），npm run size 通过。",
+        "建立 lib/scroll.ts：GSAP ScrollTrigger 把 hero→#about 滚动区间归一化为 0~1 进度，对外提供只读快照与订阅接口，与 lib/pointer.ts 风格一致。",
+        "scrub 跟随原生滚动（不劫持滚轮/触摸滚动），进度经 damp 平滑且与帧率无关，快速滚动不产生 NaN 或突跳。",
+        "TDD：scripts/scroll.test.mjs 先观察到 MODULE_NOT_FOUND 失败，再覆盖归一化边界、订阅/退订、destroy 清理、异常输入防护，npm test 通过。",
+        "组件卸载时 ScrollTrigger 与订阅全部清理（代码审查 + E2E pageerror 为空）。"
+      ],
+      "evidence": [
+        "2026-11-11：gsap@3.15.1 以 --save-exact 固定进 dependencies（npm ls gsap 实测 3.15.1）并纳入 package-lock.json；npm run size 475.09kB brotli（较基线 +42kB）≤1MB 通过。",
+        "2026-11-11 RED：scripts/scroll.test.mjs 报 ERR_MODULE_NOT_FOUND（lib/scroll.ts 缺失，54 pass 1 fail）；实现后 GREEN 62/62——8 条新测试覆盖归一化边界与 clamp、非法输入不产生 NaN、setRaw 0~1 收敛、advance 与帧率无关收敛、快速滚动来回跳唯一收敛、reduced-motion 瞬时跟随、subscribe/unsubscribe、destroy 冻结快照。",
+        "2026-11-11：lib/scroll.ts 落地 normalizeProgress + ScrollState（单一进度源：raw 即时值 / progress damp 平滑值 / reducedMotion 瞬时）+ attachScrollDriver（gsap+ScrollTrigger 动态加载，失败返回 null 回退静态；段区间 start=锚点顶-视口高、end=min(锚点顶, maxScroll)，同步 --scroll-progress 与 data-scroll-progress 到 <html>）；ScrollTrigger 仅观察滚动、无 preventDefault，不劫持滚轮。",
+        "2026-11-11：components/ScrollDriver.tsx 挂载 HomeSections，卸载时 destroy 依次清理 matchMedia 监听、gsap.ticker、订阅、trigger.kill 并复位 DOM（代码审查）；E2E e2e/scroll-transition.spec.ts 四项目 8/8 通过——初始进度 ≈0、滚动到 #about 后 >0.95、快速 5 次跳转 pageerror 为空且进度 ∈[0,1]。修复真实缺陷：页面过短滚不到 end 点时进度封顶 0.6889/0.7373（E2E 首跑 8 项同因失败），终点 clamp 到可达滚动位置后复跑 8/8 通过。",
+        "2026-11-11：npm run verify:local exit 0（62/62、lint/typecheck 干净、i18n 100%、size 475.09kB、audit 0 high）。"
+      ],
+      "notes": "用户 2026-11-11 确认按 Tech.md 既定采用 GSAP ScrollTrigger（不选零依赖方案）。本任务只负责进度源，不实现任何转场效果。"
+    },
+    {
+      "id": "US-003b",
+      "priority": 36,
+      "area": "滚动转场",
+      "title": "转场配置注册表与构建期校验（通用机制）",
+      "user_visible_behavior": "每段转场的效果参数（相机终点、背景渐变、粒子聚散、面板展开）由配置声明；非法配置在构建期被拒绝；后续模块接入只需新增配置。",
+      "status": "passing",
+      "verification": [
+        "定义转场配置类型（段 id、触发区间、相机推拉参数、背景渐变色、粒子聚散系数、面板展开参数），配置与场景组件分离，走单一出口 lib/transitions.ts。",
+        "校验接入 scripts/validate-content.mjs（prebuild）：非法区间、非法颜色、越界系数、id 重复时 npm run build 拒绝。",
+        "TDD：scripts/transitions.test.mjs 先失败后通过，覆盖默认配置与各类非法配置。",
+        "实测注入非法配置后 npm run build exit 1，恢复后 exit 0。",
+        "npm test / lint / typecheck 通过。"
+      ],
+      "evidence": [
+        "2026-11-11 RED：scripts/transitions.test.mjs 报 ERR_MODULE_NOT_FOUND（lib/transitions.ts 缺失，62 pass 1 fail）；实现后 GREEN 69/69——7 条新测试覆盖默认注册表与查询、id 重复、非法触发区间/非法 selector、非法颜色、越界系数（zOffset/coreSpin/shellScale/risePx/tiltDeg/NaN）、panel.minOpacity<0.85 红线、空注册表。",
+        "2026-11-11：lib/transitions.ts 落地 TransitionSegment 类型（range 触发区间 targetSelector+from/to 裁剪、camera zOffset/coreSpin/coreYOffset、background hex 渐变色、particles shellScale、panel risePx/tiltDeg/minOpacity）+ 默认 hero→about 段 + findTransitionSegment + validateTransitionSegments；接入 scripts/validate-content.mjs（prebuild）与 interactive 校验同列。",
+        "2026-11-11：构建期拒绝实测——注入 minOpacity: 0.5 后 npm run build exit 1（报 transitions[0].panel.minOpacity: 越界系数 0.5（允许 0.85~1）），恢复 0.9 后 npm test 69/69、npm run build exit 0；lint / typecheck 干净。"
+      ],
+      "notes": "对应用户决策「单段 + 通用机制」：本次只建 hero→about 段配置，机制可复用于 Journey/Research 等后续模块。"
+    },
+    {
+      "id": "US-003c",
+      "priority": 37,
+      "area": "滚动转场",
+      "title": "相机缓慢推进与 3D 物体移动/旋转随滚动",
+      "user_visible_behavior": "从首页滚动进入下一模块时相机缓慢推进或后退、3D 物体随滚动移动或旋转，动作平滑克制，姓名与内容文字始终可读。",
+      "status": "passing",
+      "verification": [
+        "HeroScene 消费滚动进度：相机 z 位移与核心几何体位移/自转速度由进度驱动，damp 平滑、幅度 clamp，与视差/悬停/拖拽叠加不冲突（回归 US-002 断言）。",
+        "转场参数从 US-003b 注册表读取，不硬编码在组件里。",
+        "E2E：e2e/scroll-transition.spec.ts 断言滚动后相机/物体状态数据属性随进度变化且在阈值内，四项目执行（no-webgl 条件跳过）。",
+        "3D 不遮挡姓名文字层（core.spec『CTA 不被遮挡』回归通过）。",
+        "lint / typecheck / npm run size 通过。"
+      ],
+      "evidence": [
+        "2026-11-11 RED：transitions.test.mjs 报 does not provide an export named 'cameraTargets'（62 pass 1 fail）；实现 lib/transitions.ts 的 cameraTargets（进度线性映射 + 越界 clamp + 非法归零）后转绿，期间修复 -1.4*0=-0 符号零导致 strict deepEqual 失败的问题，最终 npm test 71/71（新增 2 条映射/防护测试）。",
+        "2026-11-11：HeroScene 消费 sharedScrollState.progress（单一进度源已 damp 平滑），相机 z = 基准 + zOffset×进度，核心物体 y 位移与附加旋转以叠加方式施加（不覆盖视差/拖拽/常驻自转），目标偏移经 cameraTargets 从注册表 camera 配置读取、组件内零硬编码；FrameReport 增补 transitionProgress/cameraZ/coreOffsetY/coreSpinOffset，HeroCanvas 写入 data-transition/data-camera-z/data-core-offset-y/data-core-spin-offset 供 E2E 断言。",
+        "2026-11-11：E2E e2e/scroll-transition.spec.ts 四项目 11 passed / 1 skipped（相机用例在 chromium-no-webgl 条件跳过）——初始 data-camera-z≈0、中段单调减小、末段 < -0.5 且 ≥ -1.41（不越注册表上限 zOffset=-1.4）；data-core-offset-y ∈[-0.31,-0.05]、data-core-spin-offset ∈(0.3, π/2]，三时刻状态全无 NaN。",
+        "2026-11-11 最终代码回归：core / hero-scene / interaction 四项目 34 passed / 46 skipped / 0 failed（含 core『CTA 不被遮挡』与 US-002 视差/悬停/拖拽/点击全部断言）；lint / typecheck exit 0。"
+      ],
+      "notes": "对应 PRD US-003 详述 2 前两条。快速滚动的中断/衔接稳定性由 US-003g 专项覆盖。"
+    },
+    {
+      "id": "US-003d",
+      "priority": 38,
+      "area": "滚动转场",
+      "title": "粒子向新场景聚集或扩散",
+      "user_visible_behavior": "滚动转场时粒子产生克制的聚集或扩散效果，与相机运动形成连续叙事；低画质设备不因粒子计算卡顿。",
+      "status": "passing",
+      "verification": [
+        "复用 US-001c 粒子球壳：壳层半径/分布系数随滚动进度插值实现聚集与扩散，参数来自 US-003b 注册表。",
+        "不新增粒子数量、不新增后处理（US-002e 性能红线回归）；低画质档（lib/quality.ts）降量或关闭该计算，视口外随 frameloop 暂停。",
+        "单元测试覆盖插值函数边界；E2E 断言粒子状态数据属性随进度变化并回稳。",
+        "npm run size 通过（不引入新依赖）。"
+      ],
+      "evidence": [
+        "2026-11-11 RED：transitions.test.mjs 报 does not provide an export named 'shellFactor'（62 pass 1 fail）；实现后 GREEN 73/73——新增 2 条测试覆盖线性插值（起点 1 / 终点 shellScale / 中点 0.875 / 扩散 >1 分支）与越界 clamp、NaN 回 1 不变形。",
+        "2026-11-11：粒子聚集/扩散以整壳 scale.setScalar 实现（复用 US-001c 粒子球壳，粒子数与逐粒子计算零增加、无新增后处理）；系数经 shellFactor 从注册表 particles.shellScale 读取，HeroScene damp(6) 平滑后经 shellRef 应用到 Particles；低画质档（particles<700）与 reduced-motion 关闭计算保持原半径，视口外随 frameloop=never 暂停；FrameReport 增补 particleShell → data-particle-shell。",
+        "2026-11-11：E2E『粒子壳层随滚动聚集并回稳（低画质档关闭计算）』四项目 14 passed / 2 skipped（no-webgl 条件跳过）/ 0 failed——chromium 桌面滚动后 <0.85 且 ≥0.74（不越 shellScale=0.75 下限），停止滚动后两次采样差 <0.01 回稳；移动端（粒子 350 低画质档）按设计保持 >0.99。修复测试竞态：场景异步挂载时读到占位 div（Number(null)=0，mobile-safari 首跑失败），新增 waitForTransitionState 等待 data-transition 写入后才读状态。",
+        "2026-11-11：npm test 73/73、lint / typecheck exit 0、npm run size 475.6kB brotli ≤1MB（不引入新依赖）。"
+      ],
+      "notes": "对应 PRD US-003 详述 2 第四条。"
+    },
+    {
+      "id": "US-003e",
+      "priority": 39,
+      "area": "滚动转场",
+      "title": "场景背景渐变",
+      "user_visible_behavior": "滚动转场时场景背景平滑渐变，相邻模块之间有连续的视觉叙事；无 WebGL 与无 JS 时背景与内容仍完整。",
+      "status": "passing",
+      "verification": [
+        "HeroBackground 背景（CSS 变量/渐变）随滚动进度插值渐变，渐变色来自 US-003b 注册表；CSS 层渐变与 3D 场景色调协调。",
+        "reduced-motion 时简化为瞬时切换或保持静态（PRD 验收 5）。",
+        "E2E 断言背景状态数据属性随滚动变化；degradation no-webgl 项目断言背景与文字完整。",
+        "lint / typecheck 通过。"
+      ],
+      "evidence": [
+        "2026-11-11：HeroBackground 渐变色从注册表 background.from/to 读取（组件零硬编码），经 inline CSS 变量 --hero-bg-from/--hero-bg-to 注入（out/index.html 实测 grep #151d3a 命中，静态产物即含）；globals.css 新增 .hero-bg-tint 目标色叠加层，opacity = var(--scroll-progress, 0)×0.6 由 <html> 上的进度变量驱动，零 JS 每帧开销。",
+        "2026-11-11：reduced-motion 简化转场——ScrollState 在 reduced 模式下进度瞬时跟随滚动（US-003a 单测已覆盖），叠加层透明度随之瞬时切换、无渐变过渡（PRD 验收 5 简化形式）；无 JS 时 var 回退 0 保持静态背景（CSS fallback 声明）。",
+        "2026-11-11：E2E『背景渐变随滚动推进（无 WebGL 与无 JS 同样完整）』四项目 + degradation.spec 复验合计 23 passed / 5 skipped / 0 failed——初始 tint opacity <0.05、滚动到 #about 后 >0.4、与根 data-scroll-progress 联动误差 <0.05（opacity=progress×0.6）、h1 与 #about 转场后可见、.hero-bg 静态 style 含注册表色值；degradation 四项目断言背景与文字完整通过。",
+        "2026-11-11：lint / typecheck exit 0。"
+      ],
+      "notes": "对应 PRD US-003 详述 2 第二条与详述 3「相邻模块连续视觉叙事」。"
+    },
+    {
+      "id": "US-003f",
+      "priority": 40,
+      "area": "滚动转场",
+      "title": "内容面板从空间中展开",
+      "user_visible_behavior": "#about 内容面板随滚动从空间中展开进入视口；转场动画不阻止访客立即阅读已进入视口的内容（PRD 详述 6）。",
+      "status": "passing",
+      "verification": [
+        "#about 面板随进度展开（translate/rotate/opacity 克制幅度），参数来自 US-003b 注册表。",
+        "进入视口的内容立即可读：面板文字 opacity 不低于可读阈值（如 ≥0.85）且无模糊/位移残影遮挡；无 JS 时面板默认完整可见（静态 HTML 断言）。",
+        "E2E 断言面板展开数据属性随滚动变化、最终清晰呈现（PRD 验收 2）；overflow 回归无横向溢出。",
+        "lint / typecheck 通过。"
+      ],
+      "evidence": [
+        "2026-11-11：#about 内容包进 .about-panel，展开参数（risePx 24px / tiltDeg 2.5deg / minOpacity 0.9）经 inline CSS 变量从注册表 panel 配置读取（组件零硬编码）；globals.css 以 perspective + translateY + rotateX 按 var(--scroll-progress, 1) 插值展开，透明度 = minOpacity + (1-minOpacity)×进度（全程 ≥0.9，守住 ≥0.85 可读阈值）；reduced-motion 媒体查询直接 transform:none / opacity:1 简化转场。",
+        "2026-11-11：E2E『内容面板随滚动展开且始终可读』+ overflow 回归四项目 122 passed / 2 skipped / 0 failed——起始折叠态 translateY≈24px（断言 >10px）、初/中/末三次采样 opacity ≥0.85（PRD 详述 6 立即阅读红线）、展开后 |translateY|<2 且 opacity>0.98、#about h2/p 清晰可见（PRD 验收 2）；无 JS 回退实测——移除 --scroll-progress 后 var fallback=1，面板 translateY≈0、opacity≈1 默认完整可见；overflow 5 视口×双语无横向溢出。",
+        "2026-11-11：lint / typecheck exit 0。"
+      ],
+      "notes": "对应 PRD US-003 详述 2 第五条与详述 6。面板内容正文属 US-006，本任务只做展开动效。"
+    },
+    {
+      "id": "US-003g",
+      "priority": 41,
+      "area": "滚动转场",
+      "title": "快速滚动中断/衔接、不劫持滚轮与动画失败降级",
+      "user_visible_behavior": "快速上下滚动时动画正确中断、衔接或完成，不出现冲突的动画状态；滚轮行为完全原生；转场动画失败时内容仍可正常访问。",
+      "status": "passing",
+      "verification": [
+        "单一进度源 + damp 平滑保证任意滚动速度下状态唯一收敛：E2E 快速上下滚动序列断言进度/状态数据属性收敛、无 NaN、pageerror 为空（PRD 详述 7、验收 3）。",
+        "滚轮/触摸/键盘滚动为原生浏览器行为：E2E 断言滚动距离与输入一致、无 preventDefault 劫持（PRD 详述 5）。",
+        "动画失败降级：转场代码 try/catch 或 ErrorBoundary 包裹，模拟抛异常后内容仍可读可滚动（PRD 验收 4）；GSAP 加载失败时回退静态。",
+        "回归 core / hero-entry / interaction 现有断言不退化。",
+        "lint / typecheck 通过。"
+      ],
+      "evidence": [
+        "2026-11-11：attachScrollDriver 整段绑定 try/catch + 增量 destroy（ticker / trigger / 订阅 / matchMedia 全部空安全清理），任何绑定异常回退静态返回 null；writeDom 加去重守卫，避免 damp 渐近抖动导致每帧冗余重写 CSS 变量。",
+        "2026-11-11：E2E『快速上下滚动动画状态唯一收敛，无冲突状态』四项目通过——高频跳变后进度与面板位移均收敛（250ms 双采样差 <0.01 / <1px）、终值 ∈(0.9,1]、pageerror 为空（PRD 详述 7 / 验收 3）。过程中定位并修复两处测试时序问题：html 的 CSS smooth 使连续 behavior:'auto' 程序化滚动动画排队互相干扰（调试 spec 实测 scrollY 卡在 441/496），程序化跳变统一改 behavior:'instant'；收敛断言由固定等待改为稳定收敛轮询。",
+        "2026-11-11：E2E『滚轮与键盘滚动为原生行为，不被劫持』——滚轮输入 400px 的实际位移 ∈(100,600)（不被吞、不被放大），PageDown 原生滚动生效；mobile-WebKit 不支持注入滚轮，改 scrollBy 等价断言（与既有 WebGL 条件跳过同类，断言未删、阈值未降）。代码层 ScrollTrigger 仅观察滚动、无任何 preventDefault（PRD 详述 5）。",
+        "2026-11-11：E2E『转场脚本加载失败时回退静态，内容仍可读可滚动』——运行时扫描 out chunk（含 ScrollTrigger 实现、不含业务串）定位 GSAP chunk 并 route.abort 模拟加载失败：h1 / #about / 面板完整可读、原生滚动正常、pageerror 为空（PRD 验收 4）。",
+        "2026-11-11 回归：core / hero-entry / interaction 四项目 42 passed / 42 skipped / 0 failed（现有断言零退化）；npm run verify:local exit 0（npm test 73/73、size 475.75kB、i18n 100%、audit 0 high）。"
+      ],
+      "notes": "对应 PRD 详述 5/7 与验收 3/4。"
+    },
+    {
+      "id": "US-003h",
+      "priority": 42,
+      "area": "滚动转场",
+      "title": "US-003 整体验收与回归",
+      "user_visible_behavior": "PRD US-003 五条验收逐条可核对，转场不影响已有行为与现有质量门禁；reduced-motion 自动使用简化转场。",
+      "status": "in_progress",
+      "verification": [
+        "逐条核对五条验收：滚动触发空间转场、动画后目标模块清晰呈现、快速滚动不乱、动画失败内容可访问、reduced-motion 简化转场；证据写入 evidence。",
+        "reduced-motion E2E：断言转场为简化形式（进度瞬时/无相机运动）且内容完整（PRD 验收 5）。",
+        "全套 E2E 四项目 0 失败（不新增 fixme、不删断言、不降阈值）；npm run verify:local 通过；Lighthouse 复验 LCP 仍为文字元素。",
+        "push main 后云端 verify job 全绿，CI run URL 与 passed 数回写 claude-progress.md 与本条 evidence。",
+        "对照 PRD US-003 详述 1~7 逐条确认覆盖范围。"
+      ],
+      "evidence": [
+        "2026-11-11 PRD US-003 五条验收逐条核对——①滚动触发空间转场（进度归一化/相机/粒子/背景/面板 5 组 E2E 四项目实测）；②动画后目标模块清晰呈现（面板用例断言展开到位 opacity>0.98、#about h2/p 可见）；③快速滚动不乱（高频跳变后状态唯一收敛、pageerror 为空）；④动画失败内容可访问（GSAP chunk abort 降级用例）；⑤reduced-motion 简化转场（专项用例）。PRD 详述 1~7 全覆盖：1 滚动触发 3D 场景变化→US-003a/c/d/e/f；2 五种效果齐备→相机推进(c)、背景渐变(e)、物体移动旋转(c)、粒子聚散(d)、面板展开(f)；3 相邻模块连续视觉叙事→同一进度源统一驱动(e)；4 滚动驱动动画→GSAP ScrollTrigger(a)；5 不劫持滚轮→g 用例 + 代码零 preventDefault；6 立即可读→面板 minOpacity≥0.9 红线(f)；7 快速滚动中断衔接→单一进度源 + damp 收敛(g)。",
+        "2026-11-11：reduced-motion E2E『自动使用简化转场』四项目通过——滚动后 200ms 内进度瞬时到位（>0.9，非 damp 渐近）、data-transition/data-camera-z 恒为 0.000（无相机运动）、.about-panel transform:none / opacity:1（不做展开动画）、h1 与 #about 完整可见（PRD 验收 5）。",
+        "2026-11-11：全套 E2E 四项目 316 tests 239 passed / 77 skipped / 0 failed（--workers=2，exit 0；77 skipped = 28 项 roadmap fixme + WebGL/条件跳过；未新增 fixme、未删断言、未降阈值）。全量负载下曾暴露 mobile-safari 相机用例时序 flake（behavior:'auto' 平滑滚动动画慢于 500ms 采样点），程序化跳转统一改 behavior:'instant' 后复跑 0 失败。",
+        "2026-11-11：Lighthouse 复验 CI=1 npm run verify:lighthouse exit 0——/ 与 /en/ 各 3 run 共 6 报告 All results processed!，lighthouserc 阈值全部达标；LCP 元素实测为 <p> 文字元素、非 CANVAS（PerformanceObserver 实测 LCP_ELEMENT=P，临时用例四项目通过后清理）。",
+        "2026-11-11：npm run verify:local exit 0（npm test 73/73、lint/typecheck 干净、size 475.75kB ≤1MB、i18n 100%、audit 0 high）。**云端 verify run URL 待 push main 后回写，届时本任务转 passing**。"
+      ],
+      "notes": "本任务通过即 US-003 完成。导航激活态属 US-004，滚动进度指示器属 US-005，不在本故事范围。2026-11-11 本地验证全部完成，按 AGENTS 约定待 push main 云端 verify 全绿并回写 CI run URL 后才可标记 passing。"
     }
   ],
   "roadmap": [
     { "id": "T-003", "title": "Vitest 单元/集成测试基础设施（npm test 从 node:test 迁移，接入 verify 与 CI）", "group": "P0-技术", "status": "not_started" },
     { "id": "US-004", "title": "全局导航与空间化导航系统", "group": "P0", "status": "not_started" },
-    { "id": "US-003", "title": "电影级滚动转场", "group": "P0", "status": "not_started" },
     { "id": "US-006", "title": "个人介绍 About Me（填充 #about 占位）", "group": "P0", "status": "not_started" },
     { "id": "US-008", "title": "成长时间线 Journey", "group": "P0", "status": "not_started" },
     { "id": "US-010", "title": "科研方向 Research（DAC + LLM + MARL）", "group": "P0", "status": "not_started" },

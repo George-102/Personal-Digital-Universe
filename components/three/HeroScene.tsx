@@ -5,6 +5,8 @@ import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { clamp, damp, repelFactor, type Vec2, type PointerTracker } from '@/lib/pointer';
 import { findInteractiveObject, type InteractiveObject } from '@/lib/interactive';
+import { sharedScrollState } from '@/lib/scroll';
+import { cameraTargets, findTransitionSegment, shellFactor, transitionSegments } from '@/lib/transitions';
 
 /** 每帧上报给 DOM 层的可观察状态（E2E 断言与 tooltip 定位都以此为准） */
 export type FrameReport = {
@@ -17,6 +19,13 @@ export type FrameReport = {
   ndc: Vec2;
   hitCore: Vec2;
   hitOrbitNode: Vec2;
+  /** 滚动转场：平滑后的段进度与相机/物体目标偏移（来自注册表配置） */
+  transitionProgress: number;
+  cameraZ: number;
+  coreOffsetY: number;
+  coreSpinOffset: number;
+  /** 粒子壳层系数：1 原半径，<1 聚集、>1 扩散 */
+  particleShell: number;
 };
 
 type RefLike<T> = { current: T };
@@ -44,6 +53,11 @@ const SPIN_HOVER = 1.9;
 const PARTICLE_RADIUS = 1.2;
 const PARTICLE_STRENGTH = 0.35;
 
+// 转场参数只从注册表读取（US-003b），组件内不硬编码
+const heroSegment = findTransitionSegment(transitionSegments, 'hero-about');
+const cameraConfig = heroSegment?.camera ?? { zOffset: 0, coreSpin: 0, coreYOffset: 0 };
+const particlesConfig = heroSegment?.particles ?? { shellScale: 1 };
+
 function DisposeOnUnmount() {
   const scene = useThree((s) => s.scene);
   const gl = useThree((s) => s.gl);
@@ -68,7 +82,15 @@ function DisposeOnUnmount() {
   return null;
 }
 
-function Particles({ count, offsetRef }: { count: number; offsetRef: RefLike<Vec2> }) {
+function Particles({
+  count,
+  offsetRef,
+  shellRef,
+}: {
+  count: number;
+  offsetRef: RefLike<Vec2>;
+  shellRef: RefLike<number>;
+}) {
   const ref = useRef<THREE.Points>(null);
   const positions = useMemo(() => {
     const arr = new Float32Array(count * 3);
@@ -88,6 +110,8 @@ function Particles({ count, offsetRef }: { count: number; offsetRef: RefLike<Vec
     ref.current.rotation.y += delta * 0.02;
     ref.current.position.x = offsetRef.current.x * 0.6;
     ref.current.position.y = offsetRef.current.y * 0.6;
+    // 转场聚集/扩散：整体壳层缩放，不改粒子数量与逐粒子计算
+    ref.current.scale.setScalar(shellRef.current);
   });
 
   return (
@@ -139,6 +163,8 @@ export default function HeroScene({
   const orbitMaterial = useRef<THREE.MeshStandardMaterial>(null);
   const projection = useMemo(() => new THREE.Vector3(), []);
   const particleOffset = useRef<Vec2>({ x: 0, y: 0 });
+  const cameraBase = useRef<{ z: number } | null>(null);
+  const shellRef = useRef(1);
 
   const motion = useRef({
     parallax: { x: 0, y: 0 } as Vec2,
@@ -148,6 +174,7 @@ export default function HeroScene({
     spin: 1,
     drag: { x: 0, y: 0 } as Vec2,
     baseSpin: 0,
+    shell: 1,
   });
 
   useFrame((state, delta) => {
@@ -196,11 +223,27 @@ export default function HeroScene({
 
     // 常驻慢速旋转 + 拖拽叠加，速度上限防止 hover 与拖拽叠加超速
     m.baseSpin += dt * 0.15 * Math.min(m.spin, 2.2);
+
+    // 滚动转场：进度来自单一进度源（已 damp 平滑），目标偏移来自注册表配置；
+    // reduced-motion 简化为无相机运动（Tech.md §3.3），叠加式施加避免与视差/拖拽冲突
+    const scrollProgress = sharedScrollState.getSnapshot().progress;
+    const transition = reducedMotion ? 0 : scrollProgress;
+    const targets = cameraTargets(transition, cameraConfig);
+    if (!cameraBase.current) cameraBase.current = { z: camera.position.z };
+    camera.position.z = cameraBase.current.z + targets.z;
+
+    // 粒子聚集/扩散：低画质档与 reduced-motion 下关闭（保持原半径），damp 平滑后回稳
+    const shellTarget =
+      reducedMotion || lowQuality ? 1 : shellFactor(scrollProgress, particlesConfig);
+    m.shell = damp(m.shell, shellTarget, 6, dt);
+    shellRef.current = m.shell;
+
     if (coreGroup.current) {
-      coreGroup.current.rotation.y = m.baseSpin + m.drag.x;
+      coreGroup.current.rotation.y = m.baseSpin + m.drag.x + targets.spin;
       coreGroup.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3) * 0.12 + m.parallax.y * 0.4 + m.drag.y;
       coreGroup.current.position.x = m.parallax.x;
-      coreGroup.current.position.y = Math.sin(state.clock.elapsedTime * 0.6) * 0.15 + m.parallax.y * 0.5;
+      coreGroup.current.position.y =
+        Math.sin(state.clock.elapsedTime * 0.6) * 0.15 + m.parallax.y * 0.5 + targets.y;
       coreGroup.current.scale.setScalar(m.scale);
     }
     if (coreMaterial.current) {
@@ -235,6 +278,11 @@ export default function HeroScene({
       ndc: { ...ndc },
       hitCore: toScreen(0, 0, 0),
       hitOrbitNode: toScreen(2.2, 0.9, 0),
+      transitionProgress: transition,
+      cameraZ: targets.z,
+      coreOffsetY: targets.y,
+      coreSpinOffset: targets.spin,
+      particleShell: m.shell,
     });
   });
 
@@ -301,7 +349,7 @@ export default function HeroScene({
         />
       </mesh>
       <Orbits />
-      <Particles count={particles} offsetRef={particleOffset} />
+      <Particles count={particles} offsetRef={particleOffset} shellRef={shellRef} />
       <gridHelper args={[30, 30, '#2a2f55', '#161a38']} position={[0, -2.6, 0]} />
     </>
   );

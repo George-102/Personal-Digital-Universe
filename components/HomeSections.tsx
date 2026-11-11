@@ -1,7 +1,19 @@
 import { getTranslations } from 'next-intl/server';
+import type { CSSProperties } from 'react';
 import { profile } from '@/content/profile';
 import HeroBackground from '@/components/HeroBackground';
 import HeroCanvas from '@/components/three/HeroCanvas';
+import ScrollDriver from '@/components/ScrollDriver';
+import { findTransitionSegment, transitionSegments } from '@/lib/transitions';
+
+// 面板展开参数只从注册表读取（US-003b），组件内不硬编码
+const heroSegment = findTransitionSegment(transitionSegments, 'hero-about');
+const panel = heroSegment?.panel ?? { risePx: 0, tiltDeg: 0, minOpacity: 1 };
+const panelStyle = {
+  '--panel-rise': `${panel.risePx}px`,
+  '--panel-tilt': `${panel.tiltDeg}deg`,
+  '--panel-min-opacity': String(panel.minOpacity),
+} as CSSProperties;
 
 export default async function HomeSections({ lang }: { lang: 'zh' | 'en' }) {
   const t = await getTranslations({ locale: lang, namespace: 'Home' });
@@ -13,6 +25,7 @@ export default async function HomeSections({ lang }: { lang: 'zh' | 'en' }) {
     <>
       <section className="relative flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
         <HeroBackground />
+        <ScrollDriver />
         <HeroCanvas labels={{ core: ti('core'), orbitNode: ti('orbitNode') }} />
         {/* 文字层不拦截指针，3D 物体才能收到 hover；链接单独恢复可点击 */}
         <div className="pointer-events-none relative flex flex-col items-center gap-4">
@@ -49,8 +62,10 @@ export default async function HomeSections({ lang }: { lang: 'zh' | 'en' }) {
         </div>
       </section>
       <section id="about" className="mx-auto min-h-[50vh] max-w-3xl px-6 py-24">
-        <h2 className="text-2xl font-semibold">About</h2>
-        <p className="mt-4 opacity-70">{t('aboutPlaceholder')}</p>
+        <div className="about-panel" style={panelStyle}>
+          <h2 className="text-2xl font-semibold">About</h2>
+          <p className="mt-4 opacity-70">{t('aboutPlaceholder')}</p>
+        </div>
       </section>
     </>
   );
