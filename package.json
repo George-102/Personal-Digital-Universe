@@ -17,6 +17,7 @@
     "verify:e2e": "playwright test",
     "verify:lighthouse": "lhci autorun",
     "verify:quick": "next build && playwright test --project=chromium-no-webgl",
+    "verify:local": "npm run lint && npm run typecheck && npm run build && npm test && npm run verify:metrics",
     "verify:metrics": "npm run audit && npm run check:i18n && npm run size",
     "audit": "npm audit --audit-level=high --registry=https://registry.npmjs.org",
     "check:i18n": "node scripts/check-i18n.mjs",

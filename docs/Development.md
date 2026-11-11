@@ -119,8 +119,9 @@
 
 | 脚本 | 状态 | 用途 |
 | --- | --- | --- |
-| `npm run verify` | ✅ 已建 | 完整门禁：build + Playwright 全项目 + Lighthouse CI + 质量指标 |
-| `npm run verify:quick` | ✅ 已建 | 日常快速检查：build + 无 WebGL 降级项目 |
+| `npm run verify:local` | ✅ 已建 | **本地默认**：lint + typecheck + build + 单测 + 质量指标，零浏览器；与 CI `verify` job 前 5 步逐命令等价 |
+| `npm run verify` | ✅ 已建 | 完整门禁的本地等价入口：build + Playwright 全项目 + Lighthouse CI + 质量指标；实际门禁由云端 CI 执行，本地勿跑 |
+| `npm run verify:quick` | ✅ 已建 | 可选的单项目浏览器抽查：build + 无 WebGL 降级项目（会启动 Chromium + serve，非本地默认） |
 | `npm run verify:build` / `verify:e2e` / `verify:lighthouse` | ✅ 已建 | 门禁的三个组成 |
 | `npm run verify:metrics` | ✅ 已建 | 质量指标门禁：audit + check:i18n + size |
 | `npm run audit` | ✅ 已建 | 0 高危及以上漏洞（脚本指定官方 registry，npmmirror 不支持 audit 端点） |
@@ -131,7 +132,7 @@
 
 ### CI/CD 流水线（.github/workflows/verify.yml，定稿待落地）
 
-`verify` job：`npm ci` → `lint` / `typecheck` / `npm test` → `npm run build`（prebuild 校验 content/）→ `verify:metrics` → 安装 `chromium webkit` → `playwright test` 四项目 → `lhci autorun`（CI 下 upload 改 filesystem）→ 上传 `out/` artifact 与报告。
+`verify` job：`npm ci` → `lint` / `typecheck` → `npm run build`（prebuild 校验 content/，产物级单测依赖 `out/` 故 build 必须早于 `npm test`）→ `npm test` → `verify:metrics` → 安装 `chromium webkit` → `playwright test` 四项目 → `lhci autorun`（CI 下 upload 改 filesystem）→ 上传 `out/` artifact 与报告。前 5 步即本地 `npm run verify:local`；**浏览器 E2E 与 Lighthouse 重验证只在云端执行**，本地不跑（本地 `retries: 0` + 30s 超时易 flake，且非 CI 的 lhci 会生成公开报告链接）。
 
 `deploy` job：`needs: verify`，仅 `push main` 触发，下载同一份 artifact → `wrangler pages deploy out --project-name=... --branch=main`。密钥仅 `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 存 Actions secrets；fork PR 不注入 secrets、不部署；同仓库 PR 可选 `--branch=<分支名>` 预览。
 
@@ -145,19 +146,19 @@
 
 ### 决策：四层测试体系
 
-| 层 | 工具 | 覆盖 | 状态 |
-| --- | --- | --- | --- |
-| 单元 / 集成 | Vitest（+ Testing Library） | content/ 数据校验（缺字段、public 过滤、论文状态枚举）、工具函数、组件渲染 | ⏳ T-003 |
-| E2E | Playwright（4 项目：桌面 / 无 WebGL / 移动 Chrome / 移动 Safari） | 核心可用性、WebGL 与资源降级、i18n、主题、a11y/reduced-motion、SEO、横向溢出、外链 | ✅ e2e/ 9 个 spec 已建 |
-| 性能 / SEO 门禁 | Lighthouse CI | 性能 ≥0.85、可访问性 ≥0.95、SEO ≥0.95、最佳实践 ≥0.90；LCP ≤2.5s、CLS ≤0.1、TBT ≤200ms | ✅ lighthouserc.js 已建 |
-| 质量指标门禁 | npm audit / check-i18n.mjs / size-limit | 0 高危漏洞；zh/en 键覆盖率 100%；JS 总量 ≤1MB gzip | ✅ T-006 已建（size 实测待 T-001） |
-| 人工验收 | docs/DoD.md 末尾清单 | 视觉质量、内容真实性、笔名一致性、版权 | 每次发布前逐项打勾 |
+| 层 | 工具 | 覆盖 | 执行主体 | 状态 |
+| --- | --- | --- | --- | --- |
+| 单元 / 集成 | Vitest（+ Testing Library） | content/ 数据校验（缺字段、public 过滤、论文状态枚举）、工具函数、组件渲染 | 本地 `verify:local` + 云端 CI | ⏳ T-003 |
+| E2E | Playwright（4 项目：桌面 / 无 WebGL / 移动 Chrome / 移动 Safari） | 核心可用性、WebGL 与资源降级、i18n、主题、a11y/reduced-motion、SEO、横向溢出、外链 | **仅云端 CI**（本地不跑） | ✅ e2e/ 9 个 spec 已建 |
+| 性能 / SEO 门禁 | Lighthouse CI | 性能 ≥0.85、可访问性 ≥0.95、SEO ≥0.95、最佳实践 ≥0.90；LCP ≤2.5s、CLS ≤0.1、TBT ≤200ms | **仅云端 CI**（本地不跑） | ✅ lighthouserc.js 已建 |
+| 质量指标门禁 | npm audit / check-i18n.mjs / size-limit | 0 高危漏洞；zh/en 键覆盖率 100%；JS 总量 ≤1MB gzip | 本地 `verify:local` + 云端 CI | ✅ T-006 已建（size 实测待 T-001） |
+| 人工验收 | docs/DoD.md 末尾清单 | 视觉质量、内容真实性、笔名一致性、版权 | 人工（每次发布前） | 每次发布前逐项打勾 |
 
 注：audit 脚本指定官方 registry（npmmirror 无 audit 端点）；basic-ftp / compression / postcss 经 package.json overrides 固定至修复版（^6.2.6 / ^1.8.2 / ^8.5.32），均为工具链间接依赖，不进前端 bundle。postcss override 于 2026-11-11 加入（three 依赖链引入 high 漏洞 GHSA-qx2v-qp2m-jg93 等）。@typescript-eslint 的 6 个 moderate 暂无修复版，仅 dev 依赖，门禁卡 high 不受影响。
 
 **TDD 原则（AGENTS.md）：每个功能先写失败测试，再实现。** 单元测试随 T-003 基础设施落地后成为默认流程；E2E 验收标准已先行存在，功能实现以通过对应 spec 为准。
 
-门禁逻辑：`npm run verify` 全部通过才可合并/发布；不得为通过验收而悄悄改弱断言或阈值（AGENTS.md）。
+门禁逻辑：`npm run verify` 全部通过才可合并/发布——由云端 `.github/workflows/verify.yml` 的 `verify` job 逐条执行等价全链（push main / PR 自动触发），CI run URL 为证据；本地默认只跑 `npm run verify:local`，不替代云端门禁。不得为通过验收而悄悄改弱断言或阈值（AGENTS.md）。
 
 ---
 

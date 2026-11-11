@@ -56,8 +56,9 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 
 | 命令 | 用途 |
 | --- | --- |
-| `npm run verify` | 完整门禁：build + Playwright 全项目 + Lighthouse CI + 质量指标 |
-| `npm run verify:quick` | 日常快速检查：build + 无 WebGL 降级项目 |
+| `npm run verify:local` | **本地默认**：lint + typecheck + build + 单测 + 质量指标，零浏览器（与 CI 前 5 步等价） |
+| `npm run verify` | 完整门禁的本地等价入口：build + Playwright 全项目 + Lighthouse CI + 质量指标；**实际门禁由云端 CI 逐条执行，勿在本地运行** |
+| `npm run verify:quick` | 可选的单项目浏览器抽查：build + 无 WebGL 降级项目（会启动 Chromium + serve，非本地默认） |
 | `npm run verify:build` | 仅构建（next build） |
 | `npm run verify:e2e` | Playwright 四项目：桌面 / 无 WebGL / 移动 Chrome / 移动 Safari |
 | `npm run verify:lighthouse` | Lighthouse CI（性能 ≥0.85、a11y ≥0.95、SEO ≥0.95、最佳实践 ≥0.90） |
@@ -68,9 +69,9 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 | `npm test` | 单元测试（当前 node:test，T-003 迁移 Vitest；产物级用例需先 `npm run build`） |
 | `npm run lint` / `npm run typecheck` | ESLint / TypeScript 检查 |
 
-首次运行 E2E 前需安装浏览器：`npx playwright install`。门禁断言与阈值不得为通过验收而改弱（AGENTS.md）。
+本地默认零浏览器：无需 `npx playwright install`、不跑 `lhci`（本地跑 Lighthouse 会生成公开报告链接，见 `lighthouserc.js`）。仅按需做浏览器抽查时才安装浏览器：`npx playwright install`。门禁断言与阈值不得为通过验收而改弱（AGENTS.md）。
 
-CI 中 `.github/workflows/verify.yml` 依次执行：`npm ci` → `lint` / `typecheck` / `npm test` → `build` → `verify:metrics` → Playwright 四项目 → Lighthouse CI；全绿且为 `push main` 时才执行 `deploy`。未实现的用户故事对应断言用 `test.fixme()` 显式标注并绑定 roadmap，不删除、不用 grep 过滤。
+CI 中 `.github/workflows/verify.yml` 依次执行：`npm ci` → `lint` / `typecheck` → `build` → `npm test` → `verify:metrics` → Playwright 四项目 → Lighthouse CI；`build` 必须早于 `npm test`（产物级单测读 `out/*.html`）。重验证固定在云端，push main / PR 自动触发，CI run URL 是完成定义的证据；全绿且为 `push main` 时才执行 `deploy`。未实现的用户故事对应断言用 `test.fixme()` 显式标注并绑定 roadmap，不删除、不用 grep 过滤。
 
 ## 降级说明
 

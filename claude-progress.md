@@ -66,3 +66,24 @@
 - 验证：RED 单测观察到 `ERR_MODULE_NOT_FOUND` 后实现；注入非法 `clickTarget: /about` 实测 `npm run build` exit 1、恢复后 exit 0。最终全套四项目 E2E **201 passed / 75 skipped / 0 failed**（exit 0）；`npm test` 54/54、`lint`、`typecheck`、`check:i18n` 100%、`size` 432.94kB、`audit` 0 high、`build` exit 0、`CI=1 verify:lighthouse` exit 0（中文 perf 0.98-0.99 / a11y 1 / seo 1 / bp 0.96，LCP 213-332ms、CLS 0、TBT 83-130ms）；PerformanceObserver 实测 LCP 元素非 CANVAS。
 - 环境注意：本机默认 Node 22 与 `engines: 26.x` 不符，验证命令统一前置 PATH 到 scoop `nodejs/26.10.0` 并清空注入的 `NODE_OPTIONS`；默认并行度下 WebGL 上下文争抢会让全套 E2E 超时，本机用 `--workers=2`，`interaction.spec.ts` 内 describe 串行 + 重交互集中在 chromium + WebGL 条件跳过（CI/Linux 未复现该限制，断言与阈值未削弱）。
 - 下一步（按 feature_list）：T-005b 收尾（队友并行）→ T-003 → US-004 → US-003 → US-006 → …；US-002 已从 roadmap 移除。
+
+## T-007 本地轻验证 / 云端重验证分工（2026-11-11）
+
+**背景**：用户提出本地跑 E2E 太费时，希望云端跑重测试、本地只跑轻测试。核查发现云端重验证**已存在**：`.github/workflows/verify.yml` 在 push main / PR 自动触发全链（历史 run 42976363844 全绿 6m28s）并负责 Cloudflare Pages 部署。本地痛点为 `npm run verify` 默认也跑同一套：本地 `retries: 0` + 30s 超时导致移动端 E2E flake（本文件已记录 7 个超时），且 `lighthouserc.js` 非 CI 时用 `temporary-public-storage` 会生成公开报告链接。
+
+**方案（用户确认 4 项）**：不改 workflow（不加 shard / 拆 job / 手动触发 / 标签触发）、不引入 Vitest 或新用例、不提供一键触发云端重测试脚本；纯加法新增 `npm run verify:local`；完整同步 10 个文件。`verify` 全链、`verify:quick` 命令串、所有断言与阈值 100% 保留，重验证只是执行主体固定在云端，证据以 CI run URL 回写。
+
+**已验证（本地实测，2026-11-11）**
+- `npm run verify:local` exit 0，耗时 **35s**（对比云端全套 6m28s）：Node v26.10.0 / npm 11.19.1（前置 PATH 到 scoop `nodejs/26.10.0` 并清空注入的 `NODE_OPTIONS`）；lint / typecheck / build（含 prebuild 的 content 校验与许可证同步）/ `npm test` **54 passed** / `verify:metrics`（audit 0 high，6 moderate 为既有 @typescript-eslint 链；i18n 100%；size 432.94 kB ≤1MB）逐段全绿。
+- 零浏览器：`lhci-report/` 文件数 26→26、`playwright-report/` 0→0，未启动 playwright / serve / lhci。
+- `bash init.sh` exit 0（137s，含 `npm ci`）；`./init.ps1` LASTEXITCODE=0（中文提示语在 PowerShell 5.1 下正确解析，UTF-8 BOM 保留）。两入口仍打印 `feature_list.json OK` / `lighthouserc.js OK` 与 `Total: 276 tests in 12 files`，两条配置冒烟未动。
+- `git diff -- .github/workflows/verify.yml lighthouserc.js playwright.config.ts scripts/smoke-config.mjs package-lock.json` **为空**；`package.json` 仅 +1 行。
+- 顺带修正既有文档矛盾：`README.md:73` 与 `docs/Development.md` §3 的 CI 顺序由错误的 `npm test → build` 改为 `build → npm test`；`verify:quick` 由「日常快速检查」重定位为「可选单项目浏览器抽查」。
+
+**下一步 / 待回写**：push main 或开 PR 后云端 `Verify` workflow 自动触发；核对 `verify` job 全绿后，把 **CI run URL + 耗时 + Playwright passed/skipped/failed + Lighthouse 阈值结论** 回写本文件与 `feature_list.json` 的 `T-007.evidence[]`，再将 `T-007.status` 由 `in_progress` 改为 `passing`。CI run 未生成前不得预填假证据、不得标 passing。
+
+**风险与注意事项**
+- 本地误跑 `npm run verify` 仍会触发四项目 E2E（本地 flake）+ 非 CI Lighthouse 公开报告链接。本次仅通过 README / init / AGENTS 文档提示规避，**未加 guard、未改 verify 命令**（不改弱验证、不动 workflow）。
+- 本地 `npm audit` 依赖 registry.npmjs.org 网络，失败时按既有行为处理，未改 `--audit-level`。
+- `AGENTS.md` 本次提交一并带入 4 处**非本次产生**的既有未提交改动（第 6 步 `init.sh`→`init.ps1`、必需文件、收尾第 5 步同步，以及删除「TDD测试驱动开发原则」一行），用户已确认一并提交并披露。
+- `docs/PRD.md` 的未提交改动属于他人，本次未触碰、未提交；`.workbuddy/` 与 `test-out.txt` 保持未跟踪。

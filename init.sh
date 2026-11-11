@@ -32,4 +32,4 @@ node scripts/smoke-config.mjs
 npx playwright test --list
 
 echo "== 完成 =="
-echo "应用骨架（T-001）完成后，本脚本扩展为 npm run verify 完整门禁。"
+echo "本地轻验证请运行 npm run verify:local（不启动浏览器）；浏览器端到端与 Lighthouse 重验证由云端 CI 执行，勿在本地运行 npm run verify。"

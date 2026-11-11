@@ -130,6 +130,8 @@ content/
 
 GitHub 公开仓库的 Actions **完全免费**，不限分钟数。验收脚本在此运行，不产生费用。
 
+**本地 / 云端分工（2026-11-11 用户确认）**：浏览器 E2E 四项目与 Lighthouse CI 属耗时重验证，固定由云端 `Verify` workflow 在 push main / PR 时执行；本地默认只跑 `npm run verify:local`（lint / typecheck / build / 单测 / 质量指标，零浏览器，与 CI 前 5 步逐命令等价）。重验证的覆盖与阈值 100% 保留，只是执行位置固定；证据以 CI run URL 回写 `feature_list.json` / `claude-progress.md`。
+
 **定稿的 CI/CD 工作流（2026-11-11 确认方案 A，`.github/workflows/verify.yml`）：**
 
 ```yaml
@@ -273,6 +275,8 @@ GitHub（https://github.com/George-102/Personal-Digital-Universe）
           └── 门禁全绿 → wrangler pages deploy 上传同一份 out/ → Cloudflare Pages
 ```
 
+本地（不启动浏览器）：`npm run verify:local` = lint / typecheck / build / npm test / 质量指标，即上图中 GitHub Actions 的前 5 步；Playwright 四项目与 Lighthouse CI 只在云端执行。
+
 **总费用：0 元 / 月**，前提是：使用 `*.pages.dev` 免费子域名、不购买独立域名、不升级任何付费计划、不接入付费数据库/CMS/表单服务。如果未来需要独立域名，那是唯一现实的年度费用（约 50–100 元/年，不属于本项目当前零费用范围）。
 
 ---
@@ -286,4 +290,4 @@ GitHub（https://github.com/George-102/Personal-Digital-Universe）
 5. **i18n 路由静态预生成**：`generateStaticParams` 覆盖 `zh` 和 `en` 的所有页面。
 6. **论文状态三值约束**：`Published | Preprint | In Progress`，未发表不得进入 Publications。
 7. **不允许商用的许可证分层**：代码用 PolyForm Noncommercial（或 MIT + README 声明），内容用 CC BY-NC-ND 4.0。
-8. **验收脚本在公开仓库 CI 中免费运行**：Playwright + Lighthouse CI 作为合并门禁。
+8. **验收脚本在公开仓库 CI 中免费运行**：Playwright + Lighthouse CI 作为合并门禁，重验证固定由云端 `Verify` workflow 执行（push main / PR 自动触发）；本地默认只跑零浏览器的 `npm run verify:local`，CI run URL 是发布门禁的证据。

@@ -15,8 +15,8 @@
 3. 读取 `feature_list.json`，选择优先级最高的未完成功能或任务。
 4. 选择本次需要实现的功能或任务后，定义一个“可观察的结果”
 5. 用 `git log --oneline -5` 看最近提交。
-6. 运行 `./init.sh`。
-7. 在开始新功能前，先跑必需的 smoke test 或端到端验证。
+6. 运行 `./init.ps1`。
+7. 运行 `./init.ps1` 的两条配置冒烟，再跑本地轻验证 `npm run verify:local`（lint / typecheck / build / 单测 / 质量指标，零浏览器）；浏览器 E2E 与 Lighthouse 重验证由云端 CI 在 push / PR 时执行，本地不跑。
 8. 在开始一个新功能时，你应该尽可能询问用户一些问题来确保让用户知道你是否完全了解实现这个功能的所有细节
 
 如果基础验证一开始就失败，先修基础状态，不要在坏的起点上继续叠新功能。
@@ -31,13 +31,13 @@
 - 在制定计划时，有任何疑问可以随时询问用户，而不是靠猜
 - 如果中途有新的计划和任务插入，需要先将计划转化为任务并写入feature_list.json中再开始执行。
 - 只提交预期的changes
-- TDD测试驱动开发原则
+- 本地默认只跑 `npm run verify:local`（零浏览器）；Playwright 四项目与 Lighthouse 重验证固定在云端 `verify` job，禁止为省时在脚本或文档中删除、降级任何断言与阈值。
 
 ## 必需文件
 
 - `feature_list.json`：功能状态的唯一事实来源
 - `claude-progress.md`：会话进度和当前已验证状态
-- `init.sh`：统一的启动与验证入口
+- `init.ps1`：统一的启动与验证入口
 - `session-handoff.md`：较长会话可选的交接摘要
 
 ## 完成定义
@@ -45,7 +45,7 @@
 一个功能只有在以下条件都满足时才算完成：
 
 - 目标行为或可观察的结果已经实现
-- 要求的验证真的跑过
+- 要求的验证真的跑过：本地 `npm run verify:local` 通过 **且** 云端 `verify` job 全绿（后者以 CI run URL 为证据并回写 `feature_list.json` / `claude-progress.md`）；浏览器重测试不以本地执行为前提。
 - 证据记录在 `feature_list.json` 或 `claude-progress.md`
 - 仓库仍然能按标准启动路径重新开始工作
 - 提交对应的git commit（考虑哪些文件应该提交，哪些不应该提交应写入.gitignore）
@@ -58,4 +58,6 @@
 2. 更新 `feature_list.json`
 3. 记录仍未解决的风险或 blocker
 4. 在工作处于安全状态后，用清晰的提交信息提交
-5. 保证下一轮会话可以直接运行 `./init.sh`
+5. 保证下一轮会话可以直接运行 `./init.ps1`
+
+> 若云端 `verify` job 的 CI run 尚未生成，在 `claude-progress.md`「下一步」标注「待回写 CI run URL」，不得把未完成的云端重验证标记为 passing。

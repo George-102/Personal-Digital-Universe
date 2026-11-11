@@ -40,4 +40,4 @@ Invoke-Checked @('node', 'scripts/smoke-config.mjs')
 Invoke-Checked @('npx', 'playwright', 'test', '--list')
 
 Write-Host "== 完成 =="
-Write-Host "完整门禁请运行 npm run verify（见 README 验收命令）。"
+Write-Host "本地轻验证请运行 npm run verify:local（lint/typecheck/build/单测/质量指标，不启动浏览器）；Playwright 与 Lighthouse 重验证由云端 CI 在 push/PR 时执行，勿在本地运行 npm run verify（见 README 验收命令）。"
