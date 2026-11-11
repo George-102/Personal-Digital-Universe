@@ -649,7 +649,7 @@
       "area": "工作流 / 验证",
       "title": "本地轻验证 / 云端重验证分工",
       "user_visible_behavior": "开发者本地运行 npm run verify:local 即可完成 lint / typecheck / build / 单测 / 质量指标且不启动浏览器；Playwright 四项目与 Lighthouse 重验证仍由云端 CI 全量执行，证据可追溯。",
-      "status": "in_progress",
+      "status": "passing",
       "verification": [
         "package.json 新增 verify:local，顺序为 lint → typecheck → build → npm test → verify:metrics，且不含任何 playwright / serve / lhci 命令。",
         "verify 全链、verify:quick、.github/workflows/verify.yml、lighthouserc.js 阈值、playwright.config.ts、init 两条冒烟均逐字节未改（git diff 为空）。",
@@ -659,9 +659,10 @@
       ],
       "evidence": [
         "2026-11-11 本地实测：npm run verify:local exit 0（35s，Node 26.10.0）：lint / typecheck / build（含 prebuild）/ npm test 54/54 / verify:metrics（audit 0 high、i18n 100%、size 432.94kB）；lhci-report 26→26、playwright-report 0→0，确认零浏览器。",
-        "2026-11-11：bash init.sh exit 0 与 ./init.ps1 LASTEXITCODE=0，两入口仍保留 feature_list.json OK / lighthouserc.js OK 与 276 tests listed 冒烟；git diff 核对 workflow / lighthouserc.js / playwright.config.ts / smoke-config.mjs / package-lock.json 为空。"
+        "2026-11-11：bash init.sh exit 0 与 ./init.ps1 LASTEXITCODE=0，两入口仍保留 feature_list.json OK / lighthouserc.js OK 与 276 tests listed 冒烟；git diff 核对 workflow / lighthouserc.js / playwright.config.ts / smoke-config.mjs / package-lock.json 为空。",
+        "2026-11-11：push main 后云端 Verify workflow run `42999448346`（https://github.com/George-102/Personal-Digital-Universe/actions/runs/42999448346）全绿：verify job 6m6s success——Playwright 四项目 201 passed / 75 skipped / 0 failed（3.1m）、npm test 54/54、lint / typecheck / build / verify:metrics 逐段通过；Lighthouse CI 对 / 与 /en/ 各 3 run（6 报告）All results processed!，lighthouserc.js 阈值全部达标；deploy job 1m12s success。CI run URL 与 passed 数已回写 claude-progress.md。"
       ],
-      "notes": "重验证 100% 保留，仅执行主体固定在云端 CI（push main / PR 自动触发）；本地默认零浏览器。不新增/删除/削弱任何断言与阈值，不引入 Vitest（T-003 仍 not_started），不提供一键触发云端重测试的脚本。US-002q:636 等历史 verification 字段保留原文，其「四项目 0 失败」的执行主体按本条 scope 理解为云端 CI。"
+      "notes": "重验证 100% 保留，仅执行主体固定在云端 CI（push main / PR 自动触发）；本地默认零浏览器。不新增/删除/削弱任何断言与阈值，不引入 Vitest（T-003 仍 not_started），不提供一键触发云端重测试的脚本。US-002q:636 等历史 verification 字段保留原文，其「四项目 0 失败」的执行主体按本条 scope 理解为云端 CI。**已 passing（2026-11-11）**：五条 verification 全部满足，云端证据由用户触发的 run 42999448346 回写并实测核对。"
     }
   ],
   "roadmap": [

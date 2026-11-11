@@ -30,7 +30,7 @@
 ## 已落盘文件
 
 - 需求：`docs/PRD.md`；技术论证：`docs/Tech.md`；完成定义：`docs/DoD.md`；开发决策：`docs/Development.md`
-- 功能追踪：`feature_list.json`（US-001 11 任务 + T-006 + T-004a/b、T-005a/b 四个 CI/CD 任务 + US-002 17 任务全 passing；T-007 in_progress；其余 roadmap）
+- 功能追踪：`feature_list.json`（US-001 11 任务 + T-006 + T-004a/b、T-005a/b 四个 CI/CD 任务 + US-002 17 任务 + T-007 全 passing；其余 roadmap）
 - 应用：`app/`（根路由中文 + [locale] 英文 + sitemap/robots）、`components/`（HomeSections/SiteNav/HeroBackground/PersonJsonLd/SiteFooter/three/*）、`content/`（九类数据 + validate + index 公开出口）、`i18n/`、`messages/`、`lib/`（webgl/quality/site/pointer/interactive）
 - 验收：`e2e/`（12 个 spec）、`lighthouserc.js`（审计范围限真实路由）、`.github/workflows/verify.yml`（verify / deploy / preview 三 job，T-004b / T-005a 已落地）
 - 质量：`scripts/`（check-i18n、validate-content、sync-licenses、8 个 node:test 测试文件）、`.size-limit.json`、package.json（含 prebuild 校验钩子与 overrides）
@@ -43,7 +43,7 @@
 2. ~~**T-004b** CI 验收流水线跑通~~（2026-11-11 passing，run 42976363844 全绿、徽章 passing、分支保护 verify）
 3. ~~**T-005a** CD 发布流水线~~（2026-11-11 passing：rerun deploy 成功、生产 URL HTTP 200、产物即 verify 的 out/）
 4. ~~**T-005b** 监控与许可证~~（2026-11-11 passing：UptimeRobot `status=2`、beacon 实测注入、run 42999448346 全绿、DoD D 组打勾）
-5. **T-007** 本地轻验证分工：run 42999448346 已产生云端 verify 证据，状态仍由负责该任务的会话回写（见文末 T-007 段落）
+5. ~~**T-007** 本地轻验证分工~~（2026-11-11 passing：run 42999448346 verify 全绿 201 passed / 75 skipped / 0 failed，CI run URL + passed 数已回写本文件与 T-007.evidence，状态转 passing）
 6. **T-003** Vitest 单元/集成测试基础设施（未提前；迁移时同步改 CI 的 `npm test`）
 7. **US-004** 全局导航（8 项 + 激活态 + 移动折叠菜单——core.spec『移动端菜单』断言在此执行，同时移除对应 fixme）
 8. 之后按 roadmap：US-003 → US-006 → US-008 → US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 已完成）
@@ -85,7 +85,7 @@
 - `git diff -- .github/workflows/verify.yml lighthouserc.js playwright.config.ts scripts/smoke-config.mjs package-lock.json` **为空**；`package.json` 仅 +1 行。
 - 顺带修正既有文档矛盾：`README.md:73` 与 `docs/Development.md` §3 的 CI 顺序由错误的 `npm test → build` 改为 `build → npm test`；`verify:quick` 由「日常快速检查」重定位为「可选单项目浏览器抽查」。
 
-**下一步 / 待回写**：push main 或开 PR 后云端 `Verify` workflow 自动触发；核对 `verify` job 全绿后，把 **CI run URL + 耗时 + Playwright passed/skipped/failed + Lighthouse 阈值结论** 回写本文件与 `feature_list.json` 的 `T-007.evidence[]`，再将 `T-007.status` 由 `in_progress` 改为 `passing`。CI run 未生成前不得预填假证据、不得标 passing。**2026-11-11 补记**：run `42999448346` 已产生且全绿（verify 6m6s，201 passed / 75 skipped；deploy 1m12s success），可据此回写；本轮会话未改 T-007 状态，留给负责该任务的会话处理。
+**已回写并转 passing（2026-11-11）**：push main 后云端 `Verify` workflow run [`42999448346`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/42999448346) 全绿——`verify` job 6m6s success：Playwright 四项目 **201 passed / 75 skipped / 0 failed**（3.1m）、`npm test` 54/54、lint / typecheck / build / verify:metrics 逐段通过；Lighthouse CI 对 `/` 与 `/en/` 各 3 run（6 报告）`All results processed!`，`lighthouserc.js` 阈值全部达标；`deploy` job 1m12s success。CI run URL 与 passed 数已回写本文件与 `feature_list.json` 的 `T-007.evidence[]`，`T-007.status` 已由 `in_progress` 改为 `passing`。
 
 **风险与注意事项**
 - 本地误跑 `npm run verify` 仍会触发四项目 E2E（本地 flake）+ 非 CI Lighthouse 公开报告链接。本次仅通过 README / init / AGENTS 文档提示规避，**未加 guard、未改 verify 命令**（不改弱验证、不动 workflow）。
