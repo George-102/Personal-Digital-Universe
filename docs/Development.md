@@ -10,12 +10,12 @@
 | 技术 | 基础 | 技术架构 | ✅ 已决策 | Tech.md、本文 §1 |
 | 技术 | 数据库 | 数据库表结构 | ✅ 无数据库决策 + content/ schema | 本文 §2、T-002 |
 | 技术 | 数据库 | 数据库迁移 | ✅ 不适用（见决策） | 本文 §2 |
-| 技术 | 持续集成 | 持续集成服务器 | ✅ 配置已建，待跑通 | .github/workflows/verify.yml、T-004 |
-| 技术 | 持续集成 | 持续集成监视器 | ⏳ 待落地 | T-004（CI 徽章）、T-005（UptimeRobot） |
-| 技术 | 持续集成 | 构建脚本 | ⏳ 部分完成 | package.json（verify 系列已建，dev/build 待 T-001） |
-| 技术 | 测试 | 单元测试和集成测试 | ⏳ 待落地 | T-003（Vitest） |
-| 技术 | 测试 | 端到端测试 | ✅ 配置已建，待应用 | playwright.config.ts、e2e/（9 个 spec） |
-| 技术 | 发布 | 发布脚本 | ⏳ 待落地 | T-005（Cloudflare Pages） |
+| 技术 | 持续集成 | 持续集成服务器 | ✅ 方案已定稿，待跑通 | .github/workflows/verify.yml、T-004a/b |
+| 技术 | 持续集成 | 持续集成监视器 | ⏳ 待落地 | T-004b（CI 徽章）、T-005b（UptimeRobot） |
+| 技术 | 持续集成 | 构建脚本 | ✅ 已建 | package.json（verify 系列 + dev/build/start）；Node 26 固定随 T-004a |
+| 技术 | 测试 | 单元测试和集成测试 | ⏳ 待落地 | T-003（Vitest，未提前） |
+| 技术 | 测试 | 端到端测试 | ✅ 已建并运行 | playwright.config.ts、e2e/（11 个 spec） |
+| 技术 | 发布 | 发布脚本 | ⏳ 待落地 | T-005a（Actions + Wrangler 直传） |
 
 ---
 
@@ -45,11 +45,11 @@
 浏览器 ── Cloudflare Pages（*.pages.dev，免费 CDN）
               ├── 静态 HTML/CSS/JS（Next.js 导出 out/）
               └── 3D 资源（GLB/纹理，无限带宽）
-构建：GitHub Actions（公开仓库免费）
+构建与发布：GitHub Actions（公开仓库免费，单条可信流水线）
               ├── next build → out/
-              ├── GitHub API → content/github-cache.json（Token 仅在 secrets）
-              ├── Playwright + Lighthouse CI 门禁
-              └── 通过后 Cloudflare Pages Git 集成自动部署
+              ├── GitHub API → content/github-cache.json（Token 仅在 secrets，随 US-012）
+              ├── lint / typecheck / npm test / 质量指标 / Playwright 四项目 / Lighthouse CI
+              └── 门禁全绿 → deploy job 用 wrangler 上传同一份 out/ artifact → Pages
 ```
 
 ### 开发红线（写进代码规范）
@@ -104,13 +104,16 @@
 
 ## 3. 持续集成
 
-### 决策
+### 决策（2026-11-11 用户确认方案 A）
 
 | 检查项 | 选择 | 说明 |
 | --- | --- | --- |
-| CI 服务器 | GitHub Actions | 公开仓库免费不限分钟；push main / PR 触发；超时 20 分钟 |
-| CI 监视器 | GitHub 通知 + README 状态徽章 + UptimeRobot | 构建失败邮件通知（GitHub 默认）；徽章待 T-004；部署后 UptimeRobot 5 分钟 HTTP 检查（T-005） |
+| 仓库 | `https://github.com/George-102/Personal-Digital-Universe`（公开） | 当前远端为空仓库、本地尚未关联 remote；T-004b 关联并首次推送 |
+| CI 服务器 | GitHub Actions（公开仓库免费） | `PR` + `push main` 触发；单工作流 `.github/workflows/verify.yml` 两个 job：`verify` → `deploy`；`concurrency` 取消同分支旧运行；超时 25 分钟 |
+| CI 监视器 | GitHub 通知 + README 状态徽章 + UptimeRobot | 徽章 `https://github.com/George-102/Personal-Digital-Universe/actions/workflows/verify.yml/badge.svg`（T-004b）；部署后 UptimeRobot 5 分钟 HTTP 检查（T-005b） |
 | 构建脚本 | package.json scripts | 见下表 |
+| 运行时 | Node.js 26（本地与 CI 统一） | `scripts/*.mjs` 直接 import `.ts`，依赖 Node 22.18+ 原生类型剥离；现有 CI 的 Node 20 必失败，随 T-004a 用 `.nvmrc` + `engines` + `setup-node` 统一 |
+| CD | Actions + Wrangler Direct Upload | 关闭 Pages Git 自动构建，门禁全绿后上传被验证的同一份 `out/`；见 §5 |
 
 ### 构建脚本现状
 
@@ -123,15 +126,18 @@
 | `npm run audit` | ✅ 已建 | 0 高危及以上漏洞（脚本指定官方 registry，npmmirror 不支持 audit 端点） |
 | `npm run check:i18n` | ✅ 已建 | zh/en 键覆盖率 100%（messages/ 建立后实测） |
 | `npm run size` | ✅ 已建 | JS 总量 ≤1MB gzip（T-001 产出 out/ 后实测） |
-| `npm test` | ✅ 已建 | node:test 运行 scripts/ 测试；T-003 迁移 Vitest |
-| `npm run dev` / `build` / `start` | ⏳ T-001 | 应用骨架补齐 |
+| `npm test` | ✅ 已建 | node:test 运行 scripts/ 测试；T-003 迁移 Vitest（未提前，CI 暂用 node:test） |
+| `npm run dev` / `build` / `start` | ✅ 已建 | 本地开发与静态导出 |
 
-### CI 流水线（.github/workflows/verify.yml，已建）
+### CI/CD 流水线（.github/workflows/verify.yml，定稿待落地）
 
-checkout → setup-node 20 → npm ci → next build → 质量指标（audit + i18n + size）→ 安装 Playwright Chromium → playwright test → lhci autorun → 上传报告（保留 7 天）。
+`verify` job：`npm ci` → `lint` / `typecheck` / `npm test` → `npm run build`（prebuild 校验 content/）→ `verify:metrics` → 安装 `chromium webkit` → `playwright test` 四项目 → `lhci autorun`（CI 下 upload 改 filesystem）→ 上传 `out/` artifact 与报告。
 
-现状：配置已建但尚未运行——依赖 T-001 产出 `out/`、T-004 提交 package-lock.json 后首次跑通。
-待办：**T-004**（CI 全绿 + 徽章）。
+`deploy` job：`needs: verify`，仅 `push main` 触发，下载同一份 artifact → `wrangler pages deploy out --project-name=... --branch=main`。密钥仅 `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 存 Actions secrets；fork PR 不注入 secrets、不部署；同仓库 PR 可选 `--branch=<分支名>` 预览。
+
+**前置必修（T-004a）**：现有配置有五处必红 —— Node 20 与 TS 类型剥离不兼容；只装 Chromium 而缺 WebKit；28 个未实现故事的 E2E 断言失败（须显式 `test.fixme()` 绑定 US-004 / US-019 / 未来路由，保留全部断言，不得降阈值或用 grep 过滤）；缺 `lint` / `typecheck` / `npm test`；`lighthouserc.js` 的 `temporary-public-storage` 会把报告公开。另 `init.sh` 在 WSL 下无 node、`init.ps1` 中文编码损坏，需先修好标准启动路径。
+
+现状：方案与文档已定稿，流水线尚未跑通。待办：**T-004a → T-004b → T-005a → T-005b**。
 
 ---
 
@@ -157,18 +163,21 @@ checkout → setup-node 20 → npm ci → next build → 质量指标（audit + 
 
 ## 5. 发布
 
-### 决策
+### 决策（2026-11-11 定稿）
 
-- **平台**：Cloudflare Pages Git 集成。main 分支合并 → 自动构建（`next build`）→ 部署 `out/`。免费子域名 `*.pages.dev`，无限带宽，允许商用。
-- **发布流程**：PR → CI `verify` 全绿 → 合并 main → 自动部署 → UptimeRobot 外部可用性检查 → DoD 人工验收打勾 → 对外分享链接。
+- **平台**：Cloudflare Pages（静态导出 `out/`），免费子域名 `*.pages.dev`，无限带宽，允许商用，0 元/月。
+- **部署方式**：**GitHub Actions + Wrangler Direct Upload**（方案 A）。关闭 Pages 的 Git 自动构建，改由 Actions 的 `deploy` job 在 `verify` 全绿后上传同一份 `out/` artifact。理由：避免 Git 集成与 CI 双构建，避免「CI 还没跑完就已上线」，且部署产物就是被验证的那份。
+- **发布流程**：PR → `verify` 全绿 → 合并 main → 同一条流水线 `deploy` 自动上线 → UptimeRobot 外部可用性检查 → DoD 人工验收打勾 → 对外分享链接。
+- **预览部署**：同仓库 PR 可用 `--branch=<分支名>` 得到预览 URL；fork PR 只跑门禁，不部署（secrets 不注入）。
+- **密钥**：`CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` 仅存 GitHub Actions secrets；Token 不进前端 bundle。Pages 项目需先在 Cloudflare 创建一次。
 - **监控统计**：Cloudflare Web Analytics（免费、无 Cookie、含 Core Web Vitals）+ UptimeRobot 免费层（5 分钟间隔邮件告警）。Sentry 免费层可选，非必需。
 - **许可证分层**：代码 `LICENSE` = PolyForm Noncommercial 1.0.0；内容 `LICENSE-CONTENT` = CC BY-NC-ND 4.0；作品页与 Footer 版权声明。字体用开源可商用（Inter / Noto Sans SC / JetBrains Mono）。
 - **费用**：0 元/月。前提：免费子域名、不升级付费计划、不接付费服务。独立域名（约 50–100 元/年）是唯一可能的未来费用，不在当前范围。
 
 ### 现状与待办
 
-- 现状：平台与流程已决策，未配置。
-- 待办：**T-005**（Pages 集成、监控接入、许可证文件、Footer 版权）。
+- 现状：平台与方案已决策并写入文档，未配置；远端仓库为空、本地未关联 remote。
+- 待办：**T-005a**（Pages 项目 + secrets + deploy job + 预览部署）、**T-005b**（监控接入、许可证文件、Footer 版权、SITE_URL 真实域名）。
 
 ---
 
@@ -176,3 +185,4 @@ checkout → setup-node 20 → npm ci → next build → 质量指标（audit + 
 
 - 2026-11-10：初版。记录五类技术准备决策；无数据库决策；测试四层体系；发布流程。
 - 2026-11-10：T-006 质量指标门禁落地（audit / i18n 覆盖率 / size-limit），修复依赖漏洞（@lhci/cli 0.16 + overrides）。
+- 2026-11-11：用户确认 CI/CD 方案 A（Actions + Wrangler 直传）及 T-004/T-005 提前到 US-004 之前；同步 §1 架构图、§3 持续集成、§5 发布决策；记录五处 CI 必红前置、公开仓库地址与 Node 26 要求。

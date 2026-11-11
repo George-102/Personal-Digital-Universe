@@ -19,7 +19,7 @@
 | 内容维护        | **TypeScript/JSON 数据文件 + Markdown**           | 项目、论文、作品、文章结构化维护，零数据库费用  |
 | 托管            | **Cloudflare Pages（静态导出）+ Workers（按需）** | 免费、无限带宽、全球 CDN、适合 3D 静态资源      |
 | 部署适配        | **@opennextjs/cloudflare（如使用 SSR/API）**      | Cloudflare 官方推荐的 Next.js 部署路径          |
-| CI/CD           | **GitHub Actions（公开仓库免费）**                | 构建、Playwright 验收、Lighthouse CI            |
+| CI/CD           | **GitHub Actions + Wrangler 直传（公开仓库免费）** | 单一可信流水线：门禁全绿后上传同一份 `out/`    |
 | 统计            | **Cloudflare Web Analytics**                      | 免费、隐私优先、无 Cookie、包含 Core Web Vitals |
 | 可用性监控      | **UptimeRobot 免费计划**                          | 5 分钟间隔 HTTP 检查，邮件告警                  |
 | 错误追踪        | **Sentry 免费层（5K 错误/月）或 GlitchTip**       | 前端异常捕获，可选                              |
@@ -47,6 +47,8 @@ Cloudflare Pages 的**无限带宽**是决定性优势：3D 网站的 GLB 模型
 - 如果某些路由需要**SSR/API**（例如动态 OG 图片、服务端 GitHub 代理）：使用 `@opennextjs/cloudflare` 构建到 Cloudflare Workers，而不是已经 deprecated 的 `next-on-pages`。Workers 免费层每天 10 万请求，对个人作品集绰绰有余。
 
 **建议第一版走纯静态导出**，把所有“动态”放在客户端（3D、动画、i18n 切换、Copy Email），仅保留 GitHub 数据在构建时抓取生成本地 JSON。这样可以完全避开 SSR 的复杂度和 Worker 额度。
+
+**CD 决策（2026-11-11 用户确认方案 A）**：采用 **GitHub Actions + Wrangler Direct Upload**，关闭 Cloudflare Pages 的 Git 自动构建。Git 集成会在 CI 之外再构建一次，且不等门禁通过就部署；改为 Actions 在 `verify` 全绿后上传同一份 `out/` artifact，可保证「部署产物 = 被验证产物」，也避免双构建消耗额度。仓库为 `https://github.com/George-102/Personal-Digital-Universe`，密钥仅存 Actions secrets，详见 §6 与 `docs/Development.md` §5。
 
 ---
 
@@ -128,30 +130,52 @@ content/
 
 GitHub 公开仓库的 Actions **完全免费**，不限分钟数。验收脚本在此运行，不产生费用。
 
-**建议的 GitHub Actions 工作流：**
+**定稿的 CI/CD 工作流（2026-11-11 确认方案 A，`.github/workflows/verify.yml`）：**
 
 ```yaml
-# .github/workflows/verify.yml
-name: Verify
-on: [push, pull_request]
+name: CI/CD
+on:
+  pull_request:
+  push: { branches: [main] }
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions: { contents: read }
+
 jobs:
-  quality:
+  verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: npm }
+        with: { node-version: 26, cache: npm }
       - run: npm ci
+      - run: npm run lint && npm run typecheck && npm test
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
+      - run: npm run verify:metrics
+      - run: npx playwright install --with-deps chromium webkit
       - run: npx playwright test
-      - run: npx lighthouse-ci autorun
+      - run: npx lhci autorun
       - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
+        with: { name: out, path: out/, retention-days: 7 }
+  deploy:
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: out, path: out }
+      - run: npx wrangler pages deploy out --project-name=personal-digital-universe --branch=main
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 ```
+
+要点：`verify` 与 `deploy` 在同一条流水线内用 `needs` 串接，保证「未过门禁不上线」；部署的是被验证过的同一份 `out/` artifact；Node 26 与本地一致（`scripts/*.mjs` 直接 import `.ts`，Node 20 会失败）；Playwright 四项目需 `chromium` + `webkit`；fork PR 不注入 secrets、不部署。`wrangler` 须作为 devDependency 固定版本并纳入 `package-lock.json`，不要依赖 `npx` 拉最新版以保证部署可复现。
+
+**上线前置**：远端 `https://github.com/George-102/Personal-Digital-Universe` 当前为空仓库且本地未关联 remote；现有 28 个未实现故事的 E2E 断言须显式 `test.fixme()` 绑定 roadmap（保留断言，不得降阈值或缩小验证范围）；`lighthouserc.js` 的 upload 在 CI 下改 filesystem。详见 `docs/Development.md` §3 与 `feature_list.json` 的 T-004a/b。
 
 **Playwright 验收脚本覆盖的自动化检查：**
 
@@ -172,7 +196,9 @@ jobs:
 - Accessibility ≥ 95
 - SEO ≥ 95
 - Best Practices ≥ 90
-- Performance ≥ 85（3D 首页可单独放宽到 80，但 LCP 文案元素必须优先出现）
+- Performance ≥ 85（LCP 文案元素必须优先出现）
+
+实际阈值以 `lighthouserc.js` 为准；不得为通过验收而下调阈值或缩小审计范围。
 
 **不放入自动化、留人工验收的：** 内容真实性（论文状态、产品状态、经历时间）、视觉质量（3D 是否遮挡文字、动效是否克制）、笔名和英文名的展示一致性、版权页准确性。
 
@@ -236,13 +262,15 @@ Cloudflare Pages（免费子域名 *.pages.dev）
     ├── UptimeRobot 免费监控（5 分钟检查，邮件告警）
     └── Sentry 免费层（可选，5K 错误/月）
 
-构建与验收：
-GitHub（公开仓库，免费）
-    └── GitHub Actions（免费）
-          ├── npm run build
-          ├── Playwright（E2E 验收）
+构建、验收与发布（GitHub 公开仓库，免费）：
+GitHub（https://github.com/George-102/Personal-Digital-Universe）
+    └── GitHub Actions（单一可信流水线）
+          ├── npm run build → out/
+          ├── lint / typecheck / npm test / 质量指标
+          ├── Playwright（E2E 验收，四项目）
           ├── Lighthouse CI（性能/可访问性/SEO 门禁）
-          └── 构建时 GitHub API 抓取 → content/github-cache.json
+          ├── 构建时 GitHub API 抓取 → content/github-cache.json（随 US-012）
+          └── 门禁全绿 → wrangler pages deploy 上传同一份 out/ → Cloudflare Pages
 ```
 
 **总费用：0 元 / 月**，前提是：使用 `*.pages.dev` 免费子域名、不购买独立域名、不升级任何付费计划、不接入付费数据库/CMS/表单服务。如果未来需要独立域名，那是唯一现实的年度费用（约 50–100 元/年，不属于本项目当前零费用范围）。

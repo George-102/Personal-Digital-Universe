@@ -1,19 +1,21 @@
 # Personal Digital Universe
 
+[![CI/CD](https://github.com/George-102/Personal-Digital-Universe/actions/workflows/verify.yml/badge.svg)](https://github.com/George-102/Personal-Digital-Universe/actions/workflows/verify.yml)
+
 3D 沉浸式个人数字空间 —— 融合科研、开源项目、软件产品与文学创作的个人作品集网站。
 
 需求见 [docs/PRD.md](docs/PRD.md)，技术决策见 [docs/Tech.md](docs/Tech.md) 与 [docs/Development.md](docs/Development.md)，完成定义见 [docs/DoD.md](docs/DoD.md)。功能状态唯一事实来源是 `feature_list.json`，会话进度见 `claude-progress.md`。
 
 ## 本地启动
 
-要求 Node.js 20+（CI 使用 20，本地 24/26 已验证）。
+要求 Node.js 26（本地 v26.10.0 与 CI 统一；`scripts/*.mjs` 直接 import `.ts`，需 Node 22.18+ 原生类型剥离）。当前 CI 仍配置 Node 20，随 T-004a 统一。
 
 ```bash
 bash init.sh      # 统一入口：环境检查 + npm ci + 配置冒烟验证
 npm run dev       # 开发服务器 http://localhost:3000
 ```
 
-Windows PowerShell 下可用 `./init.ps1` 代替 `init.sh`。
+Windows PowerShell 下可用 `./init.ps1` 代替 `init.sh`（`init.ps1` 目前存在编码问题，随 T-004a 修复；修复前请用 Git Bash 运行 `bash init.sh`）。
 
 构建与预览静态产物：
 
@@ -38,11 +40,16 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 
 ## 部署方式
 
-纯静态导出（`output: 'export'` + `trailingSlash: true`），目标平台 Cloudflare Pages（随 T-005 配置）：
+纯静态导出（`output: 'export'` + `trailingSlash: true`），目标平台 Cloudflare Pages，仓库 `https://github.com/George-102/Personal-Digital-Universe`。采用 **GitHub Actions + Wrangler Direct Upload**（方案 A，随 T-004b / T-005a 落地）：
 
-- main 分支合并 → 自动构建（`next build`）→ 部署 `out/` 目录。
+- `.github/workflows/verify.yml` 单条流水线两个 job：`verify` 门禁全绿后，`deploy` 仅在 `push main` 时把**同一份 `out/` artifact** 上传到 Pages。
+- 关闭 Cloudflare Pages 的 Git 自动构建，避免双构建与「CI 未过就上线」。
+- `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 仅存 GitHub Actions secrets；fork PR 只跑门禁、不部署；同仓库 PR 可生成预览 URL。
 - 免费子域名 `*.pages.dev`，无限带宽，0 元/月。
-- 发布流程：PR → CI `npm run verify` 全绿 → 合并 main → 自动部署 → DoD 人工验收打勾 → 对外分享。
+- 发布流程：PR → `verify` 全绿 → 合并 main → 自动上线 → UptimeRobot 检查 → DoD 人工验收打勾 → 对外分享。
+- 顶部 CI 徽章在首次 Actions 运行后显示状态。
+
+流水线与门禁细节见 [docs/Development.md](docs/Development.md) §3 / §5 与 [docs/Tech.md](docs/Tech.md) §6。
 
 ## 验收命令
 
@@ -61,6 +68,8 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 | `npm run lint` / `npm run typecheck` | ESLint / TypeScript 检查 |
 
 首次运行 E2E 前需安装浏览器：`npx playwright install`。门禁断言与阈值不得为通过验收而改弱（AGENTS.md）。
+
+CI 中 `.github/workflows/verify.yml` 依次执行：`npm ci` → `lint` / `typecheck` / `npm test` → `build` → `verify:metrics` → Playwright 四项目 → Lighthouse CI；全绿且为 `push main` 时才执行 `deploy`。未实现的用户故事对应断言用 `test.fixme()` 显式标注并绑定 roadmap，不删除、不用 grep 过滤。
 
 ## 降级说明
 

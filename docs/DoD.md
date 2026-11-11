@@ -51,7 +51,7 @@
 - [ ] `prefers-reduced-motion: reduce` 时，持续粒子运动、滚动驱动相机、复杂转场被关闭或简化；导航和按钮反馈仍可用。
 - [ ] 主题切换在刷新后保持；localStorage 不可用时回退系统主题。
 - [ ] `npm run verify` 全部通过（Playwright + Lighthouse CI + 链接检查 + SEO 检查 + 质量指标：0 高危漏洞 / i18n 键 100% / JS 体积预算）。
-- [ ] GitHub Actions 在公开仓库中免费运行，不产生费用。
+- [ ] GitHub Actions 在公开仓库中免费运行；门禁全绿后才由同一条流水线部署，且部署产物就是被验证的那份 `out/`，不产生费用。
 - [ ] 已配置 Cloudflare Web Analytics（或等价免费统计）和 UptimeRobot 免费可用性监控。
 - [ ] 代码许可证与内容许可证文件存在，Footer 有版权声明。
 - [ ] README 包含：本地启动、内容维护方式、部署方式、验收命令、降级说明。
