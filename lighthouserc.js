@@ -1,3 +1,5 @@
+const isCI = Boolean(process.env.CI);
+
 module.exports = {
   ci: {
     collect: {
@@ -22,8 +24,9 @@ module.exports = {
         'interactive': ['warn', { maxNumericValue: 3500 }],
       },
     },
-    upload: {
-      target: 'temporary-public-storage',
-    },
+    // CI 下报告落盘为 artifact，避免上传 temporary-public-storage 产生公开链接
+    upload: isCI
+      ? { target: 'filesystem', outputDir: './lhci-report' }
+      : { target: 'temporary-public-storage' },
   },
 };

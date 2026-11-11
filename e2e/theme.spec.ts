@@ -3,6 +3,7 @@ import { settle } from './helpers';
 
 test.describe('主题切换', () => {
   test('切换主题后属性变化，刷新后保持', async ({ page }) => {
+    test.fixme(true, 'US-019 明暗主题切换（roadmap）未实现：落地后移除本行');
     await page.goto('/');
     await settle(page);
 

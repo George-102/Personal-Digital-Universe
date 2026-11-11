@@ -8,14 +8,14 @@
 
 ## 本地启动
 
-要求 Node.js 26（本地 v26.10.0 与 CI 统一；`scripts/*.mjs` 直接 import `.ts`，需 Node 22.18+ 原生类型剥离）。当前 CI 仍配置 Node 20，随 T-004a 统一。
+要求 Node.js 26（`.nvmrc`、`package.json` 的 `engines` 与 CI 的 `setup-node` 统一固定为 26.x；`scripts/*.mjs` 直接 import `.ts`，需 Node 22.18+ 原生类型剥离，Node 20 会在 `prebuild` 报 `ERR_UNKNOWN_FILE_EXTENSION`）。
 
 ```bash
 bash init.sh      # 统一入口：环境检查 + npm ci + 配置冒烟验证
 npm run dev       # 开发服务器 http://localhost:3000
 ```
 
-Windows PowerShell 下可用 `./init.ps1` 代替 `init.sh`（`init.ps1` 目前存在编码问题，随 T-004a 修复；修复前请用 Git Bash 运行 `bash init.sh`）。
+Windows PowerShell 下用 `./init.ps1`，与 `init.sh` 等价（环境检查 → `npm ci` → 配置冒烟验证）。WSL 中若未安装 Linux 版 Node，`bash init.sh` 会自动委托 Windows PowerShell 执行同一流程。
 
 构建与预览静态产物：
 

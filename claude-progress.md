@@ -6,6 +6,8 @@
 
 **本轮（用户要求尽早集成）：CI/CD 方案定稿 + 文档同步，未实现流水线代码。** 用户确认四项：①方案 A（GitHub Actions + Wrangler Direct Upload，关闭 Cloudflare Pages Git 自动构建）；②T-004/T-005 提前到 US-004 之前；③公开仓库 `https://github.com/George-102/Personal-Digital-Universe.git`；④28 个未实现故事的 E2E 失败项用 `test.fixme()` 绑定 roadmap，不删断言、不降阈值。方案已写入 `docs/Development.md` §1/§3/§5、`docs/Tech.md` §2/§6/§9、`README.md`、`docs/DoD.md`；任务拆为 T-004a/b、T-005a/b（priority 13-16）写入 `feature_list.json`，roadmap 中原 T-004/T-005 已移除，T-003 保持原位不提前。下一步：**T-004a CI 前置基础修复**。
 
+**本轮（用户授权推进 CI/CD）：T-004a 已完成并验证。** 前提已齐：用户确认 Cloudflare Pages 为 **Direct Upload** 项目（`personal-digital-universe`，生产域名 `personal-digital-universe.pages.dev`，无自定义域名），GitHub secrets `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 已配置（`gh secret list` 核对名称），`gh` 登录账号 George-102 且对公开仓库有 admin 权限，远端仍为空仓库、本地未关联 remote。T-004a 修复 Node 版本、双启动入口、Lighthouse 报告、28 项 roadmap fixme，证据见 `feature_list.json` T-004a。下一步：**T-004b CI 验收流水线跑通**。
+
 ## 已验证（有真实运行证据）
 
 - `bash init.sh` 成功（2026-11-10 与 2026-11-11 多次，npm ci 路径与 CI 一致）：Node v26.10.0 / npm 11.19.1，feature_list.json 解析通过，lighthouserc.js 加载通过，Playwright 测试可列出。
@@ -16,6 +18,8 @@
 - **整体验收**（2026-11-11）：core/degradation/overflow 四项目 117 通过 0 失败（移动菜单断言属 US-004 保留）；全套 E2E 182 通过，其余 28 失败均属后续故事（US-004 菜单×4、未来路由 SEO×20、US-019 主题×4）；Lighthouse 首页 perf 1.0 / a11y 1.0 / seo 1.0 / bp 0.96，LCP≈215ms、CLS 0、TBT<200；单元测试 29/29；lint/typecheck 干净。
 - 依赖漏洞：@lhci/cli 0.16；overrides 固定 basic-ftp ^6.2.6、compression ^1.8.2、**postcss ^8.5.32**（2026-11-11 消除 three 引入链上的 high）。
 - **CI/CD 方案核查**（2026-11-11）：`npm test` 29/29 通过（Node v26.10.0 / npm 11.19.1，PowerShell 下）；`git ls-remote https://github.com/George-102/Personal-Digital-Universe.git` 成功但无任何 refs（远端为空仓库），`git remote -v` 为空（本地未关联）；现有 `.github/workflows/verify.yml` 的 Node 20、仅装 Chromium、全套 E2E 红灯、缺 lint/typecheck/test、lighthouse 公开上传五处必红项已定位；`bash init.sh` 在本轮 WSL 路径下报 `node: command not found`，`./init.ps1` 中文编码损坏导致 PowerShell 解析错误（均为 T-004a 前置 blocker）。
+
+- **T-004a CI 前置基础修复**（2026-11-11）：Node 26 固定（.nvmrc / engines 26.x / setup-node node-version-file / README）；`init.ps1` 重写加 UTF-8 BOM 与共用 `scripts/smoke-config.mjs`，`init.sh` WSL 无 node 时委托 Windows PowerShell，两入口均 exit 0；`lighthouserc.js` CI 下 filesystem（`CI=1 lhci autorun` 全绿、6 报告落盘 `lhci-report/`）；28 项 `test.fixme()` 绑定 US-004 / US-019 / US-010 / 012 / 014 / 018。实测 `npm test` 29/29、lint、typecheck、build、verify:metrics（audit 0 high / i18n 100% / size 430.66kB）通过，Playwright 四项目 183 passed / 37 skipped / 0 failed。
 
 ## 已落盘文件
 
@@ -29,7 +33,7 @@
 
 ## 下一步（按序）
 
-1. **T-004a** CI 前置基础修复（Node 26 统一、init 双入口、Lighthouse filesystem、28 项 `test.fixme()`）
+1. ~~**T-004a** CI 前置基础修复~~（2026-11-11 passing，见已验证）
 2. **T-004b** CI 验收流水线跑通（关联并首次推送公开仓库、Actions 全绿、README 徽章、分支保护）
 3. **T-005a** CD 发布流水线（Pages 项目 + 2 个 secrets + deploy job + 预览部署）
 4. **T-005b** 监控与许可证（UptimeRobot / Web Analytics / LICENSE / SITE_URL）

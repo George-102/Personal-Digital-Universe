@@ -22,6 +22,7 @@ test.describe('核心可用性', () => {
   });
 
   test('移动端菜单可展开和关闭', async ({ page }) => {
+    test.fixme(true, 'US-004 全局导航（roadmap）未实现：移动端折叠菜单落地后移除本行');
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
     await settle(page);
