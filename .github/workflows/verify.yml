@@ -77,3 +77,63 @@ jobs:
             lhci-report/
           retention-days: 7
           if-no-files-found: ignore
+
+  # 仅 push main 上线：needs verify 保证门禁全绿，且部署的是被验证的同一份 out/ artifact
+  deploy:
+    needs: verify
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: production
+      url: https://personal-digital-universe.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - run: npm ci
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out
+          path: out
+
+      - name: Deploy verified out/ to Cloudflare Pages
+        run: npx wrangler pages deploy out --project-name=personal-digital-universe --branch=main
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+
+  # 同仓库 PR 生成预览 URL；fork PR 不注入 secrets，且被 if 条件显式排除
+  preview:
+    needs: verify
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - run: npm ci
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out
+          path: out
+
+      - name: Deploy preview to Cloudflare Pages
+        run: npx wrangler pages deploy out --project-name=personal-digital-universe --branch="$PREVIEW_BRANCH"
+        env:
+          PREVIEW_BRANCH: ${{ github.head_ref }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
