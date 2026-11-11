@@ -16,7 +16,16 @@ test.describe('3D 容错', () => {
       const gl = (canvas.getContext('webgl2') || canvas.getContext('webgl')) as WebGLRenderingContext;
       gl.getExtension('WEBGL_lose_context')!.loseContext();
     });
-    await page.waitForTimeout(1500);
+    await page.waitForFunction(
+      () => {
+        const canvas = document.querySelector('canvas') as HTMLCanvasElement | null;
+        if (!canvas) return false;
+        const gl = (canvas.getContext('webgl2') || canvas.getContext('webgl')) as WebGLRenderingContext;
+        return !gl.isContextLost();
+      },
+      undefined,
+      { timeout: 10_000 },
+    );
 
     const stillLost = await page.evaluate(() => {
       const canvas = document.querySelector('canvas') as HTMLCanvasElement | null;
@@ -46,7 +55,9 @@ test.describe('3D 容错', () => {
       ext.restoreContext = () => {};
       ext.loseContext();
     });
-    await page.waitForTimeout(3000);
+    await page.waitForFunction(() => document.querySelectorAll('canvas').length === 0, undefined, {
+      timeout: 10_000,
+    });
 
     await expect(page.locator('canvas')).toHaveCount(0);
     await expect(page.locator('h1')).toBeVisible();

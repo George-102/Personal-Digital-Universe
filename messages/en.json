@@ -2,6 +2,7 @@
   "Home": {
     "tagline": "I research the unknown, build what I imagine, write what I believe, and explore what I don't know.",
     "explore": "Explore My Universe",
+    "scrollHint": "Scroll to explore",
     "aboutPlaceholder": "About section coming soon.",
     "languageName": "中文"
   }

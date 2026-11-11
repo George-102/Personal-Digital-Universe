@@ -23,6 +23,15 @@ export default async function HomeSections({ lang }: { lang: 'zh' | 'en' }) {
             {t('explore')}
           </a>
         </div>
+        <div
+          data-scroll-hint
+          className="scroll-hint absolute inset-x-0 bottom-6 mx-auto flex w-fit flex-col items-center gap-1 text-xs opacity-70"
+        >
+          <span>{t('scrollHint')}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </div>
       </section>
       <section id="about" className="mx-auto min-h-[50vh] max-w-3xl px-6 py-24">
         <h2 className="text-2xl font-semibold">About</h2>

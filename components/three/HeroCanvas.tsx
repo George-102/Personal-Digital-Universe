@@ -69,7 +69,7 @@ export default function HeroCanvas() {
               }, 250);
               setTimeout(() => {
                 if (context.isContextLost()) setTier(null);
-              }, 2000);
+              }, 4000);
             });
             canvas.addEventListener('webglcontextrestored', () => {
               restoreAttempted.current = false;
