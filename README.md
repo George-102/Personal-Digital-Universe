@@ -64,7 +64,7 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 | `npm run audit` | 0 高危及以上漏洞（指定官方 registry） |
 | `npm run check:i18n` | zh/en 键覆盖率 100% |
 | `npm run size` | JS 总量 ≤1MB（size-limit） |
-| `npm test` | 单元测试（当前 node:test，T-003 迁移 Vitest） |
+| `npm test` | 单元测试（当前 node:test，T-003 迁移 Vitest；产物级用例需先 `npm run build`） |
 | `npm run lint` / `npm run typecheck` | ESLint / TypeScript 检查 |
 
 首次运行 E2E 前需安装浏览器：`npx playwright install`。门禁断言与阈值不得为通过验收而改弱（AGENTS.md）。

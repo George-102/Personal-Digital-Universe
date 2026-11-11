@@ -33,13 +33,14 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Unit tests
-        run: npm test
-
       - name: Build static export
         run: npm run build
         env:
           NEXT_TELEMETRY_DISABLED: '1'
+
+      # 产物级单测（home-text / profile-data）读取 out/*.html，必须在 build 之后
+      - name: Unit tests
+        run: npm test
 
       - name: Quality metrics (audit + i18n + size)
         run: npm run verify:metrics
