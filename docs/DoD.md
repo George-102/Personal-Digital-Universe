@@ -52,7 +52,7 @@
 - [ ] 主题切换在刷新后保持；localStorage 不可用时回退系统主题。
 - [ ] `npm run verify` 全部通过（Playwright + Lighthouse CI + 链接检查 + SEO 检查 + 质量指标：0 高危漏洞 / i18n 键 100% / JS 体积预算）——**由云端 `.github/workflows/verify.yml` 的 `verify` job 逐条执行等价全链**（push main / PR 自动触发），证据为 CI run URL 并回写 `feature_list.json` / `claude-progress.md`；本地 `npm run verify:local` 不替代此项。
 - [x] GitHub Actions 在公开仓库中免费运行；门禁全绿后才由同一条流水线部署，且部署产物就是被验证的那份 `out/`，不产生费用。
-- [ ] 已配置 Cloudflare Web Analytics（或等价免费统计）和 UptimeRobot 免费可用性监控。
+- [x] 已配置 Cloudflare Web Analytics（或等价免费统计）和 UptimeRobot 免费可用性监控。
 - [x] 代码许可证与内容许可证文件存在，Footer 有版权声明。
 - [x] README 包含：本地启动、内容维护方式、部署方式、验收命令、降级说明。
 

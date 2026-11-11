@@ -306,7 +306,7 @@
       "area": "CI/CD",
       "title": "监控、许可证与真实域名",
       "user_visible_behavior": "站点有可用性告警与访问统计；代码与内容许可证文件及 Footer 版权声明齐全；sitemap/robots 使用真实域名而非占位地址。",
-      "status": "blocked",
+      "status": "passing",
       "verification": [
         "UptimeRobot 5 分钟 HTTPS monitor 指向 *.pages.dev；开启 Cloudflare Web Analytics。",
         "添加 LICENSE（PolyForm Noncommercial 1.0.0）与 LICENSE-CONTENT（CC BY-NC-ND 4.0），Footer 版权声明与链接。",
@@ -316,11 +316,12 @@
       "evidence": [
         "2026-11-11：新增 `LICENSE`（PolyForm Noncommercial 1.0.0 官方 15 条全文）与 `LICENSE-CONTENT`（CC BY-NC-ND 4.0 链接 + 中文摘要）；新增 `components/SiteFooter.tsx` 统一双语 Footer（版权声明 + 两个许可证链接），`app/page.tsx` 与 `app/[locale]/page.tsx` 接入；`scripts/sync-licenses.mjs` 在 prebuild 同步到 `public/`（副本已 gitignore），构建产物 `out/LICENSE`、`out/LICENSE-CONTENT` 实测存在，`/` 与 `/en/` 静态 HTML 均含许可证文案。",
         "2026-11-11：`lib/site.ts` 的 SITE_URL 注释改为真实生产域名（值本已为 `https://personal-digital-universe.pages.dev`）；重建后 `out/robots.txt` 的 Sitemap 与 `out/sitemap.xml` 的 2 条 loc 均指向该域名。README 部署章节与许可证章节同步为已落地状态。",
-        "2026-11-11：`docs/DoD.md` D 组逐条核对并勾选已验证项（结构化数据、缺字段容错、GPU 资源释放、CI/CD 同产物部署、许可证与 Footer、README 五节）；其余随 US-012 / US-019 / US-022 与监控落地。",
+        "2026-11-11：`docs/DoD.md` D 组逐条核对并勾选已验证项（结构化数据、缺字段容错、GPU 资源释放、CI/CD 同产物部署、许可证与 Footer、README 五节、监控与统计）；其余随 US-012 / US-019 / US-022 落地。",
         "2026-11-11：本地 lint / typecheck / build / npm test 29/29 / verify:metrics 通过；全套 E2E 出现 7 个移动端 30s 超时，`npx playwright test --last-failed` 重跑 7/7 通过（本机并行资源 flake，CI 有 retries: 2）。",
-        "待用户操作：UptimeRobot 5 分钟 HTTPS monitor 指向 `personal-digital-universe.pages.dev`；Cloudflare Dashboard 开启 Web Analytics。agent 无第三方账号权限。"
+        "2026-11-11：UptimeRobot 免费层 HTTPS monitor `Personal-Digital-Universe-prod`（id `804633325`）由用户在本机终端调用 API 创建并回查通过：`stat=ok`、`type=1`、`url=https://personal-digital-universe.pages.dev`、`interval=300`（5 分钟）、`status=2`（Up）；创建时绑定告警联系人 `9024699_0_0`，宕机邮件告警。agent 未接触 API Key（安全策略禁止凭据外传）。",
+        "2026-11-11：Cloudflare Web Analytics 由用户在 Pages 项目 → Metrics 一键 Enable；push main 触发 run `42999448346`（verify 6m6s，201 passed / 75 skipped；deploy 1m12s success）后实测生产页 `/` 与 `/en/` 的 HTML 均含 `cloudflareinsights.com/beacon.min.js` 与 `data-cf-beacon`，Cloudflare 自动注入、无代码改动。"
       ],
-      "notes": "对应原 roadmap T-005 的监控与许可证部分。**当前 blocked**：可用性监控与访问统计需在第三方面板由用户开启，其余四项均已完成并验证。github-cache.json 构建期抓取仍随 US-012。"
+      "notes": "对应原 roadmap T-005 的监控与许可证部分。**已 passing**：四项验收逐条有证据；监控与统计在第三方面板由用户开启、由本轮实测验证，验收标准未改弱。github-cache.json 构建期抓取仍随 US-012。"
     },
     {
       "id": "US-002a",

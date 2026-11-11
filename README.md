@@ -52,6 +52,13 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 
 流水线与门禁细节见 [docs/Development.md](docs/Development.md) §3 / §5 与 [docs/Tech.md](docs/Tech.md) §6。
 
+## 监控与统计（免费）
+
+- **可用性**：UptimeRobot 免费层，HTTPS monitor `Personal-Digital-Universe-prod` 指向 `https://personal-digital-universe.pages.dev`，检查间隔 300 秒（5 分钟），宕机邮件告警（告警联系人 `9024699_0_0`）。
+- **访问统计**：Cloudflare Web Analytics（免费、无 Cookie、含 Core Web Vitals）。在 Pages 项目 → **Metrics** → Web Analytics 一键 **Enable**，Cloudflare 在下次部署自动注入 beacon 脚本，不需要改代码，也不需要 Cookie 同意横幅。
+- 两者都在第三方账号侧配置，仓库内不保存任何账号密钥；实时状态以各自控制台为准。
+- 验证：run `42999448346` 部署后 `/` 与 `/en/` 均返回含 beacon 的 HTML；UptimeRobot monitor `804633325` 回查 `status=2`（Up）。
+
 ## 验收命令
 
 | 命令 | 用途 |

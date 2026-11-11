@@ -6,7 +6,9 @@
 
 **本轮（用户要求尽早集成）：CI/CD 方案定稿 + 文档同步，未实现流水线代码。** 用户确认四项：①方案 A（GitHub Actions + Wrangler Direct Upload，关闭 Cloudflare Pages Git 自动构建）；②T-004/T-005 提前到 US-004 之前；③公开仓库 `https://github.com/George-102/Personal-Digital-Universe.git`；④28 个未实现故事的 E2E 失败项用 `test.fixme()` 绑定 roadmap，不删断言、不降阈值。方案已写入 `docs/Development.md` §1/§3/§5、`docs/Tech.md` §2/§6/§9、`README.md`、`docs/DoD.md`；任务拆为 T-004a/b、T-005a/b（priority 13-16）写入 `feature_list.json`，roadmap 中原 T-004/T-005 已移除，T-003 保持原位不提前。下一步：**T-004a CI 前置基础修复**。
 
-**本轮（用户授权推进 CI/CD）：T-004a 已完成并验证。** 前提已齐：用户确认 Cloudflare Pages 为 **Direct Upload** 项目（`personal-digital-universe`，生产域名 `personal-digital-universe.pages.dev`，无自定义域名），GitHub secrets `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 已配置（`gh secret list` 核对名称），`gh` 登录账号 George-102 且对公开仓库有 admin 权限，远端仍为空仓库、本地未关联 remote。T-004a 修复 Node 版本、双启动入口、Lighthouse 报告、28 项 roadmap fixme，证据见 `feature_list.json` T-004a。**T-004b 已完成并验证**（首次推送、run 42976363844 全绿、徽章 passing、分支保护 verify）。**T-005a 已通过**：用户移除 API Token 的 Client IP Address Filtering 后 `gh run rerun 42978098873 --failed` 的 deploy 成功（38s），生产 URL 实测 HTTP 200。**T-005b 代码部分已完成**（许可证 / Footer / SITE_URL / DoD），监控两项仍需用户操作。
+**本轮（用户授权推进 CI/CD）：T-004a 已完成并验证。** 前提已齐：用户确认 Cloudflare Pages 为 **Direct Upload** 项目（`personal-digital-universe`，生产域名 `personal-digital-universe.pages.dev`，无自定义域名），GitHub secrets `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 已配置（`gh secret list` 核对名称），`gh` 登录账号 George-102 且对公开仓库有 admin 权限，远端仍为空仓库、本地未关联 remote。T-004a 修复 Node 版本、双启动入口、Lighthouse 报告、28 项 roadmap fixme，证据见 `feature_list.json` T-004a。**T-004b 已完成并验证**（首次推送、run 42976363844 全绿、徽章 passing、分支保护 verify）。**T-005a 已通过**：用户移除 API Token 的 Client IP Address Filtering 后 `gh run rerun 42978098873 --failed` 的 deploy 成功（38s），生产 URL 实测 HTTP 200。**T-005b 已全部完成并验证**（许可证 / Footer / SITE_URL / DoD + UptimeRobot 5 分钟监控 + Cloudflare Web Analytics）。CI/CD 四个任务 T-004a / T-004b / T-005a / T-005b 全部 passing。
+
+**本轮（接手队友 blocked 的 T-005b）：CI/CD 四项收尾完成。** 队友 d5b5cd0 已完成代码部分（LICENSE / LICENSE-CONTENT / 双语 Footer / SITE_URL / sitemap-robots / DoD），仅剩两项第三方账号配置 blocked。本轮：①UptimeRobot HTTPS monitor `804633325`（type=1、interval=300、url=`https://personal-digital-universe.pages.dev`、告警联系人 `9024699_0_0`）由用户在**本机终端**调用 API 创建，回查 `status=2`（Up）；②Cloudflare Web Analytics 由用户在 Pages 项目 → Metrics 一键 Enable，push main 触发 run `42999448346`（verify 6m6s，201 passed / 75 skipped；deploy 1m12s success）后实测 `/` 与 `/en/` HTML 均含 `cloudflareinsights.com/beacon.min.js` + `data-cf-beacon`。**安全策略禁止 agent 将 API Key 发往外部**，凭据外传步骤改由用户本机执行，agent 未接触密钥；`git push` 因需读取 `~/.ssh` 私钥同样由用户执行。同步 `docs/Development.md`（准备状态总览 + §5 滞后描述）、`README.md`（新增「监控与统计」章节）、`docs/DoD.md`（D 组监控项打勾）、`feature_list.json`（T-005b → passing）。本次 push 一并带上队友此前未推送的 `243ee9f`(T-007) 与 `103ef45`(US-002)，远端 main 由 d5b5cd0 前进到 afb23b2；run 42999448346 亦为 T-007 所需的云端 verify 证据，其状态仍由负责该任务的会话回写。
 
 ## 已验证（有真实运行证据）
 
@@ -23,38 +25,41 @@
 
 - **T-004b CI 验收流水线**（2026-11-11）：workflow 全量门禁 + concurrency/permissions/timeout；首次推送 main；run 42976080859 暴露「产物级单测需 out/」缺陷，把 build 提前到 npm test 后 run 42976363844 全绿（6m28s，183 passed / 37 skipped）；branch protection 要求 `verify`，README 徽章实测 passing。
 
+- **T-005b 监控与统计落地**（2026-11-11）：`./init.ps1` 复跑 exit 0（Node v26.10.0，276 tests in 12 files）；UptimeRobot monitor `804633325` 回查 `stat=ok` / `status=2`(Up) / `interval=300` / `type=1` / url 为生产域名；Cloudflare Web Analytics beacon 在生产 `/` 与 `/en/` HTML 实测存在；run 42999448346 的 verify 与 deploy 均 success（201 passed / 75 skipped）。
+
 ## 已落盘文件
 
 - 需求：`docs/PRD.md`；技术论证：`docs/Tech.md`；完成定义：`docs/DoD.md`；开发决策：`docs/Development.md`
-- 功能追踪：`feature_list.json`（11 个 US-001 任务 + T-006 全 passing；新增 T-004a/b、T-005a/b 四个 CI/CD 任务；23 条 roadmap）
-- 应用：`app/`（根路由中文 + [locale] 英文 + sitemap/robots）、`components/`（HomeSections/SiteNav/HeroBackground/PersonJsonLd/three/*）、`content/`（九类数据 + validate + index 公开出口）、`i18n/`、`messages/`、`lib/`（webgl/quality/site）
-- 验收：`e2e/`（11 个 spec，含新增 hero-scene/context-loss/hero-entry）、`lighthouserc.js`（审计范围限真实路由）、`.github/workflows/verify.yml`（待 T-004b 重构）
-- 质量：`scripts/`（check-i18n、validate-content、5 个 node:test 测试文件）、`.size-limit.json`、package.json（含 prebuild 校验钩子与 overrides）
+- 功能追踪：`feature_list.json`（US-001 11 任务 + T-006 + T-004a/b、T-005a/b 四个 CI/CD 任务 + US-002 17 任务全 passing；T-007 in_progress；其余 roadmap）
+- 应用：`app/`（根路由中文 + [locale] 英文 + sitemap/robots）、`components/`（HomeSections/SiteNav/HeroBackground/PersonJsonLd/SiteFooter/three/*）、`content/`（九类数据 + validate + index 公开出口）、`i18n/`、`messages/`、`lib/`（webgl/quality/site/pointer/interactive）
+- 验收：`e2e/`（12 个 spec）、`lighthouserc.js`（审计范围限真实路由）、`.github/workflows/verify.yml`（verify / deploy / preview 三 job，T-004b / T-005a 已落地）
+- 质量：`scripts/`（check-i18n、validate-content、sync-licenses、8 个 node:test 测试文件）、`.size-limit.json`、package.json（含 prebuild 校验钩子与 overrides）
 - 工作流：`AGENTS.md`、`init.sh`、`init.ps1`、`README.md`、本文件
-- CI/CD 方案（2026-11-11 定稿）：`docs/Development.md` §1 架构图 / §3 持续集成 / §5 发布、`docs/Tech.md` §2 / §6 / §9、`README.md`（徽章 + 部署 + CI 门禁）、`docs/DoD.md` D 组
+- CI/CD 方案（2026-11-11 定稿）：`docs/Development.md` §1 架构图 / §3 持续集成 / §5 发布、`docs/Tech.md` §2 / §6 / §9、`README.md`（徽章 + 部署 + CI 门禁 + 监控与统计）、`docs/DoD.md` D 组
 
 ## 下一步（按序）
 
 1. ~~**T-004a** CI 前置基础修复~~（2026-11-11 passing）
 2. ~~**T-004b** CI 验收流水线跑通~~（2026-11-11 passing，run 42976363844 全绿、徽章 passing、分支保护 verify）
 3. ~~**T-005a** CD 发布流水线~~（2026-11-11 passing：rerun deploy 成功、生产 URL HTTP 200、产物即 verify 的 out/）
-4. **T-005b** 监控与许可证 —— **blocked**：LICENSE / LICENSE-CONTENT / 双语 Footer / SITE_URL 注释 / sitemap-robots 核对 / DoD 打勾均已完成并验证；仅剩 UptimeRobot 与 Cloudflare Web Analytics 需用户在第三方面板开启
-5. **T-003** Vitest 单元/集成测试基础设施（未提前；迁移时同步改 CI 的 `npm test`）
-6. **US-004** 全局导航（8 项 + 激活态 + 移动折叠菜单——core.spec『移动端菜单』断言在此执行，同时移除对应 fixme）
-7. 之后按 roadmap：US-002 → US-003 → US-006 → US-008 → US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事
+4. ~~**T-005b** 监控与许可证~~（2026-11-11 passing：UptimeRobot `status=2`、beacon 实测注入、run 42999448346 全绿、DoD D 组打勾）
+5. **T-007** 本地轻验证分工：run 42999448346 已产生云端 verify 证据，状态仍由负责该任务的会话回写（见文末 T-007 段落）
+6. **T-003** Vitest 单元/集成测试基础设施（未提前；迁移时同步改 CI 的 `npm test`）
+7. **US-004** 全局导航（8 项 + 激活态 + 移动折叠菜单——core.spec『移动端菜单』断言在此执行，同时移除对应 fixme）
+8. 之后按 roadmap：US-003 → US-006 → US-008 → US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 已完成）
 
 ## 风险与注意事项
 
 - **T-005a 已解决（2026-11-11）**：首次 deploy 报 `Authentication error [code: 10000]` 与 `Cannot use the access token from location: 172.174.165.4 [code: 9109]`，根因是 API Token 设置了 Client IP Address Filtering。用户移除后 `gh run rerun 42978098873 --failed` 的 deploy 成功。**避坑**：Cloudflare API Token 不要设置 Client IP Address Filtering（Actions 出口 IP 动态），已写入 README。
-- **并行会话**：本轮工作区存在另一路并行开发（US-002 相关）对 `AGENTS.md`、`docs/PRD.md`、`feature_list.json` 的未提交改动。`feature_list.json` 曾被覆盖导致 T-004a 状态回退、US-002a..h 任务移除，本轮已恢复 T-004a 状态与证据。提交时始终显式列文件，排除 `AGENTS.md`、`docs/PRD.md` 与并行队友的临时文件（`test-out.txt` 等）。
+- **并行会话**：本轮工作区存在另一路并行开发（US-002 / T-007 相关）对 `AGENTS.md`、`docs/PRD.md`、`feature_list.json` 的未提交改动。`feature_list.json` 曾被覆盖导致 T-004a 状态回退、US-002a..h 任务移除，本轮已恢复 T-004a 状态与证据。提交时始终显式列文件，排除 `docs/PRD.md` 与并行队友的临时文件（`test-out.txt` 等）。本次 push 已把 `243ee9f`(T-007) 与 `103ef45`(US-002) 一并带上远端。
 - 6 个 moderate 漏洞在 @typescript-eslint（eslint-config-next 传递依赖），官方尚未发布修复版；仅 dev 依赖不进前端 bundle，门禁卡 high 不受影响。
-- `lib/site.ts` 的 SITE_URL 值已为 `https://personal-digital-universe.pages.dev`（用户确认无自定义域名），仅注释仍写"占位"；T-005b 更新注释并核对 sitemap/robots。
+- `lib/site.ts` 的 SITE_URL 已为 `https://personal-digital-universe.pages.dev`（用户确认无自定义域名），注释与 sitemap/robots 均已核对（T-005b 完成）。
 - overflow/SEO spec 中 /research、/projects、/writing、/contact 路由当前为 404 占位（测试空过），实质验收随 US-010/012/014/018 落地。
 - 28 个未实现故事的 E2E 断言已用 `test.fixme()` 绑定 roadmap（US-004×4 / US-019×4 / 未来路由 SEO×20），实现对应故事时移除 fixme 并恢复断言，不得删断言、降阈值或 grep 过滤。
 - 本机 IDE 注入 `NODE_OPTIONS` safe-delete shim，会使 `npm ci` 删除 node_modules 失败；仅在本机验证命令中移除该注入，脚本保持标准 `npm ci`，CI 环境无此问题。
 - `docs/PRD.md` 有一处用户未提交改动，本轮未触碰，提交时须排除。
 - 页面当前仅 hero + about 占位，hero 无法完全滚出视口；视口暂停逻辑已用加长页面实测验证，About 正文（US-006）落地后自然生效。
-- 未决：Cloudflare token IP 过滤（T-005a）、UptimeRobot / Web Analytics 账号（T-005b）需用户操作；fork PR 不部署需第二个 GitHub 账号才能实测，当前由 `if` 条件 + GitHub 默认不注入 secrets 保证。
+- 未决：fork PR 不部署需第二个 GitHub 账号才能实测，当前由 `if` 条件 + GitHub 默认不注入 secrets 保证。T-005a 的 token IP 过滤与 T-005b 的两项监控配置均已解决（2026-11-11）。**建议用户在 UptimeRobot 后台轮换本次出现在对话中的 Main API Key**。
 
 ## US-002 迭代（2026-11-11 完成，并行会话）
 
@@ -65,7 +70,7 @@
 - 决策：点击默认平滑滚动到 `#about`、目标由注册表配置化；范围限 Hero 但通用注册机制可复用；等价入口 `href` 用根路径锚点，避免与既有 `a[href="#about"]` 定位器产生 strict mode 歧义（曾导致既有 core/hero-scene 用例红灯，已修复并回归）。
 - 验证：RED 单测观察到 `ERR_MODULE_NOT_FOUND` 后实现；注入非法 `clickTarget: /about` 实测 `npm run build` exit 1、恢复后 exit 0。最终全套四项目 E2E **201 passed / 75 skipped / 0 failed**（exit 0）；`npm test` 54/54、`lint`、`typecheck`、`check:i18n` 100%、`size` 432.94kB、`audit` 0 high、`build` exit 0、`CI=1 verify:lighthouse` exit 0（中文 perf 0.98-0.99 / a11y 1 / seo 1 / bp 0.96，LCP 213-332ms、CLS 0、TBT 83-130ms）；PerformanceObserver 实测 LCP 元素非 CANVAS。
 - 环境注意：本机默认 Node 22 与 `engines: 26.x` 不符，验证命令统一前置 PATH 到 scoop `nodejs/26.10.0` 并清空注入的 `NODE_OPTIONS`；默认并行度下 WebGL 上下文争抢会让全套 E2E 超时，本机用 `--workers=2`，`interaction.spec.ts` 内 describe 串行 + 重交互集中在 chromium + WebGL 条件跳过（CI/Linux 未复现该限制，断言与阈值未削弱）。
-- 下一步（按 feature_list）：T-005b 收尾（队友并行）→ T-003 → US-004 → US-003 → US-006 → …；US-002 已从 roadmap 移除。
+- 下一步（按 feature_list）：T-005b 已由本轮会话收尾（passing）→ T-003 → US-004 → US-003 → US-006 → …；US-002 已从 roadmap 移除。
 
 ## T-007 本地轻验证 / 云端重验证分工（2026-11-11）
 
@@ -80,7 +85,7 @@
 - `git diff -- .github/workflows/verify.yml lighthouserc.js playwright.config.ts scripts/smoke-config.mjs package-lock.json` **为空**；`package.json` 仅 +1 行。
 - 顺带修正既有文档矛盾：`README.md:73` 与 `docs/Development.md` §3 的 CI 顺序由错误的 `npm test → build` 改为 `build → npm test`；`verify:quick` 由「日常快速检查」重定位为「可选单项目浏览器抽查」。
 
-**下一步 / 待回写**：push main 或开 PR 后云端 `Verify` workflow 自动触发；核对 `verify` job 全绿后，把 **CI run URL + 耗时 + Playwright passed/skipped/failed + Lighthouse 阈值结论** 回写本文件与 `feature_list.json` 的 `T-007.evidence[]`，再将 `T-007.status` 由 `in_progress` 改为 `passing`。CI run 未生成前不得预填假证据、不得标 passing。
+**下一步 / 待回写**：push main 或开 PR 后云端 `Verify` workflow 自动触发；核对 `verify` job 全绿后，把 **CI run URL + 耗时 + Playwright passed/skipped/failed + Lighthouse 阈值结论** 回写本文件与 `feature_list.json` 的 `T-007.evidence[]`，再将 `T-007.status` 由 `in_progress` 改为 `passing`。CI run 未生成前不得预填假证据、不得标 passing。**2026-11-11 补记**：run `42999448346` 已产生且全绿（verify 6m6s，201 passed / 75 skipped；deploy 1m12s success），可据此回写；本轮会话未改 T-007 状态，留给负责该任务的会话处理。
 
 **风险与注意事项**
 - 本地误跑 `npm run verify` 仍会触发四项目 E2E（本地 flake）+ 非 CI Lighthouse 公开报告链接。本次仅通过 README / init / AGENTS 文档提示规避，**未加 guard、未改 verify 命令**（不改弱验证、不动 workflow）。

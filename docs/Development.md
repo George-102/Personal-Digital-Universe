@@ -11,7 +11,7 @@
 | 技术 | 数据库 | 数据库表结构 | ✅ 无数据库决策 + content/ schema | 本文 §2、T-002 |
 | 技术 | 数据库 | 数据库迁移 | ✅ 不适用（见决策） | 本文 §2 |
 | 技术 | 持续集成 | 持续集成服务器 | ✅ 已跑通（Verify 全量门禁全绿） | .github/workflows/verify.yml、T-004a/b |
-| 技术 | 持续集成 | 持续集成监视器 | ⏳ 部分落地（1/2） | T-004b（CI 徽章 ✅）、T-005b（UptimeRobot 5 分钟监控待配置） |
+| 技术 | 持续集成 | 持续集成监视器 | ✅ 已落地 | T-004b（CI 徽章）、T-005b（UptimeRobot 5 分钟监控 + Cloudflare Web Analytics） |
 | 技术 | 持续集成 | 构建脚本 | ✅ 已建 | package.json（verify 系列 + dev/build/start）；Node 26 固定随 T-004a |
 | 技术 | 测试 | 单元测试和集成测试 | ⏳ 待落地 | T-003（Vitest，未提前） |
 | 技术 | 测试 | 端到端测试 | ✅ 已建并运行 | playwright.config.ts、e2e/（12 个 spec） |
@@ -179,7 +179,7 @@
 
 - **T-004a / T-004b / T-005a 均已 passing**：Node 26 前置修复；`verify` 全量门禁（lint / typecheck / build / 单测 / 质量指标 / Playwright / Lighthouse）；首次推送与分支保护、README 徽章实测 passing；`deploy` + `preview` job 用 Wrangler Direct Upload 上传被验证的同一份 `out/`。生产 `https://personal-digital-universe.pages.dev` 实测 HTTP 200。
 - **T-005b 代码部分已落地**：`LICENSE`（PolyForm Noncommercial 1.0.0）、`LICENSE-CONTENT`（CC BY-NC-ND 4.0）、双语 Footer 版权、`lib/site.ts` 真实域名与 sitemap/robots、`scripts/sync-licenses.mjs`、`docs/DoD.md` D 组已验证项打勾。
-- **监控**：Cloudflare Web Analytics 在 Pages 项目 → Metrics 一键开启，Cloudflare 在下次部署自动注入 beacon，不需要改代码；UptimeRobot 5 分钟 HTTPS 监控在账号侧配置，宕机邮件告警。两项证据与最终状态见 `feature_list.json` T-005b。
+- **监控（已验证）**：Cloudflare Web Analytics 在 Pages 项目 → Metrics 一键开启；run 42999448346 部署后实测 `/` 与 `/en/` 的 HTML 均含 `cloudflareinsights.com/beacon.min.js` + `data-cf-beacon`，无需改代码。UptimeRobot HTTPS monitor `804633325`（type=1、interval=300、告警联系人 `9024699_0_0`）回查 `status=2`（Up）。两项均由用户在控制台/本机终端配置，agent 未接触第三方账号密钥；证据见 `feature_list.json` T-005b。
 - **后续**：T-003（Vitest 基础设施）→ US-004 → 其余 roadmap。
 
 ---
