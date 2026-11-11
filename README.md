@@ -40,14 +40,15 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 
 ## 部署方式
 
-纯静态导出（`output: 'export'` + `trailingSlash: true`），目标平台 Cloudflare Pages，仓库 `https://github.com/George-102/Personal-Digital-Universe`。采用 **GitHub Actions + Wrangler Direct Upload**（方案 A，随 T-004b / T-005a 落地）：
+纯静态导出（`output: 'export'` + `trailingSlash: true`），生产站点 `https://personal-digital-universe.pages.dev`，仓库 `https://github.com/George-102/Personal-Digital-Universe`。采用 **GitHub Actions + Wrangler Direct Upload**（方案 A，已由 T-004b / T-005a 落地）：
 
-- `.github/workflows/verify.yml` 单条流水线两个 job：`verify` 门禁全绿后，`deploy` 仅在 `push main` 时把**同一份 `out/` artifact** 上传到 Pages。
-- 关闭 Cloudflare Pages 的 Git 自动构建，避免双构建与「CI 未过就上线」。
-- `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 仅存 GitHub Actions secrets；fork PR 只跑门禁、不部署；同仓库 PR 可生成预览 URL。
+- `.github/workflows/verify.yml` 一条流水线三个 job：`verify` 全绿后，`deploy` 仅在 `push main` 时把**同一份 `out/` artifact** 上传到 Pages；`preview` 仅为同仓库 PR 生成预览 URL。
+- Pages 项目为 **Direct Upload**（无 Git 自动构建），避免双构建与「CI 未过就上线」。
+- `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 仅存 GitHub Actions secrets；fork PR 不注入 secrets、不部署。注意 token **不要设置 Client IP Address Filtering**，否则 Actions 动态出口 IP 会被 Cloudflare 以 `9109` 拒绝。
+- `wrangler` 以精确版本固定在 devDependencies，CI 用 `npm ci` 复现部署工具链。
 - 免费子域名 `*.pages.dev`，无限带宽，0 元/月。
-- 发布流程：PR → `verify` 全绿 → 合并 main → 自动上线 → UptimeRobot 检查 → DoD 人工验收打勾 → 对外分享。
-- 顶部 CI 徽章在首次 Actions 运行后显示状态。
+- 发布流程：PR → `verify` 全绿 → 合并 main → 自动上线 → 站点 HTTP 200 检查 → DoD 人工验收打勾 → 对外分享。
+- 顶部 CI 徽章实时显示 Verify 状态；`main` 分支保护要求 `verify` 状态检查通过。
 
 流水线与门禁细节见 [docs/Development.md](docs/Development.md) §3 / §5 与 [docs/Tech.md](docs/Tech.md) §6。
 
@@ -83,4 +84,4 @@ CI 中 `.github/workflows/verify.yml` 依次执行：`npm ci` → `lint` / `type
 
 ## 许可证
 
-代码与内容许可证分层（随 T-005 落地）：代码 PolyForm Noncommercial 1.0.0，内容 CC BY-NC-ND 4.0。当前仓库仅供学习、研究和非商业用途。
+代码与内容许可证分层：代码 [LICENSE](LICENSE)（PolyForm Noncommercial 1.0.0），内容 [LICENSE-CONTENT](LICENSE-CONTENT)（CC BY-NC-ND 4.0）。两者均仅允许非商业使用，内容另禁止演绎。站点 Footer 有版权声明与许可证链接；构建时由 `scripts/sync-licenses.mjs` 把根目录文件同步到 `public/`，使线上 `/LICENSE` 与 `/LICENSE-CONTENT` 可访问（副本已加入 `.gitignore`）。

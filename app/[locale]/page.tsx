@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import HomeSections from '@/components/HomeSections';
 import PersonJsonLd from '@/components/PersonJsonLd';
+import SiteFooter from '@/components/SiteFooter';
 import SiteNav from '@/components/SiteNav';
 
 export default async function Home({
@@ -21,9 +21,11 @@ export default async function Home({
       <main>
         <HomeSections lang={lang} />
       </main>
-      <footer className="px-6 py-8 text-center text-sm opacity-60">
-        <Link href={locale === 'zh' ? '/en/' : '/'}>{t('languageName')}</Link>
-      </footer>
+      <SiteFooter
+        lang={lang}
+        languageName={t('languageName')}
+        languageHref={locale === 'zh' ? '/en/' : '/'}
+      />
     </>
   );
 }

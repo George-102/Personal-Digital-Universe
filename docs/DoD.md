@@ -44,17 +44,17 @@
 
 ## D. 可维护与可衡量（你能长期低成本维护，且知道它在变好还是变坏）
 
-- [ ] 项目/论文/产品/作品/文章/经历使用 `content/` 下的结构化数据维护；新增一条数据后页面自动展示。
-- [ ] 字段缺失不导致页面崩溃；缺失字段有默认值或条件渲染。
+- [x] 项目/论文/产品/作品/文章/经历使用 `content/` 下的结构化数据维护；新增一条数据后页面自动展示。
+- [x] 字段缺失不导致页面崩溃；缺失字段有默认值或条件渲染。
 - [ ] GitHub Token 不出现在前端 bundle；GitHub API 失败时使用本地 `github-cache.json` 或手写 fallback。
-- [ ] 3D 组件离开视口时暂停或降低更新频率；卸载时释放 geometry / material / texture。
+- [x] 3D 组件离开视口时暂停或降低更新频率；卸载时释放 geometry / material / texture。
 - [ ] `prefers-reduced-motion: reduce` 时，持续粒子运动、滚动驱动相机、复杂转场被关闭或简化；导航和按钮反馈仍可用。
 - [ ] 主题切换在刷新后保持；localStorage 不可用时回退系统主题。
 - [ ] `npm run verify` 全部通过（Playwright + Lighthouse CI + 链接检查 + SEO 检查 + 质量指标：0 高危漏洞 / i18n 键 100% / JS 体积预算）。
-- [ ] GitHub Actions 在公开仓库中免费运行；门禁全绿后才由同一条流水线部署，且部署产物就是被验证的那份 `out/`，不产生费用。
+- [x] GitHub Actions 在公开仓库中免费运行；门禁全绿后才由同一条流水线部署，且部署产物就是被验证的那份 `out/`，不产生费用。
 - [ ] 已配置 Cloudflare Web Analytics（或等价免费统计）和 UptimeRobot 免费可用性监控。
-- [ ] 代码许可证与内容许可证文件存在，Footer 有版权声明。
-- [ ] README 包含：本地启动、内容维护方式、部署方式、验收命令、降级说明。
+- [x] 代码许可证与内容许可证文件存在，Footer 有版权声明。
+- [x] README 包含：本地启动、内容维护方式、部署方式、验收命令、降级说明。
 
 ---
 

@@ -6,7 +6,7 @@
 
 **本轮（用户要求尽早集成）：CI/CD 方案定稿 + 文档同步，未实现流水线代码。** 用户确认四项：①方案 A（GitHub Actions + Wrangler Direct Upload，关闭 Cloudflare Pages Git 自动构建）；②T-004/T-005 提前到 US-004 之前；③公开仓库 `https://github.com/George-102/Personal-Digital-Universe.git`；④28 个未实现故事的 E2E 失败项用 `test.fixme()` 绑定 roadmap，不删断言、不降阈值。方案已写入 `docs/Development.md` §1/§3/§5、`docs/Tech.md` §2/§6/§9、`README.md`、`docs/DoD.md`；任务拆为 T-004a/b、T-005a/b（priority 13-16）写入 `feature_list.json`，roadmap 中原 T-004/T-005 已移除，T-003 保持原位不提前。下一步：**T-004a CI 前置基础修复**。
 
-**本轮（用户授权推进 CI/CD）：T-004a 已完成并验证。** 前提已齐：用户确认 Cloudflare Pages 为 **Direct Upload** 项目（`personal-digital-universe`，生产域名 `personal-digital-universe.pages.dev`，无自定义域名），GitHub secrets `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 已配置（`gh secret list` 核对名称），`gh` 登录账号 George-102 且对公开仓库有 admin 权限，远端仍为空仓库、本地未关联 remote。T-004a 修复 Node 版本、双启动入口、Lighthouse 报告、28 项 roadmap fixme，证据见 `feature_list.json` T-004a。**T-004b 已完成并验证**（首次推送、run 42976363844 全绿、徽章 passing、分支保护 verify）。**T-005a 已实现但 blocked**：deploy 因 Cloudflare API Token 的 Client IP Address Filtering 报 9109/10000，需用户移除 IP 过滤（详见风险段）。
+**本轮（用户授权推进 CI/CD）：T-004a 已完成并验证。** 前提已齐：用户确认 Cloudflare Pages 为 **Direct Upload** 项目（`personal-digital-universe`，生产域名 `personal-digital-universe.pages.dev`，无自定义域名），GitHub secrets `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 已配置（`gh secret list` 核对名称），`gh` 登录账号 George-102 且对公开仓库有 admin 权限，远端仍为空仓库、本地未关联 remote。T-004a 修复 Node 版本、双启动入口、Lighthouse 报告、28 项 roadmap fixme，证据见 `feature_list.json` T-004a。**T-004b 已完成并验证**（首次推送、run 42976363844 全绿、徽章 passing、分支保护 verify）。**T-005a 已通过**：用户移除 API Token 的 Client IP Address Filtering 后 `gh run rerun 42978098873 --failed` 的 deploy 成功（38s），生产 URL 实测 HTTP 200。**T-005b 代码部分已完成**（许可证 / Footer / SITE_URL / DoD），监控两项仍需用户操作。
 
 ## 已验证（有真实运行证据）
 
@@ -37,15 +37,15 @@
 
 1. ~~**T-004a** CI 前置基础修复~~（2026-11-11 passing）
 2. ~~**T-004b** CI 验收流水线跑通~~（2026-11-11 passing，run 42976363844 全绿、徽章 passing、分支保护 verify）
-3. **T-005a** CD 发布流水线 —— **blocked**：Cloudflare API Token 的 Client IP Address Filtering 导致 deploy 报 9109/10000。用户移除 IP 过滤后，用 `gh run rerun 42978098873 --failed --repo George-102/Personal-Digital-Universe` 只重跑 deploy（复用已通过的 verify 与 out/ artifact），再实测生产 URL HTTP 200。
-4. **T-005b** 监控与许可证（UptimeRobot / Web Analytics 需用户操作；LICENSE / Footer / SITE_URL 可由 agent 完成）
+3. ~~**T-005a** CD 发布流水线~~（2026-11-11 passing：rerun deploy 成功、生产 URL HTTP 200、产物即 verify 的 out/）
+4. **T-005b** 监控与许可证 —— **blocked**：LICENSE / LICENSE-CONTENT / 双语 Footer / SITE_URL 注释 / sitemap-robots 核对 / DoD 打勾均已完成并验证；仅剩 UptimeRobot 与 Cloudflare Web Analytics 需用户在第三方面板开启
 5. **T-003** Vitest 单元/集成测试基础设施（未提前；迁移时同步改 CI 的 `npm test`）
 6. **US-004** 全局导航（8 项 + 激活态 + 移动折叠菜单——core.spec『移动端菜单』断言在此执行，同时移除对应 fixme）
 7. 之后按 roadmap：US-002 → US-003 → US-006 → US-008 → US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事
 
 ## 风险与注意事项
 
-- **T-005a blocker（2026-11-11）**：run 42978098873 的 `verify` 全绿（6m2s，183 passed / 37 skipped），`deploy` 在 `wrangler pages deploy` 报 `Authentication error [code: 10000]` 与 `Cannot use the access token from location: 172.174.165.4 [code: 9109]`。9109 = token 设置了 Client IP Address Filtering，GitHub Actions 出口 IP 不在白名单。修复：Cloudflare → My Profile → API Tokens → 编辑该 token → 删除 IP 过滤条件，并确认权限为 Account → Cloudflare Pages → Edit；不要把 Actions IP 加白名单（动态范围）。编辑不会改变 token 值，GitHub secret 无需更新；若重建 token 则须更新 `CLOUDFLARE_API_TOKEN`。
+- **T-005a 已解决（2026-11-11）**：首次 deploy 报 `Authentication error [code: 10000]` 与 `Cannot use the access token from location: 172.174.165.4 [code: 9109]`，根因是 API Token 设置了 Client IP Address Filtering。用户移除后 `gh run rerun 42978098873 --failed` 的 deploy 成功。**避坑**：Cloudflare API Token 不要设置 Client IP Address Filtering（Actions 出口 IP 动态），已写入 README。
 - **并行会话**：本轮工作区存在另一路并行开发（US-002 相关）对 `AGENTS.md`、`docs/PRD.md`、`feature_list.json` 的未提交改动。`feature_list.json` 曾被覆盖导致 T-004a 状态回退、US-002a..h 任务移除，本轮已恢复 T-004a 状态与证据。提交时始终显式列文件，排除 `AGENTS.md`、`docs/PRD.md` 与并行队友的临时文件（`test-out.txt` 等）。
 - 6 个 moderate 漏洞在 @typescript-eslint（eslint-config-next 传递依赖），官方尚未发布修复版；仅 dev 依赖不进前端 bundle，门禁卡 high 不受影响。
 - `lib/site.ts` 的 SITE_URL 值已为 `https://personal-digital-universe.pages.dev`（用户确认无自定义域名），仅注释仍写"占位"；T-005b 更新注释并核对 sitemap/robots。

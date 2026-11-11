@@ -1,6 +1,8 @@
 node_modules/
 .next/
 out/
+public/LICENSE
+public/LICENSE-CONTENT
 playwright-report/
 test-results/
 .lighthouseci/

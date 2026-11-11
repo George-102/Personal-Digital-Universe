@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/validate-content.mjs",
+    "prebuild": "node scripts/validate-content.mjs && node scripts/sync-licenses.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

@@ -283,7 +283,7 @@
       "area": "CI/CD",
       "title": "CD 发布流水线（Actions + Wrangler 直传）",
       "user_visible_behavior": "main 上 CI 全绿后自动上线到 *.pages.dev，部署产物就是被验证过的同一份 out/；同仓库 PR 可得到预览 URL，fork PR 不会部署。",
-      "status": "blocked",
+      "status": "passing",
       "verification": [
         "在 Cloudflare 创建 Pages 项目并关闭其 Git 自动构建；由用户配置 secrets CLOUDFLARE_API_TOKEN 与 CLOUDFLARE_ACCOUNT_ID（不写进仓库）。",
         "把 wrangler 固定为 devDependency 并纳入 package-lock.json，避免 npx 拉最新版导致部署不可复现。",
@@ -294,9 +294,11 @@
       "evidence": [
         "2026-11-11：用户确认 Pages 项目为 Direct Upload（`personal-digital-universe.pages.dev`，无自定义域名）；`gh secret list` 核对 `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` 两个 secret 名称存在。`wrangler@4.160.0` 以 `--save-exact` 固定为 devDependency 并纳入 package-lock.json，`npm ci` 后 `npm ls wrangler` 实测 4.160.0。",
         "2026-11-11：workflow 新增 deploy（needs verify、仅 push main、下载同名 out/ artifact、--branch=main）与 preview（仅同仓库 PR、--branch=源分支名）两个 job；fork PR 由 if 条件 + GitHub 默认不注入 secrets 双重排除。",
-        "2026-11-11：run 42978098873 的 verify 全绿（6m2s，183 passed / 37 skipped），deploy 失败：`Authentication error [code: 10000]` 与 `Cannot use the access token from location: 172.174.165.4 [code: 9109]`。根因为 API Token 设置了 Client IP Address Filtering，GitHub Actions 出口 IP 不在白名单，待用户移除 IP 限制后重跑。"
+        "2026-11-11：run 42978098873 的 verify 全绿（6m2s，183 passed / 37 skipped）；首次 deploy 因 API Token 的 Client IP Address Filtering 报 10000/9109，用户移除 IP 白名单后 `gh run rerun 42978098873 --failed` 只重跑 deploy，attempt 2 在 38s 内成功。",
+        "2026-11-11：部署日志显示下载 out artifact（ID 13836038867）后上传 23 个文件，部署 URL https://60b23f09.personal-digital-universe.pages.dev ；生产地址 https://personal-digital-universe.pages.dev 实测 HTTP 200、标题『苏子豪 — Personal Digital Universe』且 profile 内容存在，部署产物即 verify 上传的同一份 out/。",
+        "2026-11-11：fork PR 不部署由 preview job 的 if 条件（head.repo.full_name == github.repository）与 GitHub 默认不向 fork PR 注入 secrets 双重保证；fork 端到端实测需第二个 GitHub 账号，暂未执行，如实记录。"
       ],
-      "notes": "对应原 roadmap T-005 的发布部分，方案 A 经用户确认。**当前 blocked**：需用户在 Cloudflare 编辑 API Token 移除 Client IP Address Filtering（并确认 Account → Cloudflare Pages → Edit）；编辑不改 token 值，GitHub secret 无需更新。修复后用 `gh run rerun 42978098873 --failed` 只重跑 deploy。fork PR 实测需第二个 GitHub 账号，暂由 if 条件 + GitHub 默认不注入 secrets 保证。"
+      "notes": "对应原 roadmap T-005 的发布部分，方案 A 经用户确认。Cloudflare API Token 不可设置 Client IP Address Filtering（Actions 出口 IP 动态），已写入 README 避坑。同仓库 PR 预览由 preview job 实现，端到端结果另记。"
     },
     {
       "id": "T-005b",
@@ -304,15 +306,21 @@
       "area": "CI/CD",
       "title": "监控、许可证与真实域名",
       "user_visible_behavior": "站点有可用性告警与访问统计；代码与内容许可证文件及 Footer 版权声明齐全；sitemap/robots 使用真实域名而非占位地址。",
-      "status": "not_started",
+      "status": "blocked",
       "verification": [
         "UptimeRobot 5 分钟 HTTPS monitor 指向 *.pages.dev；开启 Cloudflare Web Analytics。",
         "添加 LICENSE（PolyForm Noncommercial 1.0.0）与 LICENSE-CONTENT（CC BY-NC-ND 4.0），Footer 版权声明与链接。",
         "替换 lib/site.ts 的 SITE_URL 占位域名并重建，核对 sitemap.xml 与 robots.txt 中的 URL。",
         "docs/DoD.md D 组相关项逐条打勾。"
       ],
-      "evidence": [],
-      "notes": "对应原 roadmap T-005 的监控与许可证部分。github-cache.json 构建期抓取仍随 US-012。"
+      "evidence": [
+        "2026-11-11：新增 `LICENSE`（PolyForm Noncommercial 1.0.0 官方 15 条全文）与 `LICENSE-CONTENT`（CC BY-NC-ND 4.0 链接 + 中文摘要）；新增 `components/SiteFooter.tsx` 统一双语 Footer（版权声明 + 两个许可证链接），`app/page.tsx` 与 `app/[locale]/page.tsx` 接入；`scripts/sync-licenses.mjs` 在 prebuild 同步到 `public/`（副本已 gitignore），构建产物 `out/LICENSE`、`out/LICENSE-CONTENT` 实测存在，`/` 与 `/en/` 静态 HTML 均含许可证文案。",
+        "2026-11-11：`lib/site.ts` 的 SITE_URL 注释改为真实生产域名（值本已为 `https://personal-digital-universe.pages.dev`）；重建后 `out/robots.txt` 的 Sitemap 与 `out/sitemap.xml` 的 2 条 loc 均指向该域名。README 部署章节与许可证章节同步为已落地状态。",
+        "2026-11-11：`docs/DoD.md` D 组逐条核对并勾选已验证项（结构化数据、缺字段容错、GPU 资源释放、CI/CD 同产物部署、许可证与 Footer、README 五节）；其余随 US-012 / US-019 / US-022 与监控落地。",
+        "2026-11-11：本地 lint / typecheck / build / npm test 29/29 / verify:metrics 通过；全套 E2E 出现 7 个移动端 30s 超时，`npx playwright test --last-failed` 重跑 7/7 通过（本机并行资源 flake，CI 有 retries: 2）。",
+        "待用户操作：UptimeRobot 5 分钟 HTTPS monitor 指向 `personal-digital-universe.pages.dev`；Cloudflare Dashboard 开启 Web Analytics。agent 无第三方账号权限。"
+      ],
+      "notes": "对应原 roadmap T-005 的监控与许可证部分。**当前 blocked**：可用性监控与访问统计需在第三方面板由用户开启，其余四项均已完成并验证。github-cache.json 构建期抓取仍随 US-012。"
     },
     {
       "id": "US-002a",

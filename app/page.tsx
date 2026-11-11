@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import HomeSections from '@/components/HomeSections';
 import PersonJsonLd from '@/components/PersonJsonLd';
+import SiteFooter from '@/components/SiteFooter';
 import SiteNav from '@/components/SiteNav';
 import { profile } from '@/content/profile';
 
@@ -27,9 +27,7 @@ export default async function RootPage() {
         <main>
           <HomeSections lang="zh" />
         </main>
-        <footer className="px-6 py-8 text-center text-sm opacity-60">
-          <Link href="/en/">{t('languageName')}</Link>
-        </footer>
+        <SiteFooter lang="zh" languageName={t('languageName')} languageHref="/en/" />
       </body>
     </html>
   );
