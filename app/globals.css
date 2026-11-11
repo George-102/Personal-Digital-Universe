@@ -73,6 +73,42 @@ html {
   }
 }
 
+/* 3D 交互：wrapper 自身不拦截事件，只有 Canvas 区域接收指针 */
+[data-interaction-canvas] > div,
+[data-interaction-canvas] canvas {
+  pointer-events: auto;
+}
+
+[data-interaction-canvas] canvas {
+  /* 允许垂直滚动，水平拖拽留给 3D 物体 */
+  touch-action: pan-y;
+}
+
+.interaction-tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  max-width: min(260px, 80vw);
+  padding: 6px 12px;
+  border: 1px solid rgb(34 211 238 / 40%);
+  border-radius: 999px;
+  background: rgb(11 14 31 / 92%);
+  color: var(--color-ink);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 160ms ease;
+}
+
+.interaction-tooltip.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -82,5 +118,8 @@ html {
   }
   .scroll-hint {
     animation: none;
+  }
+  .interaction-tooltip {
+    transition: none;
   }
 }

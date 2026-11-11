@@ -5,5 +5,11 @@
     "scrollHint": "滚动探索",
     "aboutPlaceholder": "个人介绍即将上线。",
     "languageName": "English"
+  },
+  "Interaction": {
+    "core": "核心星体 · 点击探索介绍",
+    "orbitNode": "轨道节点 · 点击探索介绍",
+    "fallback": "跳过 3D，直接进入介绍",
+    "hint": "移动鼠标探索 · 拖动旋转 · 点击核心进入介绍"
   }
 }

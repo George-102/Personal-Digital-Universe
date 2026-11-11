@@ -5,5 +5,11 @@
     "scrollHint": "Scroll to explore",
     "aboutPlaceholder": "About section coming soon.",
     "languageName": "中文"
+  },
+  "Interaction": {
+    "core": "Core · click to explore the intro",
+    "orbitNode": "Orbit node · click to explore the intro",
+    "fallback": "Skip the 3D scene, go to intro",
+    "hint": "Move to explore · drag to rotate · click the core to enter"
   }
 }

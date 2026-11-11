@@ -8,6 +8,13 @@ import { products } from '../content/products.ts';
 import { writing } from '../content/writing.ts';
 import { reading } from '../content/reading.ts';
 import { interests } from '../content/interests.ts';
+import { heroInteractiveObjects, validateInteractiveObjects } from '../lib/interactive.ts';
+
+const interactiveErrors = validateInteractiveObjects(heroInteractiveObjects);
+if (interactiveErrors.length > 0) {
+  console.error(`interactive 配置校验失败：\n${interactiveErrors.join('\n')}`);
+  process.exit(1);
+}
 
 const data = {
   journey,

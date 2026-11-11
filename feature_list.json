@@ -328,7 +328,7 @@
       "area": "3D 交互",
       "title": "指针输入归一化与状态管理",
       "user_visible_behavior": "鼠标与触摸统一为一套指针输入，供所有 3D 交互复用；指针离开窗口或多指触摸不报错、不残留状态。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "建立 lib/pointer.ts：监听 pointermove/down/up/cancel/leave，只取主指针，坐标归一化到 NDC（-1~1），对外提供只读快照与订阅。",
         "每帧最多更新一次并与 useFrame 对齐，避免高频 setState / DOM 更新。",
@@ -336,7 +336,10 @@
         "组件卸载移除全部监听（代码审查 + E2E pageerror 为空）。",
         "npm run lint 与 npx tsc --noEmit 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：RED 观察到 pointer.test.mjs / interactive.test.mjs / interaction-motion.test.mjs 三个先行测试报 ERR_MODULE_NOT_FOUND（lib/pointer.ts、lib/interactive.ts 缺失）；实现 lib/pointer.ts 后 npm test 54/54 通过。",
+        "2026-11-11：状态机只跟踪主指针，覆盖 NDC 归一化、pointercancel/leave/blur 复位、多指忽略、限幅 damp、手势位移与时长；attachPointerTracker 在 Canvas 卸载时 destroy 全部监听。E2E 视差与全流程用例断言无 pageerror。"
+      ],
       "notes": "后续所有 US-002 任务的唯一输入源。不直接修改 US-001c 的常驻动画，避免耦合。"
     },
     {
@@ -345,14 +348,17 @@
       "area": "3D 交互",
       "title": "可交互物体注册表与数据驱动配置",
       "user_visible_behavior": "哪些物体可悬停、拖拽、点击，反馈组合与点击目标由配置声明；新增交互物体无需修改交互逻辑。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "定义 InteractiveObject 类型（id、hoverFeedback 组合 glow/scale/spin/tooltip、draggable、clickTarget、labelKey），配置与场景组件分离，走单一出口。",
         "Hero 场景接入注册表；类型与组件可被 Research / Projects / Writing 场景直接复用（本次不实现这些场景）。",
         "构建期校验：clickTarget 非法值、labelKey 缺失、id 重复时 prebuild 拒绝；实测注入非法配置后 npm run build 失败，恢复后 exit 0。",
         "单元测试覆盖校验逻辑；npm test / npm run build / lint / typecheck 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：lib/interactive.ts 定义 InteractiveObject 与 Hero 注册表（core / orbit-node），配置与场景组件分离；validateInteractiveObjects 接入 scripts/validate-content.mjs，prebuild 校验 clickTarget / labelKey / id 重复 / 反馈枚举 / draggable。",
+        "2026-11-11：实测把 clickTarget 改为 /about 后 npm run build exit 1 并报 interactive[0].clickTarget 与 interactive[1].clickTarget 非法值；恢复 #about 后 build exit 0。interactive.test.mjs 8 项覆盖默认注册表与五类非法配置。"
+      ],
       "notes": "用户 2026-11-11 确认：范围限 Hero 场景但建立通用注册机制；点击目标默认 #about，后续故事仅需改配置即可替换。"
     },
     {
@@ -361,7 +367,7 @@
       "area": "3D 交互",
       "title": "鼠标视差：相机或核心物体的惯性跟随",
       "user_visible_behavior": "移动鼠标时相机或中心物体产生轻微视差，带平滑惯性，停止移动后自然回稳。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "Hero 场景消费指针快照，在 useFrame 内用与帧率无关的 damping / lerp 计算位移或旋转目标。",
         "幅度 clamp 且上限可配置，保证姓名、身份行与 Explore 文字始终可读、不被挤出视口。",
@@ -369,7 +375,10 @@
         "E2E：e2e/interaction.spec.ts 模拟鼠标移动，断言 data-parallax 状态或物体 transform 平滑变化并回稳；四项目执行（no-webgl 条件跳过）。",
         "lint / typecheck 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：HeroScene useFrame 消费指针 NDC，目标经单帧限幅 0.08 后由 damp(6) 平滑跟随，幅度 clamp ±0.22 / ±0.14；E2E 断言左移→右移时 data-parallax-x 单调增大且不越界、data-ndc-x > 0.5。",
+        "2026-11-11：interaction-motion.test.mjs 用与实现相同的常量验证与帧率无关的收敛（180 帧趋近 0.22）及幅度上限；文字层 pointer-events-none 让 Canvas 收到指针而不遮挡 CTA。"
+      ],
       "notes": "对应 PRD US-002 详述 1 与验收「移动鼠标时场景能够产生相应的空间反馈」。"
     },
     {
@@ -378,14 +387,17 @@
       "area": "3D 交互",
       "title": "快速移动防抖动与边界稳定性",
       "user_visible_behavior": "快速甩动鼠标、来回横跳或鼠标移出窗口时画面不抖动、不闪烁、不残留偏移。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "指针增量限幅（最大角速度 / 位移）与异常值过滤；blur / pointerleave 时平滑回中而非瞬时归零。",
         "E2E 快速移动序列：连续采样物体 transform，断言相邻帧差值在阈值内、无 NaN、pageerror 为空。",
         "单元测试覆盖限幅与回中；回归 core / degradation / hero-scene 现有断言不退化。",
         "lint / typecheck 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：E2E 快速来回横跳连续采样 6 次 data-parallax-x，全部有限、相邻帧差 ≤0.2、幅度 ≤0.22；单元测试按同常量算法断言相邻帧差 ≤0.02 且无 NaN。",
+        "2026-11-11：pointerleave / blur 让 NDC 目标回中并由 damp 平滑归位，不瞬时跳变；US-002q 全流程用例 pageerror 为空。"
+      ],
       "notes": "对应 PRD US-002 验收异常场景「用户快速移动鼠标时，不应出现明显的画面抖动」。"
     },
     {
@@ -394,14 +406,17 @@
       "area": "3D 交互",
       "title": "粒子与空间元素的跟随 / 排斥反馈",
       "user_visible_behavior": "鼠标移动时粒子和部分空间元素产生克制、可感知的跟随或排斥效果。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "复用 US-001c 粒子球壳，按指针位置施加随距离衰减的位移，作用半径与最大位移上限可配置；不新增粒子数量、不新增后处理。",
         "低画质档（lib/quality.ts）降量或关闭该计算；视口外随现有 frameloop 暂停，不产生额外计算。",
         "单元测试覆盖衰减函数与上限；E2E 断言粒子位置随指针变化、停止后回稳。",
         "npm run size 通过（不引入新依赖）。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：repelFactor（半径 1.2、强度 0.35、平方衰减）驱动粒子球壳整体阻尼位移，低画质档（particles < 700）与 reduced-motion 关闭计算；E2E chromium 断言 data-particle-x 随指针变为非零。",
+        "2026-11-11：复用 US-001c 粒子球壳，未增加粒子数、未引入新依赖；npm run size 432.94kB brotli ≤1MB。"
+      ],
       "notes": "对应 PRD US-002 详述 2；性能红线：粒子数与渲染分辨率不因交互上升。"
     },
     {
@@ -410,14 +425,17 @@
       "area": "3D 交互",
       "title": "悬停命中检测（raycasting 白名单）",
       "user_visible_behavior": "仅指定物体响应悬停；指针位于空白区域或覆盖在文字层上时不误触发、不出现多个物体同时高亮。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "基于注册表对 mesh 绑定 onPointerOver / Out（或 raycaster 白名单），同一时刻最多一个 hover 目标。",
         "DOM 文字层不吞事件、不被误判为 3D 命中；pointerleave 与 WebGL 上下文丢失时清空 hover 状态。",
         "单元测试覆盖命中过滤与状态互斥；E2E 断言 data-hover 在命中 / 离开时正确切换。",
         "lint / typecheck 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：注册表白名单驱动 R3F onPointerOver/Out，同一时刻单一 data-hover；E2E 断言悬停核心与轨道节点分别命中、移出后 data-hover 清空且 tooltip 隐藏。",
+        "2026-11-11：DOM 文字层改为 pointer-events-none、链接单独恢复 auto，既让 3D 命中生效又保住 core/hero-scene 的 expectCtaNotCovered 断言（全套 E2E 回归通过）。"
+      ],
       "notes": "本任务只负责「命中」判定；四种悬停反馈分别由 US-002g~j 实现。"
     },
     {
@@ -426,14 +444,16 @@
       "area": "3D 交互",
       "title": "悬停反馈 1：高亮发光",
       "user_visible_behavior": "悬停指定物体时出现明显但克制的高亮发光，离开后平滑恢复。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "emissive / 材质参数插值过渡（淡入淡出，无突变），不新增实时阴影或高成本后处理。",
         "prefers-reduced-motion 时仅做状态切换、不做过渡动画。",
         "E2E 断言 hover 态材质属性变化与恢复；单元测试覆盖插值边界。",
         "lint / typecheck 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：emissiveIntensity 由 0.18 damp 到 0.6，E2E 断言 data-hover-glow > 0.3；reduced-motion 下直接切状态不过渡；未新增实时阴影或高成本后处理。"
+      ],
       "notes": "对应 PRD US-002 详述 3 第一条；反馈开关由 US-002b 注册表控制。"
     },
     {
@@ -442,13 +462,15 @@
       "area": "3D 交互",
       "title": "悬停反馈 2：轻微放大",
       "user_visible_behavior": "悬停时物体轻微放大，离开后平滑回弹，幅度克制。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "scale 目标上限配置化（≤1.08），与 US-002g / i 共用同一 hover 动画状态，互不覆盖。",
         "单元测试覆盖上下限；E2E 断言 scale 变化在阈值内且无跳变。",
         "lint / typecheck 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：hover scale 目标 1.08 且 damp 插值，E2E 断言 data-hover-scale > 1.02；与高亮、自转反馈共用同一 hover 动画状态，互不覆盖。"
+      ],
       "notes": "对应 PRD US-002 详述 3 第二条。"
     },
     {
@@ -457,13 +479,15 @@
       "area": "3D 交互",
       "title": "悬停反馈 3：旋转速度变化",
       "user_visible_behavior": "悬停时物体自转速度平滑改变，离开后平滑恢复，无转速突变或超速。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "目标转速插值而非瞬时赋值，与 US-001c 常驻慢速旋转共存并设总速度上限。",
         "单元测试覆盖速度曲线；E2E 断言悬停前后角速度变化与恢复。",
         "lint / typecheck 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：自转倍率 damp 到 1.9 并设总速上限 2.2，E2E 断言 data-spin-speed > 1.2；与 US-001c 常驻慢速旋转叠加而非瞬时赋值，无转速突变。"
+      ],
       "notes": "对应 PRD US-002 详述 3 第三条。"
     },
     {
@@ -472,7 +496,7 @@
       "area": "3D 交互",
       "title": "悬停反馈 4：辅助文字与中英双语",
       "user_visible_behavior": "悬停指定物体显示辅助文字；不遮挡姓名与 Explore；中文页显示中文、/en/ 显示英文。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "文案写入 messages/zh.json 与 messages/en.json，npm run check:i18n 覆盖率 100%。",
         "tooltip 用 DOM 实现（非 Canvas 文本，保证可读与可访问），位置跟随物体但 clamp 在视口内。",
@@ -480,7 +504,10 @@
         "E2E 双语断言：/ 与 /en/ 分别显示对应文案；overflow 在 390px 视口无横向溢出。",
         "lint / typecheck 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：messages 新增 Interaction 四键（zh/en），npm run check:i18n 覆盖率 100%（各 9 键）；tooltip 用 DOM 实现、跟随物体屏幕投影并 clamp 在视口内。",
+        "2026-11-11：E2E 断言中文页含 核心星体 / 轨道节点、/en/ 含 Core，data-visible 随 hover 切换；无 hover 能力设备不显示孤立 tooltip，390px 等视口无横向溢出（overflow 全套通过）。"
+      ],
       "notes": "对应 PRD US-002 详述 3 第四条与 §6.7「3D 内容必须有对应的文本信息」。"
     },
     {
@@ -489,14 +516,17 @@
       "area": "3D 交互",
       "title": "拖拽旋转指定 3D 物体",
       "user_visible_behavior": "访客按住拖动可旋转指定物体，松手后带惯性平滑停止，页面仍可正常滚动。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "pointerdown / move / up / cancel + setPointerCapture，仅注册表中 draggable 的物体响应。",
         "旋转轴与角度范围限制；惯性与阻尼与帧率无关；touch-action: none 只作用于 3D 物体，不劫持页面滚动。",
         "E2E 鼠标拖拽与触摸拖拽分别断言物体角度变化；overflow 回归页面滚动正常。",
         "lint / typecheck 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：pointerdown/move/up 以限幅增量累加 dragTarget，HeroScene damp 追赶实现平滑停止的惯性，角度 clamp；E2E 拖拽后 data-drag-x 绝对值 > 0.01。",
+        "2026-11-11：canvas 使用 touch-action: pan-y，水平拖拽留给 3D 物体、垂直滚动仍归页面；pressTarget 由 R3F onPointerDown 记录，触摸设备同样生效。"
+      ],
       "notes": "对应 PRD US-002 详述 4；不得破坏后续 US-003 的滚动驱动相机逻辑。"
     },
     {
@@ -505,13 +535,16 @@
       "area": "3D 交互",
       "title": "拖拽与点击的手势区分",
       "user_visible_behavior": "小幅误拖仍算点击；明显拖拽不触发跳转；快速连续操作不重复触发。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "位移阈值（如 6px）与时长阈值判定 click vs drag；pointercancel / 离开视口时收尾并复位状态。",
         "单元测试覆盖阈值边界；E2E 断言拖拽后 hash 不变、单击后跳转仅触发一次。",
         "lint / typecheck 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：isClickGesture 位移阈值 6px / 时长 800ms；E2E 断言明显拖拽后 data-click-count=0 且 URL 不含 #about，单击后仅触发一次。",
+        "2026-11-11：单元测试覆盖阈值边界与拖拽后 pointerleave 复位、下一次按下从干净状态开始；pointercancel/离开视口正确收尾。"
+      ],
       "notes": "触摸设备无 hover 时同样适用该判定；是 US-002m 与 US-002o 的前置。"
     },
     {
@@ -520,14 +553,17 @@
       "area": "3D 交互",
       "title": "点击交互物体触发内容区域跳转",
       "user_visible_behavior": "点击指定物体后按配置平滑进入对应内容区域（默认 #about），行为与 Explore 一致。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "clickTarget 从注册表读取，复用 US-001e 的 smooth scroll（reduced-motion 回退 auto）。",
         "目标不存在时不报错、不产生无效跳转；不新增任何路由或占位页。",
         "E2E 断言点击后 hash 与滚动位置；单元测试覆盖配置解析。",
         "lint / typecheck 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：点击按注册表 clickTarget 执行 scrollIntoView（reduced-motion 回退 auto）与 history.replaceState，目标不存在时不跳转、不报错；E2E 断言 data-click-count=1、#about 进入视口、URL 含 #about。",
+        "2026-11-11：默认 #about 复用 US-001e 的平滑滚动，未新建任何路由或占位页；后续内容故事只需改配置即可替换目标。"
+      ],
       "notes": "用户 2026-11-11 确认默认平滑滚动到 #about；后续故事替换目标只需改配置。对应 PRD US-002 详述 5/6。"
     },
     {
@@ -536,14 +572,17 @@
       "area": "3D 交互",
       "title": "非强制交互：DOM 等价入口与键盘可访问",
       "user_visible_behavior": "不操作 3D 场景也能访问全部内容；键盘用户可用可见入口完成与点击物体等价的跳转；无 WebGL 时等价入口仍可用。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "每个 clickTarget 有可见 DOM 链接 / 按钮（可 Tab 聚焦、有可访问名称、Enter / Space 触发），Canvas 不是唯一操作路径。",
         "a11y E2E（键盘 Tab 序列 + 现有对比度 / 可访问名称断言）四项目通过；degradation no-webgl 项目复验。",
         "3D 物体有对应文本信息，与 US-002j 的 tooltip 文案一致。",
         "lint / typecheck 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：静态 HTML 中的 [data-interaction-fallback] 等价入口（href 用根路径锚点，避免与既有 a[href=#about] 定位器产生歧义）与 [data-interaction-hint] 文本信息；E2E 四项目键盘 focus + Enter 均进入 #about。",
+        "2026-11-11：无 WebGL 项目断言入口仍可见；a11y.spec 的 Tab 聚焦、core/i18n/degradation 全套回归通过，Canvas 不是唯一操作路径。"
+      ],
       "notes": "对应 PRD US-002 详述 7 与 §6.7「不允许只有通过鼠标才能完成的重要操作」。"
     },
     {
@@ -552,14 +591,17 @@
       "area": "3D 交互",
       "title": "触摸设备交互（无 hover 降级）",
       "user_visible_behavior": "触摸设备没有悬停反馈也能通过点击完成对应操作，拖拽仍可用，不出现点不动或误触跳转。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "用 media (hover: hover) 判定 hover 能力；触摸端单击直接执行 clickTarget，不常驻 tooltip。",
         "E2E 移动项目（mobile chromium / mobile-safari）断言触摸点击与触摸拖拽；页面滚动正常。",
         "复验 core / degradation / overflow 四项目不退化。",
         "lint / typecheck 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：media (hover: hover) 判定 hover 能力，触摸端不常驻 tooltip、单击直接执行 clickTarget；E2E mobile-chrome / mobile-safari 断言 data-hover-capable=false 且 touchscreen.tap 后 data-click-count=1。",
+        "2026-11-11：拖动与点击的手势判定对 pointerType=touch 同样适用；页面纵向滚动未被劫持。"
+      ],
       "notes": "对应 PRD US-002 验收异常场景「触摸设备不支持鼠标悬停时，仍能通过点击完成对应操作」。"
     },
     {
@@ -568,14 +610,17 @@
       "area": "3D 交互",
       "title": "交互的性能、降级与资源清理",
       "user_visible_behavior": "交互开启后桌面仍保持流畅（约 60 FPS）；WebGL 不可用或减少动态效果时自动关闭指针驱动动画；离屏与卸载无泄漏。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "指针监听与 useFrame 计算在视口外暂停（复用 US-001d 的 IntersectionObserver / frameloop），卸载移除监听并 dispose 新增资源。",
         "prefers-reduced-motion 时关闭视差、粒子响应与惯性，仅保留必要交互反馈（完整控制面板属 US-022）。",
         "WebGL 降级路径不挂载任何指针监听（no-webgl 项目断言）。",
         "RAF / FPS 计数实测留证；npm run verify:metrics 与 npm run size 通过（不新增依赖、LCP 仍为文字元素）。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：reduced-motion 关闭视差、粒子响应与惯性（E2E data-interaction=reduced 且 data-parallax-x=0.000）；无 WebGL 项目 data-interaction=disabled、canvas 0、移动鼠标后 pageerror 为空。",
+        "2026-11-11：每帧状态由 useFrame 单次上报（frameloop=never 时自动停止），tracker 随 Canvas 卸载 destroy；CI=1 verify:lighthouse exit 0（中文 perf 0.98-0.99、a11y/seo 1、bp 0.96、LCP 213-332ms、CLS 0、TBT 83-130ms），PerformanceObserver 实测 LCP 元素非 CANVAS，size 432.94kB。"
+      ],
       "notes": "对应 PRD §6.2 / §6.3 / §6.4；不扩展到 US-022 的完整动态效果控制。"
     },
     {
@@ -584,14 +629,17 @@
       "area": "3D 交互",
       "title": "US-002 整体验收与回归",
       "user_visible_behavior": "PRD US-002 五条验收逐条可核对，交互不影响 US-001 已有行为与现有质量门禁。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "逐条核对五条验收：移动反馈、悬停反馈、点击跳转、快速移动不抖、触摸点击可完成；证据写入 evidence。",
         "对照 PRD §5.2 场景一交互方式（鼠标视差、物体悬浮、拖动旋转、点击探索）确认四项齐备。",
         "全套 E2E 四项目 0 失败（不新增 fixme、不删断言、不降阈值）；npm test / lint / typecheck / check:i18n / size / verify:lighthouse 通过。",
         "LCP 元素仍为文字、CLS ≤0.1；证据记录后更新 claude-progress.md 并提交。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-11：PRD US-002 五条验收逐条对应——移动反馈（c/d）、悬停反馈（f~j）、点击跳转（m）、快速移动不抖（d）、触摸点击（o）；§5.2 场景一四项交互方式（视差、悬停、拖拽、点击）齐备，详述 7 由 DOM 等价入口覆盖。",
+        "2026-11-11：全套四项目 E2E 201 passed / 75 skipped / 0 failed（exit 0，--workers=2；skipped 含 28 项 roadmap fixme 与其他项目条件跳过）；npm test 54/54、npm run lint、typecheck、check:i18n 100%、size 432.94kB、audit 0 high、npm run build exit 0、CI=1 verify:lighthouse exit 0。滚动驱动相机属 US-003、导航激活态属 US-004，不在本故事范围。"
+      ],
       "notes": "本任务通过即 US-002 完成。滚动驱动相机运动属 US-003，导航激活态与移动菜单属 US-004。"
     }
   ],

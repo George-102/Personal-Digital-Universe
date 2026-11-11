@@ -55,3 +55,14 @@
 - `docs/PRD.md` 有一处用户未提交改动，本轮未触碰，提交时须排除。
 - 页面当前仅 hero + about 占位，hero 无法完全滚出视口；视口暂停逻辑已用加长页面实测验证，About 正文（US-006）落地后自然生效。
 - 未决：Cloudflare token IP 过滤（T-005a）、UptimeRobot / Web Analytics 账号（T-005b）需用户操作；fork PR 不部署需第二个 GitHub 账号才能实测，当前由 `if` 条件 + GitHub 默认不注入 secrets 保证。
+
+## US-002 迭代（2026-11-11 完成，并行会话）
+
+**US-002（访客与 3D 场景进行交互）17 个任务 US-002a~q 全部 passing**，逐条证据写入 `feature_list.json`。本轮按上一轮拆分的细粒度任务实现并验证；队友的 CI/CD（T-004a/b、T-005a/b）编号、状态与证据一律未动。
+
+- 新增：`lib/pointer.ts`（指针状态机、NDC 归一化、限幅 damp、手势阈值、DOM tracker + destroy）、`lib/interactive.ts`（可交互物体注册表与构建期校验）、`e2e/interaction.spec.ts`（14 个交互用例）、`scripts/pointer.test.mjs` / `interactive.test.mjs` / `interaction-motion.test.mjs`（TDD 先行）。
+- 改造：`components/three/HeroScene.tsx`（惯性视差、粒子排斥、四种悬停反馈、拖拽旋转、每帧状态上报）、`components/three/HeroCanvas.tsx`（命中/tooltip/点击/reduced-motion 与 hover 能力降级、tracker 清理）、`components/HomeSections.tsx`（文字层事件穿透 + DOM 等价入口 + 双语提示）、`messages/{zh,en}.json`、`app/globals.css`、`scripts/validate-content.mjs`（prebuild 校验接入）。
+- 决策：点击默认平滑滚动到 `#about`、目标由注册表配置化；范围限 Hero 但通用注册机制可复用；等价入口 `href` 用根路径锚点，避免与既有 `a[href="#about"]` 定位器产生 strict mode 歧义（曾导致既有 core/hero-scene 用例红灯，已修复并回归）。
+- 验证：RED 单测观察到 `ERR_MODULE_NOT_FOUND` 后实现；注入非法 `clickTarget: /about` 实测 `npm run build` exit 1、恢复后 exit 0。最终全套四项目 E2E **201 passed / 75 skipped / 0 failed**（exit 0）；`npm test` 54/54、`lint`、`typecheck`、`check:i18n` 100%、`size` 432.94kB、`audit` 0 high、`build` exit 0、`CI=1 verify:lighthouse` exit 0（中文 perf 0.98-0.99 / a11y 1 / seo 1 / bp 0.96，LCP 213-332ms、CLS 0、TBT 83-130ms）；PerformanceObserver 实测 LCP 元素非 CANVAS。
+- 环境注意：本机默认 Node 22 与 `engines: 26.x` 不符，验证命令统一前置 PATH 到 scoop `nodejs/26.10.0` 并清空注入的 `NODE_OPTIONS`；默认并行度下 WebGL 上下文争抢会让全套 E2E 超时，本机用 `--workers=2`，`interaction.spec.ts` 内 describe 串行 + 重交互集中在 chromium + WebGL 条件跳过（CI/Linux 未复现该限制，断言与阈值未削弱）。
+- 下一步（按 feature_list）：T-005b 收尾（队友并行）→ T-003 → US-004 → US-003 → US-006 → …；US-002 已从 roadmap 移除。
