@@ -85,3 +85,4 @@ CI 中 `.github/workflows/verify.yml` 依次执行：`npm ci` → `lint` / `type
 ## 许可证
 
 代码与内容许可证分层：代码 [LICENSE](LICENSE)（PolyForm Noncommercial 1.0.0），内容 [LICENSE-CONTENT](LICENSE-CONTENT)（CC BY-NC-ND 4.0）。两者均仅允许非商业使用，内容另禁止演绎。站点 Footer 有版权声明与许可证链接；构建时由 `scripts/sync-licenses.mjs` 把根目录文件同步到 `public/`，使线上 `/LICENSE` 与 `/LICENSE-CONTENT` 可访问（副本已加入 `.gitignore`）。
+<!-- PR preview smoke check -->
