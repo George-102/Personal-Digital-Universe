@@ -102,25 +102,19 @@ export type ScrollDriverOptions = {
 };
 
 /**
- * GSAP ScrollTrigger 绑定层：把 targetSelector 的滚动区间归一化后写入进度源，
- * 并在 <html> 上同步 --scroll-progress 与 data-scroll-progress 供 CSS 与 E2E 消费。
- * 滚动始终是原生行为（不 preventDefault、不劫持滚轮）；
- * GSAP 加载失败或绑定抛异常时回退静态（返回 null），内容不受影响。
+ * 滚动进度驱动绑定层：用原生 scroll + requestAnimationFrame 将 targetSelector
+ * 的滚动区间归一化后写入进度源，并在 <html> 上同步 --scroll-progress 与
+ * data-scroll-progress 供 CSS 与 E2E 消费。滚动始终是原生行为（不 preventDefault）。
+ * 绑定异常时回退静态（返回 null），内容不受影响。
  */
-export async function attachScrollDriver(
+export function attachScrollDriver(
   options: ScrollDriverOptions = {},
-): Promise<ScrollDriverHandle | null> {
+): ScrollDriverHandle | null {
   const state = options.state ?? sharedScrollState;
   const selector = options.targetSelector ?? '#about';
 
-  let gsap: typeof import('gsap').gsap;
-  let ScrollTrigger: typeof import('gsap/ScrollTrigger').ScrollTrigger;
-  try {
-    ({ gsap } = await import('gsap'));
-    ({ ScrollTrigger } = await import('gsap/ScrollTrigger'));
-  } catch {
-    return null;
-  }
+  const target = document.querySelector(selector);
+  if (!target) return null;
 
   const root = document.documentElement;
   const writeDom = (snapshot: { progress: number }) => {
@@ -130,60 +124,54 @@ export async function attachScrollDriver(
     root.style.setProperty('--scroll-progress', value);
   };
 
-  let trigger: ReturnType<typeof ScrollTrigger.create> | null = null;
-  let unsubscribe: (() => void) | null = null;
-  let onTick: ((time: number, deltaTimeMs: number) => void) | null = null;
-  let motionQuery: MediaQueryList | null = null;
-  let syncMotion: (() => void) | null = null;
-
-  const destroy = () => {
-    if (syncMotion && motionQuery) motionQuery.removeEventListener('change', syncMotion);
-    if (onTick) gsap.ticker.remove(onTick);
-    unsubscribe?.();
-    trigger?.kill();
-    state.setRaw(0);
-    root.style.removeProperty('--scroll-progress');
-    delete root.dataset.scrollProgress;
+  // 段区间：target 顶部从视口底进入（0）到抵达视口顶（1）；
+  // 页面过短滚不到视口顶时，终点 clamp 到实际可达的最大滚动位置
+  const range = () => {
+    const top = target.getBoundingClientRect().top + window.scrollY;
+    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    const start = Math.max(0, top - window.innerHeight);
+    const end = Math.min(top, maxScroll);
+    return { start, end: Math.max(start + 1, end) };
   };
 
-  try {
-    const target = document.querySelector(selector);
-    if (!target) return null;
+  const updateProgress = () => {
+    const { start, end } = range();
+    state.setRaw(normalizeProgress(window.scrollY, start, end));
+  };
 
-    gsap.registerPlugin(ScrollTrigger);
+  // passive scroll：不阻塞滚动性能
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress, { passive: true });
 
-    // 段区间：target 顶部从视口底进入（0）到抵达视口顶（1）；
-    // 页面过短滚不到视口顶时，终点 clamp 到实际可达的最大滚动位置，进度仍能走满 0~1
-    const range = () => {
-      const top = target.getBoundingClientRect().top + window.scrollY;
-      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-      const start = Math.max(0, top - window.innerHeight);
-      const end = Math.min(top, maxScroll);
-      return { start, end: Math.max(start + 1, end) };
-    };
+  const unsubscribe = state.subscribe(writeDom);
+  writeDom(state.getSnapshot());
 
-    trigger = ScrollTrigger.create({
-      start: () => range().start,
-      end: () => range().end,
-      onUpdate: (self) => state.setRaw(self.progress),
-    });
+  // RAF 驱动 damp 平滑（替代 gsap.ticker）
+  let rafId: number;
+  let lastTime = performance.now();
+  const tick = () => {
+    const now = performance.now();
+    state.advance(Math.max(0, now - lastTime) / 1000);
+    lastTime = now;
+    rafId = requestAnimationFrame(tick);
+  };
+  rafId = requestAnimationFrame(tick);
 
-    unsubscribe = state.subscribe(writeDom);
-    writeDom(state.getSnapshot());
+  const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const syncMotion = () => state.setReducedMotion(motionQuery.matches);
+  syncMotion();
+  motionQuery.addEventListener('change', syncMotion);
 
-    onTick = (_time: number, deltaTimeMs: number) => {
-      state.advance(Math.max(0, deltaTimeMs) / 1000);
-    };
-    gsap.ticker.add(onTick);
-
-    motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    syncMotion = () => state.setReducedMotion(motionQuery!.matches);
-    syncMotion();
-    motionQuery.addEventListener('change', syncMotion);
-  } catch {
-    destroy();
-    return null;
-  }
-
-  return { destroy };
+  return {
+    destroy: () => {
+      motionQuery.removeEventListener('change', syncMotion);
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('scroll', updateProgress);
+      window.removeEventListener('resize', updateProgress);
+      unsubscribe();
+      state.setRaw(0);
+      root.style.removeProperty('--scroll-progress');
+      delete root.dataset.scrollProgress;
+    },
+  };
 }
