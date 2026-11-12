@@ -123,16 +123,17 @@ test.describe('US-006 个人介绍', () => {
       .toBe('3d');
 
     const before = await frames(page);
-    await page.waitForTimeout(700);
-    const inViewFrames = await frames(page);
-    expect(inViewFrames, '视口内应持续渲染').toBeGreaterThan(before);
+    // WebKit 软件渲染帧率可能很低，用轮询等待首个新增帧（逐帧写 dataset）
+    await expect
+      .poll(async () => frames(page), { timeout: 8_000, message: '视口内应持续渲染' })
+      .toBeGreaterThan(before);
 
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
     await page.waitForTimeout(400);
     const pausedStart = await frames(page);
     await page.waitForTimeout(700);
     const pausedEnd = await frames(page);
-    expect(pausedEnd - pausedStart, '离屏后应暂停渲染').toBeLessThanOrEqual(10);
+    expect(pausedEnd - pausedStart, '离屏后应暂停渲染').toBeLessThanOrEqual(2);
   });
 
   test('头像上下文丢失且恢复失败后回退静态形象，文字不消失', async ({ page }, testInfo) => {
@@ -197,10 +198,13 @@ test.describe('US-006 个人介绍', () => {
   });
 
   test('各视口无横向溢出且正文对比度达标', async ({ page }) => {
+    // 单次加载 + 5 次 resize（避免 5 次导航与 WebGL 上下文销毁拖满 30s 预算）
+    test.setTimeout(60_000);
+    await page.goto('/');
+    await settle(page);
     for (const width of [1440, 1024, 768, 390, 375]) {
       await page.setViewportSize({ width, height: 844 });
-      await page.goto('/');
-      await settle(page);
+      await page.waitForTimeout(150);
       await expectNoHorizontalOverflow(page);
       await expect(page.locator('[data-about-bio]').first()).toBeVisible();
       expect(await aboutContrast(page), `${width}px 正文对比度`).toBeGreaterThanOrEqual(4.5);

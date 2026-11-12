@@ -91,7 +91,8 @@ export default function AboutPortrait({ label, alt, fallback }: Props) {
 
   const handleFrame = useCallback(() => {
     frames.current += 1;
-    if (frames.current % 10 === 0 && wrapperRef.current) {
+    // 逐帧写入：WebKit 软件渲染帧率可能低于 15fps，按 10 帧批次写会长时间停在 0
+    if (wrapperRef.current) {
       wrapperRef.current.dataset.avatarFrames = String(frames.current);
     }
   }, []);

@@ -161,7 +161,8 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
     };
     const f = (n: number) => n.toFixed(3);
     frameCountRef.current += 1;
-    if (frameCountRef.current % 10 === 0) put('heroFrames', String(frameCountRef.current));
+    // 逐帧写入（put 已做同值去重）：低帧率环境下按批次写会长时间停在旧值
+    put('heroFrames', String(frameCountRef.current));
     put('parallaxX', f(report.parallax.x));
     put('parallaxY', f(report.parallax.y));
     put('particleX', f(report.particleOffset.x));

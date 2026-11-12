@@ -420,7 +420,7 @@ test.describe('滚动转场', () => {
     const start = await heroFrames();
     await page.waitForTimeout(800);
     const end = await heroFrames();
-    expect(end - start, '离屏且收敛后 hero 渲染循环应暂停').toBeLessThanOrEqual(10);
+    expect(end - start, '离屏且收敛后 hero 渲染循环应暂停').toBeLessThanOrEqual(2);
 
     // 暂停前转场必须已收敛到终点，而不是冻结在中途
     expect(Number(await canvas.getAttribute('data-transition'))).toBeGreaterThan(0.9);
