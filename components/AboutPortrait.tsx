@@ -39,6 +39,13 @@ type Props = {
   fallback: string;
 };
 
+declare global {
+  interface Window {
+    /** 头像渲染帧计数探针（E2E 读取） */
+    __avatarFrames?: number;
+  }
+}
+
 /**
  * US-006d/e：3D 抽象头像容器。
  * - 静态 HTML 先渲染 SVG 抽象形象 + 文本替代，文字先于 3D（开发红线 1）。
@@ -65,13 +72,16 @@ export default function AboutPortrait({ label, alt, fallback }: Props) {
     return () => query.removeEventListener('change', sync);
   }, []);
 
+  // WebGL 探测与画质分档延后到进入视口之后：
+  // isWebGLAvailable() 会创建一次性 WebGL 上下文，放在首屏 hydration 阶段是纯 TBT 成本
   useEffect(() => {
+    if (!inView || tier) return;
     if (!isWebGLAvailable()) {
       setReason('no-webgl');
       return;
     }
     setTier(getQualityTier(window.innerWidth, window.devicePixelRatio || 1));
-  }, []);
+  }, [inView, tier]);
 
   useEffect(() => {
     const el = wrapperRef.current;
@@ -91,10 +101,8 @@ export default function AboutPortrait({ label, alt, fallback }: Props) {
 
   const handleFrame = useCallback(() => {
     frames.current += 1;
-    // 逐帧写入：WebKit 软件渲染帧率可能低于 15fps，按 10 帧批次写会长时间停在 0
-    if (wrapperRef.current) {
-      wrapperRef.current.dataset.avatarFrames = String(frames.current);
-    }
+    // 帧计数走 window 探针：每帧写 dataset 会让样式失效，纯属首屏成本
+    window.__avatarFrames = frames.current;
   }, []);
 
   const handleFailure = useCallback((why: string) => {
@@ -141,7 +149,6 @@ export default function AboutPortrait({ label, alt, fallback }: Props) {
       data-about-avatar
       data-avatar-mode={mode}
       data-avatar-reason={reason}
-      data-avatar-frames="0"
       role="img"
       aria-label={label}
       aria-describedby="about-avatar-alt"

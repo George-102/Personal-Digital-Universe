@@ -22,6 +22,13 @@ const HeroScene = dynamic(() => import('@/components/three/HeroScene'), { ssr: f
 
 export type InteractionLabels = { core: string; orbitNode: string };
 
+declare global {
+  interface Window {
+    /** 渲染帧计数探针（E2E 读取），避免每帧写 dataset 触发样式失效 */
+    __heroFrames?: number;
+  }
+}
+
 class SceneErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() {
@@ -45,6 +52,8 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  // tooltip 尺寸缓存：避免每帧读 offsetWidth/offsetHeight 触发强制同步布局
+  const tipSizeRef = useRef({ w: 0, h: 0 });
   const trackerRef = useRef<PointerTracker | null>(null);
   const dragTargetRef = useRef<Vec2>({ x: 0, y: 0 });
   const hoverIdRef = useRef<string | null>(null);
@@ -58,6 +67,13 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
     if (!isWebGLAvailable()) return;
     setTier(getQualityTier(window.innerWidth, window.devicePixelRatio || 1));
   }, []);
+
+  // tooltip 尺寸只在文案变化后测量一次，供每帧定位读取缓存值
+  useEffect(() => {
+    const tip = tooltipRef.current;
+    if (!tip) return;
+    tipSizeRef.current = { w: tip.offsetWidth, h: tip.offsetHeight };
+  }, [hoverId, tier]);
 
   useEffect(() => {
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -86,13 +102,16 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
   }, [tier]);
 
   // ScrollDriver 的 RAF 独立于 R3F，离屏时仍会推进 damp；订阅进度差判断是否仍在收敛
-  useEffect(
-    () =>
-      sharedScrollState.subscribe(({ raw, progress }) => {
-        setSettling(Math.abs(raw - progress) > 0.002);
-      }),
-    [],
-  );
+  // 只在布尔值翻转时 setState：每帧无条件 setSettling 会让 React 每帧做一次调度检查
+  useEffect(() => {
+    let last: boolean | null = null;
+    return sharedScrollState.subscribe(({ raw, progress }) => {
+      const next = Math.abs(raw - progress) > 0.002;
+      if (next === last) return;
+      last = next;
+      setSettling(next);
+    });
+  }, []);
 
   // Canvas 卸载（含上下文丢失转静态）时移除全部指针监听
   useEffect(
@@ -161,8 +180,8 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
     };
     const f = (n: number) => n.toFixed(3);
     frameCountRef.current += 1;
-    // 逐帧写入（put 已做同值去重）：低帧率环境下按批次写会长时间停在旧值
-    put('heroFrames', String(frameCountRef.current));
+    // 帧计数走 window 探针：写 dataset 每帧都会让样式失效，是首屏 TBT 的纯成本
+    window.__heroFrames = frameCountRef.current;
     put('parallaxX', f(report.parallax.x));
     put('parallaxY', f(report.parallax.y));
     put('particleX', f(report.particleOffset.x));
@@ -185,8 +204,10 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
     const tip = tooltipRef.current;
     if (tip) {
       const point = hoverIdRef.current === 'orbit-node' ? report.hitOrbitNode : report.hitCore;
-      const x = clamp(point.x + 16, 8, Math.max(8, window.innerWidth - tip.offsetWidth - 8));
-      const y = clamp(point.y - 44, 8, Math.max(8, window.innerHeight - tip.offsetHeight - 8));
+      // 尺寸用缓存：每帧读 offsetWidth/offsetHeight 会在本函数刚写完 dataset 后强制同步布局
+      const { w, h } = tipSizeRef.current;
+      const x = clamp(point.x + 16, 8, Math.max(8, window.innerWidth - w - 8));
+      const y = clamp(point.y - 44, 8, Math.max(8, window.innerHeight - h - 8));
       tip.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
     }
   }, []);

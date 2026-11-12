@@ -47,7 +47,9 @@ const aboutContrast = (page: Page) =>
   });
 
 const frames = async (page: Page) =>
-  Number(await page.locator('[data-about-avatar]').getAttribute('data-avatar-frames'));
+  Number(
+    await page.evaluate(() => (window as unknown as { __avatarFrames?: number }).__avatarFrames ?? 0),
+  );
 
 test.describe('US-006 个人介绍', () => {
   test('正文与要点在无 JS 的静态 HTML 中完整可读', async ({ page }) => {

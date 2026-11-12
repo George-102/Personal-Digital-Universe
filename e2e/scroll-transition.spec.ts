@@ -430,7 +430,8 @@ test.describe('滚动转场', () => {
     // 等待 damp 收敛（滚动驱动仍在跑），收敛后 frameloop 应停下
     await page.waitForTimeout(2000);
     const canvas = page.locator('[data-interaction-canvas][data-transition]').first();
-    const heroFrames = async () => Number(await canvas.getAttribute('data-hero-frames'));
+    const heroFrames = async () =>
+      Number(await page.evaluate(() => (window as unknown as { __heroFrames?: number }).__heroFrames ?? 0));
     const start = await heroFrames();
     await page.waitForTimeout(800);
     const end = await heroFrames();
