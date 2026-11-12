@@ -46,7 +46,7 @@
 5. ~~**T-007** 本地轻验证分工~~（2026-11-11 passing：run 42999448346 verify 全绿 201 passed / 75 skipped / 0 failed，CI run URL + passed 数已回写本文件与 T-007.evidence，状态转 passing）
 6. ~~**US-003** 电影级页面转场（US-003a~h，用户指定提前）~~（2026-11-12 passing：本地全套 E2E 239/0 + Lighthouse 达标，云端 run [43025954251](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43025954251) verify 7m30s 全绿 239 passed / 77 skipped / 0 failed，CI run URL 已回写 US-003h.evidence）
 7. **T-003** Vitest 单元/集成测试基础设施（迁移时同步改 CI 的 `npm test`）
-8. **US-004** 全局导航（US-004a~g 已 passing，US-004h 等待云端 verify run URL 回写；core.spec『移动端菜单』fixme 已移除并实跑）
+8. ~~**US-004** 全局导航~~（2026-11-12 passing：US-004a~h 共 8 任务全 passing，本地 verify:local exit 0，云端 run [`43189384137`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43189384137) verify 全绿 280 passed / 76 skipped / 0 failed + Lighthouse 达标 + deploy success，CI run URL 已回写 US-004h 与 PRD_UserStory.json）
 9. 之后按 roadmap：US-006 → US-008 → US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 / US-003 已完成）
 
 ## 风险与注意事项
@@ -93,7 +93,7 @@
 - 排障：①navTargetId 正则漏捕获组（match[1] undefined）；②遮罩放在 header 内时被 backdrop-filter 的包含块限制，改为 header 同级；③移动端收起菜单时缺少 navigation 地标（a11y 回归），改为移动顶栏常驻 `<nav>`；④桌面导航在 <md 隐藏后 core.spec 需先展开菜单。
 - 验证：RED→GREEN（nav.test.mjs 先 ERR_MODULE_NOT_FOUND 后 11/11）；构建期注入非法 href 实测 build exit 1、恢复 exit 0；`npm run verify:local` exit 0（npm test 84/84、lint/typecheck、build 7 页、i18n 100%、size 476.87kB brotli、audit 0 high）；分批 E2E 四项目全绿——navigation 37 passed / 3 skipped、core+a11y 61 passed / 3 skipped、overflow 100/100。
 - **未决 / 风险**：本地一次性跑全套 356 项时 `serve out` 中途退出（ERR_CONNECTION_REFUSED）且 test-results 出现 ENOENT，同时检测到**并行会话**正在运行 `playwright test e2e/scroll-transition.spec.ts` 并占用 4173 端口与 test-results；按 T-007 改为分批本地 + 云端全量重验证。并行会话已将滚动驱动从 GSAP 改为原生 scroll + RAF（`lib/scroll.ts`、`components/ScrollDriver.tsx`、`package.json`、`package-lock.json`、`e2e/scroll-transition.spec.ts`、`AGENTS.md`、`docs/PRD.md`），本会话按「不覆盖他人未提交工作」原则提交时显式排除这些文件。
-- **下一步**：push main → 回写云端 verify run URL 与 passed 数到 `feature_list.json` US-004h 与本文件 → US-004h 转 passing。
+- **已回写并转 passing（2026-11-12）**：用户 push main（7904e25）后云端 Verify workflow run [`43189384137`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43189384137) 全绿——verify job 10m31s success（Playwright 四项目 **280 passed / 76 skipped / 0 failed**，5.8m；Lighthouse CI 对 `/` 与 `/en/` 各 3 run，Healthcheck passed、All results processed!、断言全达标；lint/typecheck/build/单测/质量门禁逐段 success），deploy job 1m11s success，preview 按 PR 条件 skipped。本地以 Node v26.10.0 复跑 `npm run verify:local` exit 0（i18n 100%、size 435.34kB ≤1MB、audit 0 high），并确认 `e2e/core.spec.ts` / `navigation.spec.ts` 无残留 fixme。CI run URL 与 passed 数已回写 `feature_list.json` US-004h、`PRD_UserStory.json` US-004 与本文件；US-004h 与 US-004 均转 passing。期间 run 43188801947 因 concurrency 取消、43177217750 因 Lighthouse TBT 超阈值失败（已由 fe88960 原生 scroll+RAF 修复），均被本次绿色 run 覆盖，无遗留阻塞。
 
 ## T-007 本地轻验证 / 云端重验证分工（2026-11-11）
 

@@ -72,13 +72,14 @@
       "details": "网站设置全局导航栏，导航项目包括 Home、About、Journey、Research、Projects、Writing、Interests、Contact。导航栏可以采用透明玻璃质感（Glassmorphism），支持固定在页面顶部，当前所在模块应当具有明显的激活状态。点击导航项目后，页面平滑移动到对应区域，导航切换可以配合 3D 相机运动或局部空间过渡。移动端采用折叠菜单。导航必须清晰易用，不能为了视觉效果隐藏核心入口。",
       "Acceptance Criteria": "- 正常场景：点击导航项目后，可以准确到达对应模块。- 正常场景：页面滚动时，导航激活状态同步变化。- 正常场景：导航栏在不同背景下始终具有足够的可读性。- 异常场景：目标模块不存在时，不应产生无效跳转。- 异常场景：移动端可以通过触摸正常展开和关闭导航。",
       "DoD": "五条验收逐条通过并留证；core.spec『移动端菜单』4 项 test.fixme() 断言移除并恢复执行（不删断言、不降阈值）；npm run verify:local 通过 + 云端 verify job 全绿并回写 CI run URL。",
-      "status": "in_progress",
+      "status": "passing",
       "evidence": [
-        "2026-11-12：US-004a~g 共 7 个任务全部 passing，逐条证据见 feature_list.json；五条验收逐条对应——点击准确到达、滚动激活态同步、三处背景对比度 ≥4.5、无效目标不跳转、移动端触摸展开关闭。",
-        "2026-11-12：npm run verify:local exit 0（84/84 单测、lint/typecheck/build/i18n/size/audit）；分批 E2E 四项目全绿（navigation 37 passed、core+a11y 61 passed、overflow 100/100）。",
-        "2026-11-12：US-004h 等待 push main 后的云端 verify 全绿与 CI run URL 回写。"
+        "2026-11-12：US-004a~h 共 8 个任务全部 passing，逐条证据见 feature_list.json；五条验收逐条对应——点击准确到达、滚动激活态同步、三处背景对比度 ≥4.5、无效目标不跳转、移动端触摸展开关闭。",
+        "2026-11-12：npm run verify:local exit 0（84/84 单测、lint/typecheck/build/i18n 100%/size 435.34kB/audit 0 high）；分批 E2E 四项目全绿（navigation 37 passed、core+a11y 61 passed、overflow 100/100）；core.spec『移动端菜单』×4 fixme 已移除并实跑，e2e/core.spec.ts 与 navigation.spec.ts 无残留 fixme。",
+        "2026-11-12：push main（7904e25）后云端 Verify workflow run 43189384137（https://github.com/George-102/Personal-Digital-Universe/actions/runs/43189384137）全绿——verify job 10m31s success（Playwright 四项目 280 passed / 76 skipped / 0 failed；Lighthouse CI 对 / 与 /en/ 各 3 run，Healthcheck passed、All results processed!、断言全达标）、deploy job 1m11s success；preview job 按 PR 条件 skipped。CI run URL 与 passed 数已回写 feature_list.json US-004h 与 claude-progress.md。",
+        "2026-11-12 复核：本地以 Node v26.10.0 复跑 npm run verify:local exit 0；cloud run 43188801947 因 concurrency 被取消、43177217750 因 Lighthouse TBT 超阈值失败（已由 fe88960 原生 scroll+RAF 修复），两者均被 7904e25 的绿色 run 覆盖，无遗留阻塞。"
       ],
-      "notes": "core.spec『移动端菜单』×4 fixme 已移除并实跑（US-004e）。当前导航按决策 A 只注册真实存在的 Home / About，其余 6 项随对应故事落地时加入。"
+      "notes": "core.spec『移动端菜单』×4 fixme 已移除并实跑（US-004e）。当前导航按决策 A 只注册真实存在的 Home / About，其余 6 项随对应故事落地时加入。2026-11-12 云端 verify 全绿后转 passing。"
     },
     {
       "id": "US-005",

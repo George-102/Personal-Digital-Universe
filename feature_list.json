@@ -998,7 +998,7 @@
       "area": "全局导航",
       "title": "US-004 整体验收与回归",
       "user_visible_behavior": "PRD US-004 五条验收逐条可核对，导航不影响已有行为与现有质量门禁。",
-      "status": "in_progress",
+      "status": "passing",
       "verification": [
         "逐条核对五条验收：点击准确到达对应模块、滚动时激活态同步、不同背景下可读、目标不存在不无效跳转、移动端触摸展开关闭；证据写入 evidence。",
         "对照 PRD US-004 详述 1~9 逐条确认覆盖范围（2 的 8 项清单按决策 A 逐条映射：当前 2 项已注册，6 项待对应故事）。",
@@ -1011,9 +1011,10 @@
         "2026-11-12：npm run verify:local exit 0——npm test 84/84、lint/typecheck 干净、build 7 静态页、i18n 100%（14 键）、size 476.87kB brotli ≤1MB、audit 0 high（6 moderate 为既有 @typescript-eslint 链）。",
         "2026-11-12：分批 E2E 四项目全绿——navigation.spec 37 passed / 3 skipped / 0 failed；core+a11y 61 passed / 3 skipped / 0 failed（含 4 项移动菜单原 fixme 已转实跑）；overflow 100/100；degradation 等其余 spec 由云端全量覆盖。",
         "2026-11-12 阻塞与排障：本地一次性跑全套 356 项时，`serve out` 进程中途退出（ERR_CONNECTION_REFUSED）且 test-results 产物出现 ENOENT，同时检测到并行会话正在运行 `playwright test e2e/scroll-transition.spec.ts` 占用 4173 端口与 test-results 目录；按 T-007「本地轻验证、云端全量重验证」改为分批回归 + 云端 CI 全量。并行会话已将滚动驱动从 GSAP 改为原生 scroll + RAF（lib/scroll.ts / ScrollDriver.tsx / package.json / scroll-transition.spec.ts，未提交），本任务按「不覆盖他人未提交工作」原则未提交这些文件。",
-        "2026-11-12：待回写云端 CI run URL 与 passed 数（push main 后）。"
+        "2026-11-12：push main（7904e25）后云端 Verify workflow run `43189384137`（https://github.com/George-102/Personal-Digital-Universe/actions/runs/43189384137）全绿——verify job 10m31s success：Playwright 四项目 280 passed / 76 skipped / 0 failed（5.8m）、Lighthouse CI 对 / 与 /en/ 各 3 run（Healthcheck passed、All results processed!、2 URL / 6 runs 断言全达标）、lint/typecheck/build/单测/质量门禁逐段 success；deploy job 1m11s success；preview job 按 PR 条件 skipped。CI run URL 与 passed 数已回写 claude-progress.md 与 PRD_UserStory.json，本任务转 passing。",
+        "2026-11-12 复核：本地以 Node v26.10.0 复跑 npm run verify:local exit 0（84/84 单测、i18n 100%、size 435.34kB ≤1MB、audit 0 high）；e2e/core.spec.ts 与 navigation.spec.ts 无残留 fixme，DoD 的『移动菜单 4 项断言恢复执行』满足。cloud run 43188801947 因 concurrency 取消、43177217750 因 Lighthouse TBT 超阈值失败（已由 fe88960 原生 scroll+RAF 修复），均被 7904e25 绿色 run 覆盖，无遗留阻塞。"
       ],
-      "notes": "本任务通过即 US-004 完成。滚动进度指示器属 US-005、滚动转场属 US-003，均不在本故事范围。US-004a~g 已 passing；本条 in_progress 仅等待云端 verify 全绿证据。并行会话的滚动驱动重构属于他人未提交改动，提交时已显式排除（AGENTS.md / docs/PRD.md / lib/scroll.ts / components/ScrollDriver.tsx / package.json / package-lock.json / e2e/scroll-transition.spec.ts）。"
+      "notes": "本任务通过即 US-004 完成。滚动进度指示器属 US-005、滚动转场属 US-003，均不在本故事范围。**已 passing（2026-11-12）**：US-004a~h 全部通过，本地验证 + 云端 run 43189384137 证据齐备。并行会话的滚动驱动重构属于他人未提交改动，提交时已显式排除（AGENTS.md / docs/PRD.md / lib/scroll.ts / components/ScrollDriver.tsx / package.json / package-lock.json / e2e/scroll-transition.spec.ts）。"
     }
   ],
   "roadmap": [
