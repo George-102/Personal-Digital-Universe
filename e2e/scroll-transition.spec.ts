@@ -28,6 +28,24 @@ async function scrollToTransitionMid(page: Page) {
   });
 }
 
+/**
+ * 确定性跳到 #about 顶部：先内联覆盖 scroll-behavior:smooth。
+ * Safari 会把 behavior:'instant' 当作 auto → 走 CSS 平滑滚动，
+ * 长页面下平滑未结束就被误判为「已收敛」。
+ */
+async function jumpToAboutTop(page: Page) {
+  await page.evaluate(() => {
+    const root = document.documentElement;
+    root.style.scrollBehavior = 'auto';
+    const about = document.querySelector('#about');
+    const top = about ? about.getBoundingClientRect().top + window.scrollY : 0;
+    window.scrollTo({ top, behavior: 'auto' });
+  });
+  await expect
+    .poll(async () => (await readScrollProgress(page)) ?? -1, { timeout: 10_000 })
+    .toBeGreaterThan(0.9);
+}
+
 test.describe('滚动转场', () => {
   test('滚动进度源把 hero→#about 归一化为 0~1', async ({ page }) => {
     await page.goto('/');
@@ -278,11 +296,7 @@ test.describe('滚动转场', () => {
     }
 
     // 停在终点后状态应收敛到唯一终值（单一进度源，无相互冲突的动画状态）
-    await page.evaluate(() =>
-      document
-        .querySelector('#about')
-        ?.scrollIntoView({ behavior: 'instant', block: 'start' }),
-    );
+    await jumpToAboutTop(page);
     await expect
       .poll(
         async () => {
