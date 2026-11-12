@@ -27,6 +27,50 @@ html {
   animation: hint-bob 2.2s ease-in-out infinite;
 }
 
+/* US-004b：玻璃质感固定导航栏（半透明 + 模糊 + 细边框，PRD 详述 3/4） */
+.site-nav {
+  border-bottom: 1px solid rgb(232 234 246 / 0.12);
+  background: rgb(5 6 15 / 0.62);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+}
+
+.site-nav-link {
+  position: relative;
+  color: rgb(232 234 246 / 0.82);
+  transition: color 160ms ease;
+}
+
+.site-nav-link:hover,
+.site-nav-link:focus-visible,
+.site-nav-link[data-active='true'] {
+  color: var(--color-accent);
+}
+
+/* US-004d：当前模块的明显激活态（下划线光条） */
+.site-nav-link[data-active='true']::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  box-shadow: 0 0 8px rgb(34 211 238 / 60%);
+}
+
+/* US-004e：移动端折叠菜单面板（不透明度更高，保证文字可读） */
+.site-nav-panel {
+  background: rgb(5 6 15 / 0.96);
+}
+
+.site-nav a:focus-visible,
+.site-nav button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 999px;
+}
+
 @keyframes hint-bob {
   0%,
   100% {
@@ -141,6 +185,9 @@ html {
     animation: none;
   }
   .interaction-tooltip {
+    transition: none;
+  }
+  .site-nav-link {
     transition: none;
   }
   /* US-003f：减少动态效果时面板不做展开动画，直接完整呈现（简化转场） */

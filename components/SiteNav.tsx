@@ -1,17 +1,20 @@
-import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import NavBar from '@/components/NavBar';
+import { navItems, navMessageKey, resolveNavHref, sortNavItems, type NavLang } from '@/lib/nav';
 
-export default function SiteNav({ lang }: { lang: 'zh' | 'en' }) {
-  const base = lang === 'en' ? '/en/' : '/';
+/** 服务端壳：从注册表解析双语文案与本地化 href，把纯数据交给 NavBar。 */
+export default async function SiteNav({ lang }: { lang: NavLang }) {
+  const tn = await getTranslations({ locale: lang, namespace: 'Nav' });
+  const items = sortNavItems(navItems).map((item) => ({
+    id: item.id,
+    label: tn(navMessageKey(item)),
+    href: resolveNavHref(item, lang),
+  }));
+
   return (
-    <header className="fixed inset-x-0 top-0 z-10 border-b border-white/10 bg-space/60 backdrop-blur">
-      <nav aria-label={lang === 'zh' ? '主导航' : 'Main navigation'} className="mx-auto flex max-w-5xl items-center gap-6 px-6 py-3 text-sm">
-        <Link href={base} className="font-semibold tracking-wide">
-          {lang === 'zh' ? '首页' : 'Home'}
-        </Link>
-        <Link href={`${base}#about`} className="opacity-80 transition-opacity hover:opacity-100">
-          About
-        </Link>
-      </nav>
-    </header>
+    <NavBar
+      items={items}
+      labels={{ main: tn('mainLabel'), menu: tn('menu'), menuClose: tn('menuClose') }}
+    />
   );
 }

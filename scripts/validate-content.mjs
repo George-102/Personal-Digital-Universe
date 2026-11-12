@@ -10,6 +10,7 @@ import { reading } from '../content/reading.ts';
 import { interests } from '../content/interests.ts';
 import { heroInteractiveObjects, validateInteractiveObjects } from '../lib/interactive.ts';
 import { transitionSegments, validateTransitionSegments } from '../lib/transitions.ts';
+import { navItems, validateNavItems } from '../lib/nav.ts';
 
 const interactiveErrors = validateInteractiveObjects(heroInteractiveObjects);
 if (interactiveErrors.length > 0) {
@@ -20,6 +21,12 @@ if (interactiveErrors.length > 0) {
 const transitionErrors = validateTransitionSegments(transitionSegments);
 if (transitionErrors.length > 0) {
   console.error(`transitions 配置校验失败：\n${transitionErrors.join('\n')}`);
+  process.exit(1);
+}
+
+const navErrors = validateNavItems(navItems);
+if (navErrors.length > 0) {
+  console.error(`nav 配置校验失败：\n${navErrors.join('\n')}`);
   process.exit(1);
 }
 

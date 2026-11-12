@@ -23,7 +23,10 @@ export default async function HomeSections({ lang }: { lang: 'zh' | 'en' }) {
 
   return (
     <>
-      <section className="relative flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
+      <section
+        id="home"
+        className="relative flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center"
+      >
         <HeroBackground />
         <ScrollDriver />
         <HeroCanvas labels={{ core: ti('core'), orbitNode: ti('orbitNode') }} />

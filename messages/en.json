@@ -11,5 +11,12 @@
     "orbitNode": "Orbit node · click to explore the intro",
     "fallback": "Skip the 3D scene, go to intro",
     "hint": "Move to explore · drag to rotate · click the core to enter"
+  },
+  "Nav": {
+    "mainLabel": "Main navigation",
+    "home": "Home",
+    "about": "About",
+    "menu": "Menu",
+    "menuClose": "Close menu"
   }
 }

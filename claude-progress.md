@@ -46,7 +46,7 @@
 5. ~~**T-007** 本地轻验证分工~~（2026-11-11 passing：run 42999448346 verify 全绿 201 passed / 75 skipped / 0 failed，CI run URL + passed 数已回写本文件与 T-007.evidence，状态转 passing）
 6. ~~**US-003** 电影级页面转场（US-003a~h，用户指定提前）~~（2026-11-12 passing：本地全套 E2E 239/0 + Lighthouse 达标，云端 run [43025954251](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43025954251) verify 7m30s 全绿 239 passed / 77 skipped / 0 failed，CI run URL 已回写 US-003h.evidence）
 7. **T-003** Vitest 单元/集成测试基础设施（迁移时同步改 CI 的 `npm test`）
-8. **US-004** 全局导航（8 项 + 激活态 + 移动折叠菜单——core.spec『移动端菜单』断言在此执行，同时移除对应 fixme）
+8. **US-004** 全局导航（US-004a~g 已 passing，US-004h 等待云端 verify run URL 回写；core.spec『移动端菜单』fixme 已移除并实跑）
 9. 之后按 roadmap：US-006 → US-008 → US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 / US-003 已完成）
 
 ## 风险与注意事项
@@ -82,6 +82,18 @@
 - 验证：npm test 73/73；全套 E2E 四项目 316 tests **239 passed / 77 skipped / 0 failed**（--workers=2）；CI=1 verify:lighthouse exit 0（6 报告，LCP 元素实测 `<p>` 非 CANVAS）；verify:local exit 0（size 475.75kB brotli ≤1MB）；构建期拒绝非法转场配置实测（minOpacity 0.5 → build exit 1）。
 - 排坑记录：①页面过短滚不到 end 点时进度封顶 0.69——end clamp 到可达 maxScroll；②`-0` vs `0` 符号零坑（strict deepEqual）；③CSS smooth 使程序化 `behavior:'auto'` 滚动动画排队互扰（scrollY 卡 441/496），程序化跳转统一 `behavior:'instant'`；④进度源每帧重写 CSS 变量抢跑 fallback 断言——writeDom 去重守卫 + 断言单次 evaluate 同步读取；⑤mobile-WebKit 不支持注入滚轮（等价滚动断言，断言未删）；⑥移动端 350 粒子属低画质档，粒子壳层计算按设计关闭（E2E 双分支断言）。
 - **已回写并转 passing（2026-11-12）**：用户 push main 后云端 Verify workflow run [`43025954251`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43025954251) 全绿——verify job 7m30s success（Playwright 四项目 239 passed / 77 skipped / 0 failed，4.3m，与本地全套数字一致；Lighthouse 达标）、deploy job 32s success。CI run URL 与 passed 数已回写 US-003h.evidence，US-003h 转 passing。
+
+## US-004 迭代（2026-11-12，US-004a~g passing，US-004h 待云端 CI）
+
+**US-004（访客使用空间化导航系统）拆为 8 个任务（priority 43-50）**，决策 A：导航注册表只收录真实存在的模块（当前 Home / About），后续故事落地时逐条加入，不建空占位 section。
+
+- 新增：`lib/nav.ts`（NavItem 注册表 + validateNavItems / navTargetId / resolveNavHref / navMessageKey，prebuild 校验）、`components/NavBar.tsx`（客户端导航：注册表渲染、点击目标守卫、滚动激活态、移动端折叠菜单）、`e2e/navigation.spec.ts`（10 用例 × 4 项目）、`scripts/nav.test.mjs`（11 项 TDD）。
+- 改造：`components/SiteNav.tsx`（服务端壳：Nav 文案 + 本地化 href）、`components/HomeSections.tsx`（hero section id="home"）、`app/globals.css`（.site-nav 玻璃质感 / 激活态光条 / focus-visible / mobile 面板）、`messages/{zh,en}.json`（Nav：mainLabel/home/about/menu/menuClose，各 14 键）、`scripts/validate-content.mjs`（nav 校验接入）、`e2e/core.spec.ts`（About 定位放宽为 /about|关于/i；移动端先展开菜单；移除移动菜单 fixme）。
+- 功能要点：玻璃质感固定顶部导航（半透明 + backdrop-blur + 细边框）；点击目标存在走原生 smooth scroll + hash 同步，不存在则 preventDefault（运行时注入 ghost 目标实测 URL 不变、无异常）；滚动激活态用 rAF 合并滚动计算并写 data-active / aria-current（短页面滚到底取最后模块）；移动端折叠菜单（aria-expanded / Esc / 遮罩 / 焦点进入与回焦，常驻 navigation 地标）；导航点击复用 US-003 ScrollState 进度源驱动 3D 相机（无第二份相机配置）；对比度按半透明合成后计算，三处背景 ≥4.5。
+- 排障：①navTargetId 正则漏捕获组（match[1] undefined）；②遮罩放在 header 内时被 backdrop-filter 的包含块限制，改为 header 同级；③移动端收起菜单时缺少 navigation 地标（a11y 回归），改为移动顶栏常驻 `<nav>`；④桌面导航在 <md 隐藏后 core.spec 需先展开菜单。
+- 验证：RED→GREEN（nav.test.mjs 先 ERR_MODULE_NOT_FOUND 后 11/11）；构建期注入非法 href 实测 build exit 1、恢复 exit 0；`npm run verify:local` exit 0（npm test 84/84、lint/typecheck、build 7 页、i18n 100%、size 476.87kB brotli、audit 0 high）；分批 E2E 四项目全绿——navigation 37 passed / 3 skipped、core+a11y 61 passed / 3 skipped、overflow 100/100。
+- **未决 / 风险**：本地一次性跑全套 356 项时 `serve out` 中途退出（ERR_CONNECTION_REFUSED）且 test-results 出现 ENOENT，同时检测到**并行会话**正在运行 `playwright test e2e/scroll-transition.spec.ts` 并占用 4173 端口与 test-results；按 T-007 改为分批本地 + 云端全量重验证。并行会话已将滚动驱动从 GSAP 改为原生 scroll + RAF（`lib/scroll.ts`、`components/ScrollDriver.tsx`、`package.json`、`package-lock.json`、`e2e/scroll-transition.spec.ts`、`AGENTS.md`、`docs/PRD.md`），本会话按「不覆盖他人未提交工作」原则提交时显式排除这些文件。
+- **下一步**：push main → 回写云端 verify run URL 与 passed 数到 `feature_list.json` US-004h 与本文件 → US-004h 转 passing。
 
 ## T-007 本地轻验证 / 云端重验证分工（2026-11-11）
 
