@@ -1200,7 +1200,7 @@
       "area": "个人介绍",
       "title": "US-006 整体验收、文档回写与云端 CI",
       "user_visible_behavior": "PRD US-006 五条验收逐条可核对，个人介绍不影响已有行为与现有质量门禁。",
-      "status": "in_progress",
+      "status": "passing",
       "verification": [
         "逐条核对 PRD 五条验收：完整介绍可读、形象与文字清晰、CV 配置后可下载、头像 / 3D 失败文字仍在、未配置简历不显示无效入口；PRD 详述 1~7 逐条映射，证据写入 evidence。",
         "全套 E2E 四项目 0 失败（不新增 fixme、不删断言、不降阈值）；npm run verify:local 通过。",
@@ -1210,7 +1210,8 @@
       "evidence": [
         "2026-11-12：PRD US-006 五条验收逐条核对——①完整介绍可读（无 JS 静态 HTML + 双语用例）；②形象与文字清晰（3D 头像 + fallback + 视口内渲染用例）；③CV 可下载（配置态临时构建 E2E + /cv.pdf 200）；④头像/3D 失败文字仍在（no-webgl / context-lost / 资源 abort 三路径）；⑤未配置简历无无效入口（默认产物 0 命中）。PRD 详述 1~7 映射：1/2/3 → US-006c/d，4 → US-006b，5 → US-006d，6 → US-006f，7 → US-006b。",
         "2026-11-12：全套 E2E 四项目修复后分批全绿（about 34 passed / 2 skipped；scroll-transition + navigation 78 passed / 6 skipped；其余 spec 由全套 310 passed / 78 skipped 覆盖），未新增 fixme、未删断言、未降阈值。",
-        "2026-11-12：本地 verify:local 与 Lighthouse 均 exit 0；云端 verify job 待 push 后回写 CI run URL（AGENTS.md 要求 CI run URL 才能标记 passing，本条保持 in_progress）。"
+        "2026-11-12 云端 CI 全绿：run 43259860487（commit 4e210ea，https://github.com/George-102/Personal-Digital-Universe/actions/runs/43259860487）—— verify job success（lint / typecheck / build / npm test / 质量门禁 / 四项目 acceptance tests / Lighthouse CI 逐段 success），deploy job success，preview 按条件 skipped。Lighthouse 本轮 6 次运行：TBT 最优 114ms（`/`）与 115ms（`/en/`，阈值 200）、LCP 208-211ms、CLS 0、perf 98-99、a11y 100、seo 100、bp 96。",
+        "2026-11-12 TBT 回归修复（commit 4e210ea，上一版 run 43222980899 曾以 218-250ms 挂掉门禁）：根因是首屏每帧固定成本 —— ① HeroCanvas 每帧写 18 个 dataset 后紧接读 tooltip offsetWidth/offsetHeight，形成强制同步布局；② 帧计数逐帧写 dataset；③ sharedScrollState 每帧无条件 setSettling；④ 头像挂载即调 isWebGLAvailable 创建一次性 WebGL 上下文。修复为尺寸缓存 / window 探针 / 布尔翻转去重 / 视口内才探测，未改任何阈值。修复后 TBT 从 218-250ms 降到 114-124ms，perf 89-93 → 98-99。"
       ],
       "notes": "本任务通过即 US-006 完成。文案定稿与 CV 文件由用户后续提供，只需改 content/ 与 public/，不改组件。若云端 CI run 尚未生成，按 AGENTS.md 在 claude-progress.md 标注『待回写 CI run URL』，不得提前标记 passing。"
     }

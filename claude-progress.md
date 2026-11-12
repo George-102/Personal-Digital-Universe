@@ -47,8 +47,9 @@
 6. ~~**US-003** 电影级页面转场（US-003a~h，用户指定提前）~~（2026-11-12 passing：本地全套 E2E 239/0 + Lighthouse 达标，云端 run [43025954251](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43025954251) verify 7m30s 全绿 239 passed / 77 skipped / 0 failed，CI run URL 已回写 US-003h.evidence）
 7. **T-003** Vitest 单元/集成测试基础设施（迁移时同步改 CI 的 `npm test`）
 8. ~~**US-004** 全局导航~~（2026-11-12 passing：US-004a~h 共 8 任务全 passing，本地 verify:local exit 0，云端 run [`43189384137`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43189384137) verify 全绿 280 passed / 76 skipped / 0 failed + Lighthouse 达标 + deploy success，CI run URL 已回写 US-004h 与 PRD_UserStory.json）
-9. **US-006 个人介绍 About Me**（2026-11-12 实施：US-006a~i passing，**US-006j in_progress——待 push 后回写云端 verify run URL**）。用户确认四项决策：①3D 抽象头像（低面数 / 异步 / 失败降级）；②Download CV 暂不配置、入口条件隐藏；③中英叙事文案由 agent 按 PRD 起草并标注待确认；④只填充首页 #about，不新建 /about 路由。T-003（Vitest 迁移）保持 roadmap 原位不提前。
-10. 之后按 roadmap：US-008 → US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 / US-003 / US-004 已完成）
+9. ~~**US-006 个人介绍 About Me**~~（2026-11-12 passing：US-006a~j 共 10 任务全 passing，云端 run [`43259860487`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43259860487) verify + deploy 全绿、TBT 114/115ms、perf 98-99，CI run URL 已回写 US-006j 与 PRD_UserStory.json）
+10. **US-008 成长时间线**（下一个 P0 内容故事；`#about` 已就位，可直接沿用「content 数据 → 双语 → section」范式。开工前按 AGENTS.md 先用 AskUserQuestion 确认时间线内容与展示形式，再拆 US-008a~? 写入 feature_list.json）
+11. 之后按 roadmap：US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 / US-003 / US-004 / US-006 已完成）。**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
 
 ## 风险与注意事项
 
@@ -60,7 +61,8 @@
 - 28 个未实现故事的 E2E 断言已用 `test.fixme()` 绑定 roadmap（US-004×4 / US-019×4 / 未来路由 SEO×20），实现对应故事时移除 fixme 并恢复断言，不得删断言、降阈值或 grep 过滤。
 - 本机 IDE 注入 `NODE_OPTIONS` safe-delete shim，会使 `npm ci` 删除 node_modules 失败；仅在本机验证命令中移除该注入，脚本保持标准 `npm ci`，CI 环境无此问题。
 - `docs/PRD.md` 有一处用户未提交改动，本轮未触碰，提交时须排除。
-- 页面当前仅 hero + about 占位，hero 无法完全滚出视口；视口暂停逻辑已用加长页面实测验证，About 正文（US-006）落地后自然生效。
+- ~~页面当前仅 hero + about 占位，hero 无法完全滚出视口~~（US-006 已解决：`#about` 为 `min-h-screen` 真实内容，hero 可完全滚出；离屏暂停改为「收敛中继续渲染、收敛后暂停」，稳态仍 `frameloop=never`）。
+- **首屏每帧成本是本项目的性能红线**（2026-11-12 教训）：`useFrame` 里任何 DOM 写入/读取都会被放大成 TBT。禁止在每帧回调里读 `offsetWidth/offsetHeight/getBoundingClientRect`，禁止每帧写 `dataset` 做探针（改用 `window.__*` 或在状态变化时写）。
 - 未决：fork PR 不部署需第二个 GitHub 账号才能实测，当前由 `if` 条件 + GitHub 默认不注入 secrets 保证。T-005a 的 token IP 过滤与 T-005b 的两项监控配置均已解决（2026-11-11）。**建议用户在 UptimeRobot 后台轮换本次出现在对话中的 Main API Key**。
 
 ## US-002 迭代（2026-11-11 完成，并行会话）
@@ -129,12 +131,15 @@
 
 **本轮文件改动**：`feature_list.json`（拆分 + scope_note + roadmap）、`claude-progress.md`（本段与下一步第 9/10 条）。JSON 已用 Node 解析校验（60 个 features、10 个新增任务 priority 51-60 唯一、roadmap 19 项且无 US-006）。未提交：工作区存在并行的 `AGENTS.md` / `docs/PRD.md` 未提交改动，提交时必须显式排除。
 
-## US-006 迭代（2026-11-12，US-006a~i passing，US-006j 待云端 CI）
+## US-006 迭代（2026-11-12，US-006a~j 全部 passing）
 
-**US-006（个人介绍 About Me）10 个任务中 9 个 passing。** 用户四项决策：3D 抽象头像、CV 暂不配置（条件隐藏）、文案由 agent 按 PRD 起草待用户确认、只填 #about 不新建路由。
+**US-006（个人介绍 About Me）10 个任务全部 passing。** 用户四项决策：3D 抽象头像、CV 暂不配置（条件隐藏）、文案由 agent 按 PRD 起草待用户确认、只填 #about 不新建路由。
 
 - 新增：`components/AboutSection.tsx`（#about 服务端渲染，正文/要点直接进静态 HTML）、`components/AboutPortrait.tsx`（客户端头像容器 + 静态 SVG 降级 + 文本替代）、`components/three/AboutAvatarScene.tsx`（低面数 R3F 场景：二十面体核心 + 线框壳 + 双轨道）、`lib/about.ts`（resolveAbout / hasCv / hasPortrait + 站内路径白名单）、`e2e/about.spec.ts`（9 用例 × 4 项目）、`scripts/about.test.mjs`（8 项 TDD）。
 - 改造：`content/types.ts`（AboutContent + Profile.about）、`content/profile.ts`（3 段中英叙事 + 7 条要点）、`content/validate.ts`（嵌套字段读取 + optionalLocaleLists / optionalAssets）、`content/index.ts`（about 统一出口）、`components/HomeSections.tsx`（渲染 AboutSection、移除占位）、`components/three/HeroCanvas.tsx`（离屏但转场未收敛时继续渲染 + data-hero-frames）、`messages/{zh,en}.json`（About 命名空间，各 20 键）、`app/globals.css`（.about-copy / .about-avatar 系列）、`e2e/scroll-transition.spec.ts` 与 `navigation.spec.ts`（长页适配 + hero 暂停用例）、`README.md` / `docs/Development.md` / `docs/DoD.md`。
 - 真实缺陷与回归修复：①hero 离屏立即暂停会冻结未收敛的相机/粒子/面板 → 改为「收敛中继续渲染、收敛后暂停」（稳态离屏仍为 never）；②`#about p` 严格模式多匹配（4 项失败）→ 改 `[data-about-bio]`；③`scrollHeight*0.5` 已越过转场终点（mobile-safari 相机用例）→ 按段区间中点采样。三处均未删断言、未降阈值。
 - 验证：`npm test` 92/92；`npm run verify:local` exit 0（i18n 20 键、size 437.03kB ≤1MB、audit 0 high）；about.spec 四项目 34 passed / 2 skipped；scroll-transition + navigation 四项目 78 passed / 6 skipped；全套四项目首跑 310 passed / 78 skipped / 4 failed（失败已全部修复），未新增 fixme；`CI=1 npm run verify:lighthouse` exit 0（perf 93-100、a11y 100、seo 100、bp 96，LCP 210-271ms、CLS 0、TBT 74-207ms——TBT 单次最高 207ms 略高于 200ms，门禁按 3 run 最优值聚合通过，阈值未改，后续新增 3D 模块需继续观察）。
-- **待办（US-006j）**：commit 后 push main，等云端 verify job 全绿，把 CI run URL 与 passed 数回写 `feature_list.json` US-006j、`PRD_UserStory.json` US-006、本文件；两者再转 passing。文案为中英草稿（`content/profile.ts` 注释已标【待用户确认】），CV 未配置。
+- **云端 CI（US-006j 收尾）**：run [43259860487](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43259860487)（commit 4e210ea）**verify success + deploy success + preview skipped**。首跑 run 43217692188 已绿，但暴露两个长页 flake（帧计数批次写、Safari 把 `behavior:'instant'` 当 auto）已修；第二跑 run 43222980899 因 `total-blocking-time` 挂门禁（`/` 796/250.5/278、`/en/` 221/250/218.5，阈值 200）。
+- **TBT 回归根因与修复（commit 4e210ea）**：`HeroCanvas.handleFrame` 每帧写 18 个 dataset 后紧接读 `tooltip.offsetWidth/offsetHeight` → 强制同步布局，页面变长后代价放大；另加帧计数逐帧写 dataset、`setSettling` 每帧 setState、头像挂载即调 `isWebGLAvailable()`。修复为 tooltip 尺寸缓存、帧计数改 `window.__heroFrames` / `window.__avatarFrames` 探针、`setSettling` 布尔翻转去重、WebGL 探测延后到进入视口。**阈值与断言一处未改。**
+- 修复后 Lighthouse（同一门禁）：TBT 最优 **114ms（`/`）/ 115ms（`/en/`）**、LCP 208-211ms、CLS 0、perf 98-99、a11y 100、seo 100、bp 96；单次仍有 636ms 离群（lhci 按最优 run 聚合，属 runner 噪声）。
+- **未决风险**：中英文案仍是 agent 按 PRD 起草的草稿（`content/profile.ts` 注释标【待用户确认】）；CV 未配置（入口隐藏，提供 PDF 后改 `cvUrl` 一个字段即可）；T-003（Vitest 迁移）仍 `not_started`。

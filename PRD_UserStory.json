@@ -103,12 +103,12 @@
       "details": "设置独立的 About Me 区域，展示个人姓名、个人照片或具有代表性的 3D 形象，以及具有叙事性的自我介绍（而非简单罗列信息）。个人介绍包括：计算机科学专业本科大三学生；目前准备研究生考试及实习；从事 LLM、MARL 与动态空域配置相关研究；参与 GitHub 开源项目；独立开发并发布软件产品；创作《法渊》等玄幻文学作品；对阅读、数学、哲学、经济学和其他领域保持兴趣。可以利用 3D 人物形象、抽象头像或几何元素增强视觉表现。提供 Download CV 入口。",
       "Acceptance Criteria": "- 正常场景：访客可以阅读完整的个人介绍。- 正常场景：个人形象和文字信息能够清晰呈现。- 正常场景：点击 Download CV 可以下载已配置的简历。- 异常场景：头像或 3D 模型加载失败时，文字内容仍可正常显示。- 异常场景：未配置简历时，不显示无效下载入口。",
       "DoD": "五条验收逐条通过并留证；填充 #about 占位 section 正文；内容从 content/ 结构化数据渲染；npm run verify:local 通过 + 云端 verify job 全绿并回写 CI run URL。",
-      "status": "in_progress",
+      "status": "passing",
       "evidence": [
-        "2026-11-12：feature_list.json 中 US-006a~i 共 9 个任务 passing，US-006j 保持 in_progress（本地证据齐全，云端 CI 待 push 后回写）；逐条证据见 feature_list.json。",
+        "2026-11-12：feature_list.json 中 US-006a~j 共 10 个任务全部 passing；逐条证据见 feature_list.json。",
         "2026-11-12 五条验收逐条核对：完整介绍可读（无 JS 静态 HTML + 中英双语用例）、形象与文字清晰（3D 抽象头像 + 静态降级）、CV 配置后可下载（临时构建 E2E + /cv.pdf 200）、头像/3D 失败时文字仍在（no-webgl / context-lost / 资源 abort 三路径）、未配置简历不显示无效入口（默认产物 data-cv=0）。",
         "2026-11-12：npm run verify:local exit 0（92/92 单测、i18n 100% 20 键、size 437.03kB ≤1MB、audit 0 high）；CI=1 npm run verify:lighthouse exit 0（perf 93-100 / a11y 100 / seo 100 / bp 96，LCP 210-271ms、CLS 0、TBT 74-207ms）；全套 E2E 修复后分批全绿（about 34 passed / 2 skipped、scroll-transition + navigation 78 passed / 6 skipped，其余 spec 由全套 310 passed / 78 skipped 覆盖）。",
-        "待回写：push main 后云端 verify job 的 CI run URL 与 passed 数；US-006j 转 passing 后本故事同步转 passing。"
+        "2026-11-12 云端 CI 全绿：run 43259860487（commit 4e210ea，https://github.com/George-102/Personal-Digital-Universe/actions/runs/43259860487）verify success + deploy success + preview skipped；Lighthouse 六次运行 TBT 最优 114ms / 115ms（阈值 200）、LCP 208-211ms、CLS 0、perf 98-99、a11y 100、seo 100、bp 96。此前 run 43222980899 曾因 TBT 218-250ms 挂门禁，修复见 feature_list.json US-006j。"
       ],
       "notes": "2026-11-12 已实现：#about 由占位替换为真实个人介绍（3 段叙事 + 7 条要点，中英双语，来自 content/profile.ts 的 about 字段）、低面数 3D 抽象头像（视口内挂载、失败降级静态 SVG、上下文丢失恢复一次后转静态）、Download CV 条件渲染。文案为 agent 按 PRD §1.1 与 US-006 详述 4 起草的草稿，标注待用户确认；CV 暂未配置（入口隐藏），用户提供 PDF 后改 cvUrl 一个字段即可启用。T-003 仍 not_started。"
     },
