@@ -3,7 +3,6 @@
     "tagline": "探索未知，创造想象，记录思想，持续成长。",
     "explore": "Explore My Universe",
     "scrollHint": "滚动探索",
-    "aboutPlaceholder": "个人介绍即将上线。",
     "languageName": "English"
   },
   "Interaction": {
@@ -18,5 +17,14 @@
     "about": "关于",
     "menu": "菜单",
     "menuClose": "关闭菜单"
+  },
+  "About": {
+    "eyebrow": "01 / ABOUT ME",
+    "title": "关于我",
+    "highlights": "关键标签",
+    "downloadCv": "下载简历",
+    "portraitLabel": "个人抽象 3D 形象",
+    "avatarAlt": "抽象 3D 头像：一颗悬浮的低面数几何核心，外绕发光轨道环。",
+    "avatarFallback": "3D 形象不可用，已显示静态形象。"
   }
 }

@@ -13,7 +13,7 @@
     "passing": "要求的验证已经通过，并且证据已经记录。"
   },
   "source": "docs/PRD.md（用户故事与验收标准）、docs/Tech.md 与 docs/Development.md（技术决策）、docs/DoD.md（完成定义）",
-  "scope_note": "首个开发需求为 US-001（3D 首页与沉浸式入口，PRD P0 首位），已连同前置任务 T-001/T-002 拆分为 11 个小任务，按 priority 顺序执行，一次只做一个。其余用户故事保留在 roadmap 中，轮到该故事时再拆分为小任务写入 features。2026-11-11 经用户确认以模板 schema 重建本文件；旧版完整清单见 git 提交 5a8d051。2026-11-11 用户确认 CI/CD 方案 A（GitHub Actions + Wrangler Direct Upload，关闭 Pages Git 自动构建）并要求尽早集成：T-004/T-005 从 roadmap 提升为 features 中 priority 13-16 的四个任务，排在所有 roadmap 故事（含 US-004）之前；T-003 保持原位不提前。方案细节见 docs/Development.md §3/§5、docs/Tech.md §6。2026-11-11 用户指定 US-002（访客与 3D 场景进行交互）为下一个需求，按 PRD 拆为 US-002a~q 共 17 个任务，priority 17-33，紧接 CI/CD（13-16）之后执行，roadmap 中 US-004 及其他故事顺延；用户确认三项决策：①点击交互物体默认平滑滚动到 #about，目标配置化、后续故事替换，不新建占位路由；②交互范围限 Hero 场景，但建立通用可交互物体注册表供后续 3D 场景复用；③队友正在进行的 CI/CD 任务（T-004a/b、T-005a/b）的编号、优先级、状态与证据一律不动。2026-11-11 用户确认本地/云端验证分工：本地默认只跑 `npm run verify:local`（lint / typecheck / build / npm test / verify:metrics，零浏览器），Playwright 四项目与 Lighthouse 重验证固定在云端 CI（push main / PR 自动触发），证据以 CI run URL 回写；`.github/workflows/verify.yml` 不改动，重验证覆盖与阈值 100% 保留。2026-11-11 用户指定 US-003（电影级页面转场）提前到 T-003/US-004 之前执行，并确认四项决策：①滚动驱动动画按 Tech.md 既定采用 GSAP ScrollTrigger；②五种转场效果（相机推拉/背景渐变/3D 物体移动旋转/粒子聚散/内容面板展开）全做、幅度克制；③范围为 hero→#about 单段完整转场 + 通用滚动进度注册机制（后续模块接入只需配置）；④拆为 US-003a~h 共 8 个任务 priority 35-42，roadmap 中 US-003 已移除。2026-11-12 用户指定 US-004（全局导航与空间化导航系统）拆分并确认决策 A：导航注册表只收录真实存在的模块（当前 Home / About），后续故事落地时逐条加入，不建空占位 section（天然满足 PRD 验收「目标模块不存在时不应产生无效跳转」，与 US-002/US-003 不建占位原则一致）；拆为 US-004a~h 共 8 个任务 priority 43-50，roadmap 中 US-004 已移除；core.spec『移动端菜单』4 项 test.fixme() 在 US-004e 移除并执行。",
+  "scope_note": "首个开发需求为 US-001（3D 首页与沉浸式入口，PRD P0 首位），已连同前置任务 T-001/T-002 拆分为 11 个小任务，按 priority 顺序执行，一次只做一个。其余用户故事保留在 roadmap 中，轮到该故事时再拆分为小任务写入 features。2026-11-11 经用户确认以模板 schema 重建本文件；旧版完整清单见 git 提交 5a8d051。2026-11-11 用户确认 CI/CD 方案 A（GitHub Actions + Wrangler Direct Upload，关闭 Pages Git 自动构建）并要求尽早集成：T-004/T-005 从 roadmap 提升为 features 中 priority 13-16 的四个任务，排在所有 roadmap 故事（含 US-004）之前；T-003 保持原位不提前。方案细节见 docs/Development.md §3/§5、docs/Tech.md §6。2026-11-11 用户指定 US-002（访客与 3D 场景进行交互）为下一个需求，按 PRD 拆为 US-002a~q 共 17 个任务，priority 17-33，紧接 CI/CD（13-16）之后执行，roadmap 中 US-004 及其他故事顺延；用户确认三项决策：①点击交互物体默认平滑滚动到 #about，目标配置化、后续故事替换，不新建占位路由；②交互范围限 Hero 场景，但建立通用可交互物体注册表供后续 3D 场景复用；③队友正在进行的 CI/CD 任务（T-004a/b、T-005a/b）的编号、优先级、状态与证据一律不动。2026-11-11 用户确认本地/云端验证分工：本地默认只跑 `npm run verify:local`（lint / typecheck / build / npm test / verify:metrics，零浏览器），Playwright 四项目与 Lighthouse 重验证固定在云端 CI（push main / PR 自动触发），证据以 CI run URL 回写；`.github/workflows/verify.yml` 不改动，重验证覆盖与阈值 100% 保留。2026-11-11 用户指定 US-003（电影级页面转场）提前到 T-003/US-004 之前执行，并确认四项决策：①滚动驱动动画按 Tech.md 既定采用 GSAP ScrollTrigger；②五种转场效果（相机推拉/背景渐变/3D 物体移动旋转/粒子聚散/内容面板展开）全做、幅度克制；③范围为 hero→#about 单段完整转场 + 通用滚动进度注册机制（后续模块接入只需配置）；④拆为 US-003a~h 共 8 个任务 priority 35-42，roadmap 中 US-003 已移除。2026-11-12 用户指定 US-004（全局导航与空间化导航系统）拆分并确认决策 A：导航注册表只收录真实存在的模块（当前 Home / About），后续故事落地时逐条加入，不建空占位 section（天然满足 PRD 验收「目标模块不存在时不应产生无效跳转」，与 US-002/US-003 不建占位原则一致）；拆为 US-004a~h 共 8 个任务 priority 43-50，roadmap 中 US-004 已移除；core.spec『移动端菜单』4 项 test.fixme() 在 US-004e 移除并执行。2026-11-12 用户要求 agent 自主规划下一个需求并拆分到 features：经核对 PRD_UserStory.json（priority 1 未完成故事中排首）、claude-progress.md「下一步」第 9 条与 #about 仍为占位，推荐并获用户确认选择 US-006（个人介绍 About Me）；T-003（Vitest 迁移）保持 roadmap 原位不提前，理由为零用户可见价值且需同步改 CI 的 npm test，待内容模块成型后一次性迁移；US-005 / US-008 顺延。用户确认四项决策：①个人形象采用 3D 抽象头像（低面数、复用 R3F 与 lib/quality.ts、异步加载、WebGL/资源失败时降级为 CSS 占位）；②Download CV 暂不配置，入口条件隐藏，保留配置位并用临时文件实测两条路径后移除；③中英叙事文案由 agent 按 PRD §1.1 与 US-006 详述 4 起草并标注待用户确认，不虚构经历（PRD §8.3）；④范围限首页 #about section 填充，不新建 /about 独立路由（沿用 US-002 / US-003 / US-004 的不建占位原则）。拆为 US-006a~j 共 10 个任务 priority 51-60，roadmap 中 US-006 已移除；一次只做一个，下一步为 US-006a，全部新任务 status=not_started，实施开始时才把当前任务置 in_progress。已识别两项关键风险：#about 填充后页面变长，会改变 lib/scroll.ts 进度终点、NavBar 激活态判定与 hero 视口暂停行为，故设 US-006h 专项回归；新增 3D 头像可能推高 TBT（历史 run 43177217750 曾因此失败），由 US-006i 专项复验 Lighthouse 阈值。2026-11-12 实施结果：US-006a~i 已 passing（本地证据齐全），US-006j 保持 in_progress——PRD 五条验收已核对、全套 E2E 分批全绿、verify:local 与 CI=1 Lighthouse 均 exit 0，但云端 verify run URL 需 push 后回写；按 AGENTS.md 未把云端重验证提前标记 passing。实施中修复两处真实回归：①HeroCanvas 离屏立即暂停会让未收敛的转场冻结，改为「离屏但仍在收敛时继续渲染，收敛后暂停」；②测试中依赖短页假设的 `#about p` 严格模式多匹配与 scrollHeight*0.5 采样越过转场终点，改为语义定位与按段区间中点采样，断言强度不变。",
   "features": [
     {
       "id": "T-001a",
@@ -1015,28 +1015,320 @@
         "2026-11-12 复核：本地以 Node v26.10.0 复跑 npm run verify:local exit 0（84/84 单测、i18n 100%、size 435.34kB ≤1MB、audit 0 high）；e2e/core.spec.ts 与 navigation.spec.ts 无残留 fixme，DoD 的『移动菜单 4 项断言恢复执行』满足。cloud run 43188801947 因 concurrency 取消、43177217750 因 Lighthouse TBT 超阈值失败（已由 fe88960 原生 scroll+RAF 修复），均被 7904e25 绿色 run 覆盖，无遗留阻塞。"
       ],
       "notes": "本任务通过即 US-004 完成。滚动进度指示器属 US-005、滚动转场属 US-003，均不在本故事范围。**已 passing（2026-11-12）**：US-004a~h 全部通过，本地验证 + 云端 run 43189384137 证据齐备。并行会话的滚动驱动重构属于他人未提交改动，提交时已显式排除（AGENTS.md / docs/PRD.md / lib/scroll.ts / components/ScrollDriver.tsx / package.json / package-lock.json / e2e/scroll-transition.spec.ts）。"
+    },
+    {
+      "id": "US-006a",
+      "priority": 51,
+      "area": "个人介绍",
+      "title": "About 内容模型与构建期校验",
+      "user_visible_behavior": "个人介绍正文、要点、头像配置与简历地址都来自 content/ 结构化数据；非法数据在构建期被拒绝，缺可选字段不崩溃。",
+      "status": "passing",
+      "verification": [
+        "扩展 content/types.ts 的 Profile，新增 about 对象（bio 双语叙事段落、highlights 双语要点数组、portrait? 可选图片路径、cvUrl? 可选简历路径），接入 content/validate.ts 的 profile 规则与 content/index.ts 单一出口；页面只从该出口取数。",
+        "validate.ts 增加校验：bio 与 highlights 必须含非空 zh/en，portrait / cvUrl 必须为站内安全路径或省略，public 过滤与可选字段缺失容错沿用 T-002a / T-002c。",
+        "TDD：scripts/about.test.mjs 先观察到 MODULE_NOT_FOUND 或校验失败，再覆盖合法数据、缺字段、非法路径、public:false、单语字段被拒，npm test 通过。",
+        "实测注入非法 cvUrl 或单语 bio 后 npm run build exit 1，恢复后 exit 0；lint / typecheck 通过。"
+      ],
+      "evidence": [
+        "2026-11-12 RED：scripts/about.test.mjs 报 ERR_MODULE_NOT_FOUND（lib/about.ts 缺失）；实现 content/types.ts 的 AboutContent 与 Profile.about、lib/about.ts（resolveAbout / hasCv / hasPortrait + PORTRAIT_PATH / CV_PATH 站内路径白名单）、content/validate.ts 嵌套字段读取与 optionalLocaleLists / optionalAssets 规则、content/index.ts 统一出口后 GREEN 8/8（npm test 92/92）。",
+        "2026-11-12 构建期拒绝实测：临时注入 about.cvUrl = https://evil.example.com/cv.pdf 后 npm run build exit 1（prebuild 报 profile: about.cvUrl 必须是站内安全路径），移除后 build exit 0；npx tsc --noEmit 与 npm run lint 均 exit 0。"
+      ],
+      "notes": "对应 PRD_UserStory.json US-006 DoD『内容从 content/ 结构化数据渲染』，并复验 US-023 的缺字段容错。不改首屏 profile 的 name / tagline / status 现有字段，避免回归 T-002b。"
+    },
+    {
+      "id": "US-006b",
+      "priority": 52,
+      "area": "个人介绍",
+      "title": "真实叙事文案与中英双语文案键",
+      "user_visible_behavior": "访客在 / 与 /en/ 都能读到完整的叙事性自我介绍；事实符合 PRD §8.3，修改内容文件后重新构建页面随之更新。",
+      "status": "passing",
+      "verification": [
+        "按用户决策由 agent 起草中英叙事草稿，覆盖 PRD US-006 详述 4 七项事实（CS 本科大三、准备考研与实习、LLM / MARL / DAC 研究、GitHub 开源、独立软件产品、《法渊》等创作、跨领域兴趣）；在 content/ 中标注『待用户确认』，不虚构论文、获奖、产品数据，不把准备中事项写成已完成。",
+        "messages/zh.json 与 messages/en.json 新增 About 命名空间（区块标题、要点标签、CV 按钮、头像替代文本、降级提示等），npm run check:i18n 覆盖率 100%。",
+        "组件零硬编码文案：标题与标签取 messages，正文与要点取 content/；/ 显示中文、/en/ 显示英文。",
+        "传播性实测：临时修改一条 bio 文案后 npm run build，out/index.html 与 out/en/index.html 对应变化；恢复后重建。"
+      ],
+      "evidence": [
+        "2026-11-12：content/profile.ts 的 about 写入 3 段中英叙事正文 + 7 条双语要点，覆盖 PRD US-006 详述 4 七项事实；按 §8.3 只写进行时（准备考研/实习、写作中），未虚构论文、获奖或产品数据；代码注释标注【待用户确认】。",
+        "2026-11-12：messages/zh.json 与 en.json 新增 About 命名空间（eyebrow / title / highlights / downloadCv / portraitLabel / avatarAlt / avatarFallback），移除 aboutPlaceholder；npm run check:i18n 100%（各 20 键）。",
+        "2026-11-12 传播性实测：临时给首段中文加 TEMP-CHANGE-VERIFY-006B 并重建，out/index.html 命中 2 次（静态 HTML + RSC payload）；移除后重建命中 0 次。文案改 content/ 即生效，组件零硬编码。"
+      ],
+      "notes": "PRD 详述 7 要求叙事性而非简单罗列。文案草稿属用户待确认项，须在 US-006j 的未决风险中保留；用户后续只需改 content/ 一个文件。"
+    },
+    {
+      "id": "US-006c",
+      "priority": 53,
+      "area": "个人介绍",
+      "title": "#about 区域结构与静态可读（替换占位）",
+      "user_visible_behavior": "点击 Explore、3D 物体或导航 About 后，访客到达有真实内容的介绍区域；无 JS、无 WebGL 时正文仍完整可读。",
+      "status": "passing",
+      "verification": [
+        "替换 HomeSections 中 #about 的 aboutPlaceholder：section 内含 h2 + 叙事段落 + highlights 列表 + 头像容器 + CV 位置；保留 id=about 与 .about-panel 包裹，不破坏 US-003f 面板展开与 minOpacity ≥0.9 可读红线。",
+        "语义化 HTML：全页只有一个 h1（hero 姓名），About 用 h2、标题层级不跳级；核心个人介绍出现在 out/ 静态 HTML 中（DoD C 组 / PRD §6.6）。",
+        "npm run build 后 grep out/index.html 与 out/en/index.html，确认正文与要点存在且不含占位文案『个人介绍即将上线』。",
+        "回归 core / hero-entry / interaction / navigation / scroll-transition 中全部 #about 定位与可见性断言，四项目通过（不删断言、不降阈值）。"
+      ],
+      "evidence": [
+        "2026-11-12：新增 components/AboutSection.tsx 替换 #about 占位（eyebrow + h2 + 3 段正文 + 7 要点 + 头像 + CV 位），保留 id=about 与 .about-panel，面板参数仍从 lib/transitions.ts 读取；HomeSections 改为渲染 AboutSection。",
+        "2026-11-12 静态产物：out/index.html 与 out/en/index.html 各含 3 个 data-about-bio 与 7 个 data-about-highlight（另 RSC payload 同名）；h1=1 / h2=1 / h3=1；占位文案「个人介绍即将上线」命中 0。",
+        "2026-11-12：e2e/about.spec.ts「正文与要点在无 JS 的静态 HTML 中完整可读」四项目通过（abort /_next/static/** 后正文仍可见）；整套 about.spec 四项目 34 passed / 2 skipped / 0 failed。"
+      ],
+      "notes": "现有 #about 是 US-001a 占位，同时是 US-002 点击目标、US-003 转场终点、US-004 导航目标，替换时须逐一回归。"
+    },
+    {
+      "id": "US-006d",
+      "priority": 54,
+      "area": "个人介绍",
+      "title": "3D 抽象头像场景（低面数、异步、配置化）",
+      "user_visible_behavior": "支持 WebGL 的访客在 About 区域看到与 Hero 视觉语言一致的低面数 3D 抽象头像，加载不阻塞文字阅读。",
+      "status": "passing",
+      "verification": [
+        "新建 components/three/AboutAvatar.tsx 与 AboutAvatarCanvas.tsx：低面数抽象几何（几何核心 + 线框壳 / 轨道环 / 点光），复用 lib/quality.ts 三档画质与 lib/webgl.ts 能力检测；dynamic import + ssr:false + Suspense fallback，WebGL 可用后才挂载。",
+        "视觉参数（尺度 / 转速 / 配色 / 粒子数）集中在配置或常量中，幅度克制并与 US-001c HeroScene 保持同一设计语言；不新增 npm 依赖。",
+        "文字先于 3D：LCP 元素仍为文字（PerformanceObserver 实测），头像进入视口后才启动渲染循环，reduced-motion 时静态呈现。",
+        "E2E 四项目断言头像状态数据属性；npm run size 通过（≤1MB），lint / typecheck 通过。"
+      ],
+      "evidence": [
+        "2026-11-12：新增 components/AboutPortrait.tsx（客户端容器 + dynamic ssr:false）与 components/three/AboutAvatarScene.tsx（二十面体核心 + 线框壳 + 双轨道环，低画质档减少环段与节点），复用 lib/webgl.ts 与 lib/quality.ts；未新增 npm 依赖。",
+        "2026-11-12：首次进入视口才挂载 Canvas（IntersectionObserver threshold 0.2），dpr 取 quality tier；进入视口后 data-avatar-mode=3d 在 chromium / mobile-chrome / mobile-safari 实测通过，no-webgl 项目按设计保持 fallback。",
+        "2026-11-12：LCP 仍为文字元素——既有 interaction.spec「LCP 元素仍为文字而非 Canvas」在全套四项目中通过；首屏不挂载头像 Canvas，不增加首屏 WebGL 成本。"
+      ],
+      "notes": "用户 2026-11-12 明确选择 3D 抽象头像而非 CSS/SVG 抽象形象。遵守开发红线 1 / 2 / 3；历史 TBT 超阈值曾由 fe88960 修复，本任务不得引入常驻高开销动画（建议 frameloop 按需或仅在视口内）。"
+    },
+    {
+      "id": "US-006e",
+      "priority": 55,
+      "area": "个人介绍",
+      "title": "3D 头像降级、可访问替代与 GPU 资源清理",
+      "user_visible_behavior": "WebGL 不可用、上下文丢失或 3D 资源加载失败时，About 显示静态占位且文字完整；头像离开视口暂停渲染，卸载释放资源。",
+      "status": "passing",
+      "verification": [
+        "失败降级：WebGL 检测失败 / 上下文丢失 / 资源 404 均回退 CSS 抽象头像占位，正文与要点不消失、pageerror 为空（PRD 验收 4）。",
+        "显式 dispose geometry / material / texture，IntersectionObserver 驱动 frameloop 暂停；RAF 计数实测视口内 >0、视口外趋近 0。",
+        "3D 内容有文本替代：容器有可访问名称与等价说明，与 US-002n / PRD §6.7『3D 内容必须有对应文本信息』一致，键盘与无 WebGL 项目断言。",
+        "chromium-no-webgl 项目与 degradation.spec 四项目复验通过，无未捕获异常；不新增 fixme。"
+      ],
+      "evidence": [
+        "2026-11-12 降级三路径实测：chromium-no-webgl 下 data-avatar-mode=fallback / data-avatar-reason=no-webgl / canvas 数 0；注入 WEBGL_lose_context 且 restoreContext 置空后 reason=context-lost 并回退静态 SVG，正文完整；abort glb/gltf/ktx2/hdr/png/webp/avif/jpg 后正文与要点完整、pageerror 为空。",
+        "2026-11-12：文本替代为 role=img + aria-describedby=about-avatar-alt，SR 文本含抽象头像描述；视口外 frameloop=never，实测视口内 700ms 帧计数增长、滚回顶部后 700ms 增量 ≤10；场景卸载 DisposeOnUnmount 遍历 dispose geometry / material / texture 与 gl。"
+      ],
+      "notes": "复用 US-001d 的上下文丢失恢复一次后转静态与 DisposeOnUnmount 模式，不重复写第二套容错逻辑。"
+    },
+    {
+      "id": "US-006f",
+      "priority": 56,
+      "area": "个人介绍",
+      "title": "Download CV 条件渲染与失效防护",
+      "user_visible_behavior": "未配置简历时不出现无效下载入口；配置简历后入口可见、可键盘操作且能真实下载。",
+      "status": "passing",
+      "verification": [
+        "cvUrl 未配置（当前默认）时不渲染任何下载入口，静态 HTML 中不出现无效链接（PRD 验收 5、DoD B 组）。",
+        "配置后入口可见：有可访问名称、可 Tab 聚焦与 Enter 触发、带 download 属性、指向 public/ 下的真实静态资源；/ 与 /en/ 文案各取 messages。",
+        "两条路径实测：临时放入测试 PDF 并配置 cvUrl 后 build，E2E 断言入口可见且资源请求返回 200；移除配置与临时文件后重建，断言入口消失、无 404。",
+        "不虚构简历内容、不把个人信息写入示例文件；docs/DoD.md B 组『未配置的 CV、链接、图片不显示无效入口』打勾。"
+      ],
+      "evidence": [
+        "2026-11-12 默认态：out/index.html 中 data-cv=0、download 属性=0、无「下载简历」文案；e2e/about.spec「未配置简历时不显示任何无效下载入口」四项目通过。",
+        "2026-11-12 配置态实测：临时创建 public/cv.pdf 并写入 cvUrl=/cv.pdf 后重建，产物 data-cv=1、href=\"/cv.pdf\"=1、download=1、out/cv.pdf 存在；临时 Playwright 用例断言入口可见、可键盘聚焦、/cv.pdf 返回 200（chromium passed）；随后删除临时文件与配置并重建，全部归零。",
+        "2026-11-12：docs/DoD.md B 组「未配置的 CV、链接、图片不显示无效入口」已打勾。"
+      ],
+      "notes": "用户 2026-11-12 决策：暂不配置 CV，只保留配置位与验证链路。真实 PDF 由用户后续放入 public/ 并改 content/ 一个字段即可启用。"
+    },
+    {
+      "id": "US-006g",
+      "priority": 57,
+      "area": "个人介绍",
+      "title": "响应式、可访问性与 reduced-motion",
+      "user_visible_behavior": "About 区域在 390px 到桌面各视口无横向溢出，文字对比度达标、键盘可达，减少动态效果时仍完整可读。",
+      "status": "passing",
+      "verification": [
+        "overflow.spec 四项目、5 视口（含 390 / 375）与双语页面复验无横向溢出；移动端单列、头像与文字不重叠、触摸目标大小合理。",
+        "About 文字与背景对比度 ≥4.5（与 a11y.spec / US-004g 同一计算口径），键盘 Tab 序列可达全部交互元素，focus 可见样式。",
+        "reduced-motion 时头像与面板不做持续动画、正文完整可读；无 WebGL 项目头像占位不遮挡文字。",
+        "a11y.spec / overflow.spec 四项目 0 失败；lint / typecheck 通过。"
+      ],
+      "evidence": [
+        "2026-11-12：about.spec「各视口无横向溢出且正文对比度达标」四项目通过——1440 / 1024 / 768 / 390 / 375 五档 scrollWidth-clientWidth ≤1；正文 rgba(232 234 246 / 0.88) 与 #05060f 合成后对比度 ≥4.5。",
+        "2026-11-12：overflow.spec 四项目 100/100 通过（5 视口 × 5 路由）；a11y.spec 四项目通过；reduced-motion 用例断言 .about-panel transform=none 且正文完整可读。",
+        "2026-11-12：移动端 md 以下头像与正文上下单列、头像 max-w 260px + aspect-square，无横向溢出；CV 配置态用例验证入口可键盘聚焦。"
+      ],
+      "notes": "对应 PRD §6.5 / §6.7 与 US-021 的基础适配；US-021 全站整体验收仍在 roadmap，不在本故事范围。"
+    },
+    {
+      "id": "US-006h",
+      "priority": 58,
+      "area": "个人介绍",
+      "title": "页面变长后的滚动/转场/导航/视口暂停专项回归",
+      "user_visible_behavior": "About 正文变长后，滚动转场、导航激活态、Explore 与 3D 点击跳转、离屏暂停全部保持既有行为。",
+      "status": "passing",
+      "verification": [
+        "识别并逐项复验页面高度变化的影响面：lib/scroll.ts 进度归一化终点（原 clamp 到 maxScroll）、NavBar 40% 判定线与 atBottom 分支、HeroCanvas 的 IntersectionObserver 视口暂停、scroll-transition.spec / navigation.spec 中全部滚动位置断言。",
+        "RAF 计数实测 hero 现在能真正滚出视口并暂停渲染（此前受短页限制，claude-progress.md 已记录该待验证项）。",
+        "全套回归 scroll-transition / navigation / core / hero-entry / interaction / degradation / hero-scene 四项目 0 失败；若既有断言隐含短页假设，扩为兼容真实长页而非删断言或降阈值。",
+        "记录填充前后页面高度与关键断言数值，证据写入本条 evidence。"
+      ],
+      "evidence": [
+        "2026-11-12：#about 由 min-h-[50vh] 占位改为 min-h-screen 真实内容后 hero 可完全滚出视口；新增 scroll-transition「US-006h hero 真正滚出视口、转场收敛后暂停渲染」——滚到底后 hero.bottom ≤0，等待收敛后 800ms 内 hero 帧计数增量 ≤10，且 data-transition >0.9、data-camera-z < -0.5（chromium / mobile-chrome / mobile-safari 通过，no-webgl 条件跳过）。",
+        "2026-11-12 真实缺陷修复：HeroCanvas 原 frameloop=inView?always:never 会在 hero 离屏时立即冻结，导致 damp 未收敛的相机/粒子/面板停在中途；改为「离屏且 |raw-progress|>0.002 时继续渲染，收敛后暂停」，稳态离屏仍为 never（未放宽暂停红线）。",
+        "2026-11-12 回归：全套四项目 310 passed / 78 skipped / 4 failed —— 4 项均为 #about 新增 <p> 导致 `#about p` 严格模式多匹配（四项目同因），改为 `#about [data-about-bio]` 后通过；另 mobile-safari 相机用例因页面变长、scrollHeight*0.5 已越过转场终点而失败，测试改为按段区间中点采样（断言强度不变）。修复后 scroll-transition + navigation 四项目 78 passed / 6 skipped / 0 failed。"
+      ],
+      "notes": "本故事最高风险项：#about 从 min-h-[50vh] 占位变成真实内容，页面高度与滚动终点都会改变，US-003 / US-004 的行为必须重新实证。"
+    },
+    {
+      "id": "US-006i",
+      "priority": 59,
+      "area": "个人介绍",
+      "title": "性能、SEO 与构建门禁",
+      "user_visible_behavior": "新增 3D 头像后首屏性能与 SEO 门禁不退化，核心介绍仍能被搜索引擎读取。",
+      "status": "passing",
+      "verification": [
+        "Lighthouse 复验：性能 ≥0.85 / a11y ≥0.95 / SEO ≥0.95 / 最佳实践 ≥0.90，LCP ≤2.5s、CLS ≤0.1、TBT ≤200ms；新增 3D 头像后 TBT 为专项观察点。",
+        "PerformanceObserver 实测 LCP 元素仍为文字元素而非 CANVAS（开发红线 1）。",
+        "npm run size 通过（≤1MB）、不新增 npm 依赖；npm run verify:local exit 0（lint / typecheck / build / npm test / audit 0 high / i18n 100%）。",
+        "静态 HTML 含核心个人介绍（DoD C 组）；核对 Person JSON-LD 与 sitemap 未因页面结构变化而退化；无 JS 与无 WebGL 路径复验。"
+      ],
+      "evidence": [
+        "2026-11-12：npm run verify:local exit 0——npm test 92/92、lint / typecheck 干净、build 7 静态页、check:i18n 100%（20 键）、audit 0 high、size 437.03kB brotli ≤1MB；未新增 npm 依赖。",
+        "2026-11-12：CI=1 npm run verify:lighthouse exit 0（Healthcheck passed、2 URL / 6 run、All results processed!）——perf 93-100、a11y 100、seo 100、bp 96，LCP 210-271ms、CLS 0、TBT 74-207ms（门禁按 3 run 最优值聚合，阈值未改）。",
+        "2026-11-12：静态 HTML 含核心个人介绍（3 段 + 7 要点，中英各一份）；Person JSON-LD 与 sitemap/robots 在 seo.spec 全项目中通过，未因页面结构变化退化。"
+      ],
+      "notes": "重验证（Playwright 四项目 + Lighthouse）按 T-007 固定在云端 CI，本地默认只跑 verify:local，不删断言、不降阈值。"
+    },
+    {
+      "id": "US-006j",
+      "priority": 60,
+      "area": "个人介绍",
+      "title": "US-006 整体验收、文档回写与云端 CI",
+      "user_visible_behavior": "PRD US-006 五条验收逐条可核对，个人介绍不影响已有行为与现有质量门禁。",
+      "status": "in_progress",
+      "verification": [
+        "逐条核对 PRD 五条验收：完整介绍可读、形象与文字清晰、CV 配置后可下载、头像 / 3D 失败文字仍在、未配置简历不显示无效入口；PRD 详述 1~7 逐条映射，证据写入 evidence。",
+        "全套 E2E 四项目 0 失败（不新增 fixme、不删断言、不降阈值）；npm run verify:local 通过。",
+        "push main 后云端 verify job 全绿，CI run URL 与 passed 数回写 feature_list.json / claude-progress.md / PRD_UserStory.json；PRD_UserStory.json 的 US-006 转 passing。",
+        "更新 docs/DoD.md B / C 组相关项与 README 内容维护章节；记录未决风险（中英文案待用户确认、CV 真实文件待提供、T-003 仍 not_started）；更新 claude-progress.md 并提交预期文件。"
+      ],
+      "evidence": [
+        "2026-11-12：PRD US-006 五条验收逐条核对——①完整介绍可读（无 JS 静态 HTML + 双语用例）；②形象与文字清晰（3D 头像 + fallback + 视口内渲染用例）；③CV 可下载（配置态临时构建 E2E + /cv.pdf 200）；④头像/3D 失败文字仍在（no-webgl / context-lost / 资源 abort 三路径）；⑤未配置简历无无效入口（默认产物 0 命中）。PRD 详述 1~7 映射：1/2/3 → US-006c/d，4 → US-006b，5 → US-006d，6 → US-006f，7 → US-006b。",
+        "2026-11-12：全套 E2E 四项目修复后分批全绿（about 34 passed / 2 skipped；scroll-transition + navigation 78 passed / 6 skipped；其余 spec 由全套 310 passed / 78 skipped 覆盖），未新增 fixme、未删断言、未降阈值。",
+        "2026-11-12：本地 verify:local 与 Lighthouse 均 exit 0；云端 verify job 待 push 后回写 CI run URL（AGENTS.md 要求 CI run URL 才能标记 passing，本条保持 in_progress）。"
+      ],
+      "notes": "本任务通过即 US-006 完成。文案定稿与 CV 文件由用户后续提供，只需改 content/ 与 public/，不改组件。若云端 CI run 尚未生成，按 AGENTS.md 在 claude-progress.md 标注『待回写 CI run URL』，不得提前标记 passing。"
     }
   ],
   "roadmap": [
-    { "id": "T-003", "title": "Vitest 单元/集成测试基础设施（npm test 从 node:test 迁移，接入 verify 与 CI）", "group": "P0-技术", "status": "not_started" },
-    { "id": "US-006", "title": "个人介绍 About Me（填充 #about 占位）", "group": "P0", "status": "not_started" },
-    { "id": "US-008", "title": "成长时间线 Journey", "group": "P0", "status": "not_started" },
-    { "id": "US-010", "title": "科研方向 Research（DAC + LLM + MARL）", "group": "P0", "status": "not_started" },
-    { "id": "US-012", "title": "GitHub 开源项目（含 github-cache.json 构建期抓取）", "group": "P0", "status": "not_started" },
-    { "id": "US-013", "title": "软件产品展厅", "group": "P0", "status": "not_started" },
-    { "id": "US-014", "title": "文学作品（《法渊》等）", "group": "P0", "status": "not_started" },
-    { "id": "US-018", "title": "联系方式 Contact", "group": "P0", "status": "not_started" },
-    { "id": "US-021", "title": "多设备适配整体验收", "group": "P0", "status": "not_started" },
-    { "id": "US-023", "title": "内容维护整体验收（核心已由 T-002a/b/c 覆盖，随内容区块复验）", "group": "P0", "status": "not_started" },
-    { "id": "US-005", "title": "动态滚动反馈", "group": "P1", "status": "not_started" },
-    { "id": "US-007", "title": "技术能力展示", "group": "P1", "status": "not_started" },
-    { "id": "US-009", "title": "教育背景", "group": "P1", "status": "not_started" },
-    { "id": "US-011", "title": "学术论文与成果", "group": "P1", "status": "not_started" },
-    { "id": "US-015", "title": "个人文章与思想记录", "group": "P1", "status": "not_started" },
-    { "id": "US-016", "title": "兴趣阅读与跨领域探索", "group": "P1", "status": "not_started" },
-    { "id": "US-017", "title": "当前状态与未来目标", "group": "P1", "status": "not_started" },
-    { "id": "US-019", "title": "明暗主题切换", "group": "P1", "status": "not_started" },
-    { "id": "US-020", "title": "统一动态视觉系统", "group": "P1", "status": "not_started" },
-    { "id": "US-022", "title": "动态效果控制（prefers-reduced-motion）", "group": "P1", "status": "not_started" }
+    {
+      "id": "T-003",
+      "title": "Vitest 单元/集成测试基础设施（npm test 从 node:test 迁移，接入 verify 与 CI）",
+      "group": "P0-技术",
+      "status": "not_started"
+    },
+    {
+      "id": "US-008",
+      "title": "成长时间线 Journey",
+      "group": "P0",
+      "status": "not_started"
+    },
+    {
+      "id": "US-010",
+      "title": "科研方向 Research（DAC + LLM + MARL）",
+      "group": "P0",
+      "status": "not_started"
+    },
+    {
+      "id": "US-012",
+      "title": "GitHub 开源项目（含 github-cache.json 构建期抓取）",
+      "group": "P0",
+      "status": "not_started"
+    },
+    {
+      "id": "US-013",
+      "title": "软件产品展厅",
+      "group": "P0",
+      "status": "not_started"
+    },
+    {
+      "id": "US-014",
+      "title": "文学作品（《法渊》等）",
+      "group": "P0",
+      "status": "not_started"
+    },
+    {
+      "id": "US-018",
+      "title": "联系方式 Contact",
+      "group": "P0",
+      "status": "not_started"
+    },
+    {
+      "id": "US-021",
+      "title": "多设备适配整体验收",
+      "group": "P0",
+      "status": "not_started"
+    },
+    {
+      "id": "US-023",
+      "title": "内容维护整体验收（核心已由 T-002a/b/c 覆盖，随内容区块复验）",
+      "group": "P0",
+      "status": "not_started"
+    },
+    {
+      "id": "US-005",
+      "title": "动态滚动反馈",
+      "group": "P1",
+      "status": "not_started"
+    },
+    {
+      "id": "US-007",
+      "title": "技术能力展示",
+      "group": "P1",
+      "status": "not_started"
+    },
+    {
+      "id": "US-009",
+      "title": "教育背景",
+      "group": "P1",
+      "status": "not_started"
+    },
+    {
+      "id": "US-011",
+      "title": "学术论文与成果",
+      "group": "P1",
+      "status": "not_started"
+    },
+    {
+      "id": "US-015",
+      "title": "个人文章与思想记录",
+      "group": "P1",
+      "status": "not_started"
+    },
+    {
+      "id": "US-016",
+      "title": "兴趣阅读与跨领域探索",
+      "group": "P1",
+      "status": "not_started"
+    },
+    {
+      "id": "US-017",
+      "title": "当前状态与未来目标",
+      "group": "P1",
+      "status": "not_started"
+    },
+    {
+      "id": "US-019",
+      "title": "明暗主题切换",
+      "group": "P1",
+      "status": "not_started"
+    },
+    {
+      "id": "US-020",
+      "title": "统一动态视觉系统",
+      "group": "P1",
+      "status": "not_started"
+    },
+    {
+      "id": "US-022",
+      "title": "动态效果控制（prefers-reduced-motion）",
+      "group": "P1",
+      "status": "not_started"
+    }
   ]
 }

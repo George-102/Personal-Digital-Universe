@@ -3,7 +3,6 @@
     "tagline": "I research the unknown, build what I imagine, write what I believe, and explore what I don't know.",
     "explore": "Explore My Universe",
     "scrollHint": "Scroll to explore",
-    "aboutPlaceholder": "About section coming soon.",
     "languageName": "中文"
   },
   "Interaction": {
@@ -18,5 +17,14 @@
     "about": "About",
     "menu": "Menu",
     "menuClose": "Close menu"
+  },
+  "About": {
+    "eyebrow": "01 / ABOUT ME",
+    "title": "About Me",
+    "highlights": "At a glance",
+    "downloadCv": "Download CV",
+    "portraitLabel": "Abstract 3D portrait",
+    "avatarAlt": "Abstract 3D portrait: a floating low-poly geometric core wrapped in glowing orbit rings.",
+    "avatarFallback": "3D portrait unavailable — showing a static illustration."
   }
 }

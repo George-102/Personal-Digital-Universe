@@ -278,9 +278,12 @@ test.describe('空间化导航', () => {
 
     expect(await navContrast(page)).toBeGreaterThanOrEqual(4.5);
 
+    // 转场中段：按 hero→#about 段区间取中点（US-006 起页面变长，scrollHeight*0.5 会越过终点）
     await page.evaluate(() => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      window.scrollTo({ top: max * 0.5, behavior: 'instant' });
+      const about = document.querySelector('#about');
+      if (!about) return;
+      const top = about.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: top * 0.5, behavior: 'instant' });
     });
     await page.waitForTimeout(300);
     expect(await navContrast(page)).toBeGreaterThanOrEqual(4.5);

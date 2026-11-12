@@ -9,6 +9,17 @@ export interface SocialLink {
   url: string;
 }
 
+/**
+ * US-006：个人介绍内容。正文/要点为双语数组，资源路径为站内静态资源。
+ * portrait / cvUrl 省略时页面不渲染对应入口（不显示无效链接）。
+ */
+export interface AboutContent {
+  bio: LocaleText[];
+  highlights: LocaleText[];
+  portrait?: string;
+  cvUrl?: string;
+}
+
 export interface Profile {
   name: LocaleText;
   tagline: LocaleText;
@@ -16,6 +27,8 @@ export interface Profile {
   email?: string;
   links: SocialLink[];
   public: boolean;
+  /** 可选：缺失时 About 区域安全降级，不崩溃（T-002c 缺字段容错） */
+  about?: AboutContent;
 }
 
 export type JourneyCategory =

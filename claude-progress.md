@@ -47,7 +47,8 @@
 6. ~~**US-003** 电影级页面转场（US-003a~h，用户指定提前）~~（2026-11-12 passing：本地全套 E2E 239/0 + Lighthouse 达标，云端 run [43025954251](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43025954251) verify 7m30s 全绿 239 passed / 77 skipped / 0 failed，CI run URL 已回写 US-003h.evidence）
 7. **T-003** Vitest 单元/集成测试基础设施（迁移时同步改 CI 的 `npm test`）
 8. ~~**US-004** 全局导航~~（2026-11-12 passing：US-004a~h 共 8 任务全 passing，本地 verify:local exit 0，云端 run [`43189384137`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43189384137) verify 全绿 280 passed / 76 skipped / 0 failed + Lighthouse 达标 + deploy success，CI run URL 已回写 US-004h 与 PRD_UserStory.json）
-9. 之后按 roadmap：US-006 → US-008 → US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 / US-003 已完成）
+9. **US-006 个人介绍 About Me**（2026-11-12 实施：US-006a~i passing，**US-006j in_progress——待 push 后回写云端 verify run URL**）。用户确认四项决策：①3D 抽象头像（低面数 / 异步 / 失败降级）；②Download CV 暂不配置、入口条件隐藏；③中英叙事文案由 agent 按 PRD 起草并标注待确认；④只填充首页 #about，不新建 /about 路由。T-003（Vitest 迁移）保持 roadmap 原位不提前。
+10. 之后按 roadmap：US-008 → US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 / US-003 / US-004 已完成）
 
 ## 风险与注意事项
 
@@ -115,3 +116,25 @@
 - 本地 `npm audit` 依赖 registry.npmjs.org 网络，失败时按既有行为处理，未改 `--audit-level`。
 - `AGENTS.md` 本次提交一并带入 4 处**非本次产生**的既有未提交改动（第 6 步 `init.sh`→`init.ps1`、必需文件、收尾第 5 步同步，以及删除「TDD测试驱动开发原则」一行），用户已确认一并提交并披露。
 - `docs/PRD.md` 的未提交改动属于他人，本次未触碰、未提交；`.workbuddy/` 与 `test-out.txt` 保持未跟踪。
+
+## 下一需求规划（2026-11-12，仅规划与拆分，未写实现代码）
+
+**结论：选 US-006（个人介绍 About Me），用户已确认。** 依据：`PRD_UserStory.json` 中 priority 1 且 not_started 的首条故事；本文件「下一步」第 9 条原定顺序；`#about` 仍是 US-001a 的占位文案（个人介绍即将上线），而它同时是 US-002 的点击目标、US-003 的转场终点、US-004 的导航目标——当前最大功能空洞。填充后还能自然解决「页面过短导致 hero 无法滚出视口」的既有风险，并建立首个「content 数据 → 双语 → section → 导航 → 转场」内容模块范式，供 US-008 / 010 / 012 / 014 / 018 复用。
+
+**未选**：T-003（Vitest 迁移为零用户可见价值的工具链重构，且需同步改 CI 的 `npm test` 与产物级单测对 `out/` 的依赖，内容模块少时迁移收益低，保持原位不提前）；US-005（P1，真实内容模块还少）；US-008（跳过第一个内容模块）。
+
+**已写入 `feature_list.json`**：US-006a~j（priority 51-60，10 个任务，全部 not_started），roadmap 中 US-006 移除，scope_note 记录用户四项决策。任务链：a 内容模型/构建期校验 → b 真实叙事文案与 i18n → c #about 结构与静态可读 → d 3D 抽象头像 → e 头像降级与 GPU 清理 → f CV 条件渲染 → g 响应式/可访问 → h **页面变长专项回归** → i 性能/SEO 门禁 → j 整体验收 + 云端 CI 回写。
+
+**两项前置风险（已转为独立任务）**：①`#about` 由 `min-h-[50vh]` 占位变真实内容会改变页面高度，进而影响 `lib/scroll.ts` 进度终点、NavBar 40% 激活判定与 HeroCanvas 视口暂停，US-006h 要求全套四项目回归且不得删断言/降阈值；②新增 3D 头像可能推高 TBT（run 43177217750 曾因 TBT 超阈值失败），US-006i 要求 Lighthouse 专项复验，头像建议按需 frameloop、不常驻高开销动画。
+
+**本轮文件改动**：`feature_list.json`（拆分 + scope_note + roadmap）、`claude-progress.md`（本段与下一步第 9/10 条）。JSON 已用 Node 解析校验（60 个 features、10 个新增任务 priority 51-60 唯一、roadmap 19 项且无 US-006）。未提交：工作区存在并行的 `AGENTS.md` / `docs/PRD.md` 未提交改动，提交时必须显式排除。
+
+## US-006 迭代（2026-11-12，US-006a~i passing，US-006j 待云端 CI）
+
+**US-006（个人介绍 About Me）10 个任务中 9 个 passing。** 用户四项决策：3D 抽象头像、CV 暂不配置（条件隐藏）、文案由 agent 按 PRD 起草待用户确认、只填 #about 不新建路由。
+
+- 新增：`components/AboutSection.tsx`（#about 服务端渲染，正文/要点直接进静态 HTML）、`components/AboutPortrait.tsx`（客户端头像容器 + 静态 SVG 降级 + 文本替代）、`components/three/AboutAvatarScene.tsx`（低面数 R3F 场景：二十面体核心 + 线框壳 + 双轨道）、`lib/about.ts`（resolveAbout / hasCv / hasPortrait + 站内路径白名单）、`e2e/about.spec.ts`（9 用例 × 4 项目）、`scripts/about.test.mjs`（8 项 TDD）。
+- 改造：`content/types.ts`（AboutContent + Profile.about）、`content/profile.ts`（3 段中英叙事 + 7 条要点）、`content/validate.ts`（嵌套字段读取 + optionalLocaleLists / optionalAssets）、`content/index.ts`（about 统一出口）、`components/HomeSections.tsx`（渲染 AboutSection、移除占位）、`components/three/HeroCanvas.tsx`（离屏但转场未收敛时继续渲染 + data-hero-frames）、`messages/{zh,en}.json`（About 命名空间，各 20 键）、`app/globals.css`（.about-copy / .about-avatar 系列）、`e2e/scroll-transition.spec.ts` 与 `navigation.spec.ts`（长页适配 + hero 暂停用例）、`README.md` / `docs/Development.md` / `docs/DoD.md`。
+- 真实缺陷与回归修复：①hero 离屏立即暂停会冻结未收敛的相机/粒子/面板 → 改为「收敛中继续渲染、收敛后暂停」（稳态离屏仍为 never）；②`#about p` 严格模式多匹配（4 项失败）→ 改 `[data-about-bio]`；③`scrollHeight*0.5` 已越过转场终点（mobile-safari 相机用例）→ 按段区间中点采样。三处均未删断言、未降阈值。
+- 验证：`npm test` 92/92；`npm run verify:local` exit 0（i18n 20 键、size 437.03kB ≤1MB、audit 0 high）；about.spec 四项目 34 passed / 2 skipped；scroll-transition + navigation 四项目 78 passed / 6 skipped；全套四项目首跑 310 passed / 78 skipped / 4 failed（失败已全部修复），未新增 fixme；`CI=1 npm run verify:lighthouse` exit 0（perf 93-100、a11y 100、seo 100、bp 96，LCP 210-271ms、CLS 0、TBT 74-207ms——TBT 单次最高 207ms 略高于 200ms，门禁按 3 run 最优值聚合通过，阈值未改，后续新增 3D 模块需继续观察）。
+- **待办（US-006j）**：commit 后 push main，等云端 verify job 全绿，把 CI run URL 与 passed 数回写 `feature_list.json` US-006j、`PRD_UserStory.json` US-006、本文件；两者再转 passing。文案为中英草稿（`content/profile.ts` 注释已标【待用户确认】），CV 未配置。

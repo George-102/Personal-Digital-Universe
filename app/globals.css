@@ -114,6 +114,62 @@ html {
   );
 }
 
+/* US-006g：正文用明确 rgba，保证与背景的对比度可计算且 ≥4.5 */
+.about-copy {
+  color: rgb(232 234 246 / 0.88);
+}
+
+/* US-006d/e：3D 抽象头像容器 + 静态降级形象（SSR 即存在，文字先于 3D） */
+.about-avatar {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px solid rgb(124 108 255 / 25%);
+  border-radius: 1.5rem;
+  background: radial-gradient(circle at 50% 40%, rgb(124 108 255 / 18%), rgb(5 6 15 / 90%) 70%);
+  box-shadow: 0 0 60px rgb(124 108 255 / 12%), inset 0 0 40px rgb(5 6 15 / 60%);
+}
+
+.about-avatar-fallback,
+.about-avatar-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.about-avatar-fallback {
+  display: grid;
+  place-items: center;
+  padding: 12%;
+  transition: opacity 240ms ease, visibility 240ms ease;
+}
+
+.about-avatar-canvas canvas {
+  display: block;
+}
+
+.about-avatar[data-avatar-mode='3d'] .about-avatar-fallback {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.about-avatar-caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 0.5rem 0.75rem;
+  background: rgb(5 6 15 / 82%);
+  color: rgb(232 234 246 / 80%);
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: center;
+  transition: opacity 200ms ease, visibility 200ms ease;
+}
+
+.about-avatar[data-avatar-mode='3d'] .about-avatar-caption {
+  opacity: 0;
+  visibility: hidden;
+}
+
 .hero-bg::before {
   content: '';
   position: absolute;
@@ -188,6 +244,11 @@ html {
     transition: none;
   }
   .site-nav-link {
+    transition: none;
+  }
+  /* US-006g：减少动态效果时头像降级切换不做过渡动画 */
+  .about-avatar-fallback,
+  .about-avatar-caption {
     transition: none;
   }
   /* US-003f：减少动态效果时面板不做展开动画，直接完整呈现（简化转场） */

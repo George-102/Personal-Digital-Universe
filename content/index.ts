@@ -14,6 +14,8 @@ export function publicOnly<T extends { public: boolean }>(_category: string, ite
 }
 
 export const profile = rawProfile;
+/** US-006：About 内容走统一出口，页面不直接 import content/profile.ts */
+export const about = rawProfile.about ?? null;
 export const journey = filterPublic(rawJourney);
 export const research = filterPublic(rawResearch);
 export const publications = filterPublic(rawPublications);

@@ -25,7 +25,7 @@
 - [ ] 产品状态真实：Released / Beta / In Development / Discontinued 与实际一致。
 - [ ] 《法渊》等作品未完成时标记 **Writing / In Progress**。
 - [ ] DAC 3D 空域可视化带有 **“Conceptual illustration, not simulation data”** 标注。
-- [ ] 未配置的 CV、链接、图片不显示无效入口。
+- [x] 未配置的 CV、链接、图片不显示无效入口。（US-006f：默认无 `cvUrl` 时静态 HTML 无 download 链接，配置后临时构建实测入口与 `/cv.pdf` 200）
 - [ ] 中英双语均可切换；关键页面（首页、About、Research、Projects、Writing、Contact）中文和英文文案均存在。
 - [ ] 所有可点击外链可打开；失效外链不导致页面报错。
 

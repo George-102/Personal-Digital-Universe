@@ -84,7 +84,7 @@
 
 | 文件 | 内容 | 关键字段 |
 | --- | --- | --- |
-| profile.ts | 姓名/笔名/英文名、身份、社交链接 | name{zh,en}, tagline{zh,en}, links[], email |
+| profile.ts | 姓名/笔名/英文名、身份、社交链接、个人介绍 | name{zh,en}, tagline{zh,en}, links[], email, about{bio[], highlights[], portrait?, cvUrl?} |
 | journey.ts | 经历时间线 | date, title{zh,en}, summary{zh,en}, category, detail?, public |
 | research.ts | 研究方向 | slug, title{zh,en}, problems[], methods[], status, public |
 | publications.ts | 论文 | title（原文）, authors, year, status（三值）, links?, public |

@@ -14,6 +14,20 @@ async function waitForTransitionState(page: Page) {
   await page.locator('[data-interaction-canvas][data-transition]').first().waitFor({ timeout: 15_000 });
 }
 
+/**
+ * 滚到 hero→#about 转场段的中点。
+ * US-006 起 #about 变长，scrollHeight*0.5 可能已越过转场终点，
+ * 故按段区间（0 ~ #about 顶部）取中点，保证采样的是真正的转场中途。
+ */
+async function scrollToTransitionMid(page: Page) {
+  await page.evaluate(() => {
+    const about = document.querySelector('#about');
+    if (!about) return;
+    const top = about.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top: top * 0.5, behavior: 'instant' });
+  });
+}
+
 test.describe('滚动转场', () => {
   test('滚动进度源把 hero→#about 归一化为 0~1', async ({ page }) => {
     await page.goto('/');
@@ -78,10 +92,7 @@ test.describe('滚动转场', () => {
     });
 
     const initial = await readState();
-    await page.evaluate(() => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      window.scrollTo({ top: max * 0.5, behavior: 'instant' });
-    });
+    await scrollToTransitionMid(page);
     await page.waitForTimeout(500);
     const mid = await readState();
     await page.evaluate(() =>
@@ -217,11 +228,8 @@ test.describe('滚动转场', () => {
     expect(Math.abs(initial.translateY)).toBeGreaterThan(10);
     expect(initial.opacity).toBeGreaterThanOrEqual(0.85);
 
-    // 中途采样同样不破可读红线
-    await page.evaluate(() => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      window.scrollTo({ top: max * 0.5, behavior: 'auto' });
-    });
+    // 中途采样同样不破可读红线（按转场段中点采样，避免长页面越过终点）
+    await scrollToTransitionMid(page);
     await page.waitForTimeout(400);
     expect((await readPanel()).opacity).toBeGreaterThanOrEqual(0.85);
 
@@ -235,7 +243,9 @@ test.describe('滚动转场', () => {
     const end = await readPanel();
     expect(end.opacity).toBeGreaterThan(0.98);
     await expect(page.locator('#about h2')).toBeVisible();
-    await expect(page.locator('#about p')).toBeVisible();
+    // US-006c 起 #about 内有多段 <p>（eyebrow / 正文 / 头像替代文本），
+    // 用正文标记定位以保持“面板文字可见”的原断言意图（不是放宽）。
+    await expect(page.locator('#about [data-about-bio]').first()).toBeVisible();
 
     // 无 JS 回退：进度变量不存在时 var fallback=1 → 面板默认完整可见；
     // 移除与读取必须同一次 evaluate（进度源每帧可能重写变量）
@@ -386,5 +396,34 @@ test.describe('滚动转场', () => {
     // 内容完整（PRD 验收 5）
     await expect(page.locator('h1')).toBeVisible();
     await expect(page.locator('#about h2')).toBeVisible();
+  });
+
+  test('US-006h hero 真正滚出视口、转场收敛后暂停渲染', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === 'chromium-no-webgl', '仅在支持 WebGL 的项目运行');
+    await page.goto('/');
+    await settle(page);
+    await waitForSceneReady(page);
+    await waitForTransitionState(page);
+
+    // 页面变长后 hero 应能完全滚出视口（此前受短页限制无法验证）
+    const heroOut = await page.evaluate(() => {
+      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' });
+      const hero = document.getElementById('home');
+      return hero ? hero.getBoundingClientRect().bottom <= 0 : false;
+    });
+    expect(heroOut, 'hero 应能完全滚出视口').toBe(true);
+
+    // 等待 damp 收敛（滚动驱动仍在跑），收敛后 frameloop 应停下
+    await page.waitForTimeout(2000);
+    const canvas = page.locator('[data-interaction-canvas][data-transition]').first();
+    const heroFrames = async () => Number(await canvas.getAttribute('data-hero-frames'));
+    const start = await heroFrames();
+    await page.waitForTimeout(800);
+    const end = await heroFrames();
+    expect(end - start, '离屏且收敛后 hero 渲染循环应暂停').toBeLessThanOrEqual(10);
+
+    // 暂停前转场必须已收敛到终点，而不是冻结在中途
+    expect(Number(await canvas.getAttribute('data-transition'))).toBeGreaterThan(0.9);
+    expect(Number(await canvas.getAttribute('data-camera-z'))).toBeLessThan(-0.5);
   });
 });

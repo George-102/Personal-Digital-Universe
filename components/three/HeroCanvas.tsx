@@ -15,6 +15,7 @@ import {
   type Vec2,
 } from '@/lib/pointer';
 import { findInteractiveObject, heroInteractiveObjects } from '@/lib/interactive';
+import { sharedScrollState } from '@/lib/scroll';
 import type { FrameReport } from '@/components/three/HeroScene';
 
 const HeroScene = dynamic(() => import('@/components/three/HeroScene'), { ssr: false });
@@ -34,6 +35,9 @@ class SceneErrorBoundary extends Component<{ children: ReactNode }, { failed: bo
 export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
   const [tier, setTier] = useState<{ particles: number; pixelRatio: number } | null>(null);
   const [inView, setInView] = useState(true);
+  // US-006h：页面变长后 hero 会真正滚出视口；离屏且滚动转场已收敛时才暂停渲染，
+  // 否则 damp 未收敛就冻结状态会让相机/粒子/面板转场停在中途。
+  const [settling, setSettling] = useState(false);
   const [hoverId, setHoverId] = useState<string | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [hoverCapable, setHoverCapable] = useState(true);
@@ -47,6 +51,8 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
   const pressTargetRef = useRef<string | null>(null);
   const clickCountRef = useRef(0);
   const restoreAttempted = useRef(false);
+  // US-006h：渲染帧计数，用于实测「离屏且转场收敛后暂停渲染」
+  const frameCountRef = useRef(0);
 
   useEffect(() => {
     if (!isWebGLAvailable()) return;
@@ -78,6 +84,15 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
     observer.observe(el);
     return () => observer.disconnect();
   }, [tier]);
+
+  // ScrollDriver 的 RAF 独立于 R3F，离屏时仍会推进 damp；订阅进度差判断是否仍在收敛
+  useEffect(
+    () =>
+      sharedScrollState.subscribe(({ raw, progress }) => {
+        setSettling(Math.abs(raw - progress) > 0.002);
+      }),
+    [],
+  );
 
   // Canvas 卸载（含上下文丢失转静态）时移除全部指针监听
   useEffect(
@@ -145,6 +160,8 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
       if (el.dataset[key] !== value) el.dataset[key] = value;
     };
     const f = (n: number) => n.toFixed(3);
+    frameCountRef.current += 1;
+    if (frameCountRef.current % 10 === 0) put('heroFrames', String(frameCountRef.current));
     put('parallaxX', f(report.parallax.x));
     put('parallaxY', f(report.parallax.y));
     put('particleX', f(report.particleOffset.x));
@@ -204,7 +221,7 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
         <SceneErrorBoundary>
           <Canvas
             dpr={tier.pixelRatio}
-            frameloop={inView ? 'always' : 'never'}
+            frameloop={inView || settling ? 'always' : 'never'}
             camera={{ position: [0, 0.6, 7], fov: 50 }}
             gl={{ antialias: true, powerPreference: 'high-performance' }}
             style={{ pointerEvents: 'auto' }}
