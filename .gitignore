@@ -11,3 +11,5 @@ lhci-report/
 *.tsbuildinfo
 .DS_Store
 .env*
+# 本地调试输出（agent / 手动命令产生）
+test-out.txt
