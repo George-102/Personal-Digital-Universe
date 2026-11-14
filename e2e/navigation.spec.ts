@@ -131,6 +131,42 @@ test.describe('空间化导航', () => {
     await expect.poll(() => activeIds(page)).toEqual(['about']);
   });
 
+  test('点击 Journey 准确到达 #journey 并同步 URL hash', async ({ page }) => {
+    const errors: Error[] = [];
+    page.on('pageerror', (error) => errors.push(error));
+    await page.goto('/');
+    await settle(page);
+
+    await clickNav(page, 'journey');
+    await expect(page.locator('#journey')).toBeInViewport({ timeout: 10_000 });
+    await expect.poll(() => new URL(page.url()).hash).toBe('#journey');
+    await expect.poll(() => activeIds(page)).toEqual(['journey']);
+    expect(errors).toEqual([]);
+  });
+
+  test('英文页 Journey 导航同样到达并激活', async ({ page }) => {
+    await page.goto('/en');
+    await settle(page);
+    await clickNav(page, 'journey');
+    await expect(page.locator('#journey')).toBeInViewport({ timeout: 10_000 });
+    await expect.poll(() => new URL(page.url()).hash).toBe('#journey');
+    await expect.poll(() => activeIds(page)).toEqual(['journey']);
+  });
+
+  test('滚动到 Journey 时激活态唯一且切换到 journey', async ({ page }) => {
+    await page.goto('/');
+    await settle(page);
+
+    await page.evaluate(() =>
+      document.getElementById('journey')?.scrollIntoView({ behavior: 'instant', block: 'start' }),
+    );
+    await expect.poll(() => activeIds(page)).toEqual(['journey']);
+
+    // 回到顶部：激活态收回到 home
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await expect.poll(() => activeIds(page)).toEqual(['home']);
+  });
+
   test('滚动时激活态同步，同一时刻仅一项激活', async ({ page }) => {
     const errors: Error[] = [];
     page.on('pageerror', (error) => errors.push(error));

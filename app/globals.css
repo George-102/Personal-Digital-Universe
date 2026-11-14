@@ -230,6 +230,209 @@ html {
   visibility: visible;
 }
 
+/* US-008c/f：DOM 时间轴（3D 轨道是视觉层，不参与信息呈现） */
+.journey-layout {
+  position: relative;
+}
+
+.journey-canvas {
+  display: none;
+}
+
+/* 桌面才给 3D 留位置；窄屏完全隐藏（组件侧也不挂载 Canvas） */
+@media (min-width: 1024px) {
+  .journey-canvas {
+    display: block;
+    position: absolute;
+    top: 2.5rem;
+    right: -1.5rem;
+    width: 300px;
+    height: 30rem;
+    pointer-events: none;
+    opacity: 0.9;
+  }
+  .journey-list {
+    max-width: 34rem;
+  }
+}
+
+.journey-list {
+  position: relative;
+  margin: 2.5rem 0 0;
+  padding: 0 0 0 2rem;
+  list-style: none;
+}
+
+/* 竖向轨道线：从第一个节点到最后节点 */
+.journey-list::before {
+  content: '';
+  position: absolute;
+  top: 0.6rem;
+  bottom: 0.6rem;
+  left: 0.44rem;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-glow) 55%, transparent),
+    color-mix(in srgb, var(--color-accent) 32%, transparent) 60%,
+    transparent
+  );
+}
+
+.journey-item {
+  position: relative;
+  margin-bottom: 1.25rem;
+}
+
+.journey-item:last-child {
+  margin-bottom: 0;
+}
+
+.journey-marker {
+  position: absolute;
+  top: 1.55rem;
+  left: -1.78rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 999px;
+  background: var(--color-space);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 70%, transparent);
+  box-shadow: 0 0 0.6rem color-mix(in srgb, var(--color-glow) 45%, transparent);
+}
+
+.journey-item[data-open='true'] .journey-marker {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.journey-card {
+  border: 1px solid rgba(232, 234, 246, 0.12);
+  border-radius: 0.9rem;
+  background: rgba(11, 14, 31, 0.72);
+  padding: 1.1rem 1.25rem;
+}
+
+.journey-details > summary {
+  cursor: pointer;
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.journey-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.journey-details > summary:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: 0.4rem;
+}
+
+.journey-static {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.journey-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.journey-period {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  /* 显式不透明色：正文对比度可实测，且不受 color-mix 序列化差异影响 */
+  color: #a8aec6;
+}
+
+.journey-chip {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(34, 211, 238, 0.38);
+  color: #7ee7f7;
+}
+
+.journey-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #e8eaf6;
+}
+
+.journey-summary {
+  font-size: 0.94rem;
+  line-height: 1.7;
+  color: #c6cbe0;
+}
+
+.journey-toggle-hint {
+  font-size: 0.75rem;
+  color: #7ee7f7;
+}
+
+.journey-toggle-hint.is-muted {
+  color: #8b90a8;
+}
+
+.journey-panel {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(232, 234, 246, 0.12);
+  display: grid;
+  gap: 0.7rem;
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: #c2c7db;
+}
+
+.journey-link {
+  width: fit-content;
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/* US-008i：条目进入视口时淡入上移。用 CSS 滚动时间线，零 JS、零 TBT；
+   不支持的浏览器直接静态呈现（@supports 保护），减少动效偏好时完全关闭。 */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .journey-item {
+      animation: journey-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 22%;
+    }
+  }
+}
+
+@keyframes journey-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .journey-list {
+    padding-left: 1.5rem;
+  }
+  .journey-marker {
+    left: -1.3rem;
+  }
+  .journey-card {
+    padding: 0.95rem 1rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

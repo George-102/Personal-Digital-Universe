@@ -15,6 +15,7 @@
     "mainLabel": "Main navigation",
     "home": "Home",
     "about": "About",
+    "journey": "Journey",
     "menu": "Menu",
     "menuClose": "Close menu"
   },
@@ -26,5 +27,24 @@
     "portraitLabel": "Abstract 3D portrait",
     "avatarAlt": "Abstract 3D portrait: a floating low-poly geometric core wrapped in glowing orbit rings.",
     "avatarFallback": "3D portrait unavailable — showing a static illustration."
+  },
+  "Journey": {
+    "eyebrow": "02 / JOURNEY",
+    "title": "Journey",
+    "intro": "Key milestones in learning, research, building and writing, in chronological order.",
+    "listLabel": "Personal journey timeline",
+    "expand": "Show details",
+    "collapse": "Hide details",
+    "noDetail": "No further details",
+    "linkLabel": "Related link",
+    "categories": {
+      "education": "Education",
+      "research": "Research",
+      "opensource": "Open source",
+      "product": "Product",
+      "competition": "Competition",
+      "work": "Work",
+      "writing": "Writing"
+    }
   }
 }

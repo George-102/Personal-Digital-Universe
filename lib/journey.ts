@@ -123,8 +123,7 @@ export function validateJourneyEntry(entry: unknown): string[] {
 /**
  * 整表校验：逐条字段 + date/title 组合唯一 + 至少一条公开条目。
  * 供 prebuild 与 content/index.ts 调用，构建期拒绝坏数据。
- */
-export function validateJourneyEntries(entries: unknown): string[] {
+ */export function validateJourneyEntries(entries: unknown): string[] {
   if (!Array.isArray(entries)) return ['journey: 必须是数组'];
   if (entries.length === 0) return [];
 
@@ -152,4 +151,46 @@ export function validateJourneyEntries(entries: unknown): string[] {
   }
 
   return errors;
+}
+
+/** 时间显示：有结束时间时用 en dash 连接，否则只显示开始时间 */
+export function formatJourneyPeriod(start: string, end?: string | null): string {
+  return end ? `${start} — ${end}` : start;
+}
+
+export type JourneyItemView = {
+  /** DOM 锚点/aria-controls 用，含语言与序号，跨语言唯一 */
+  id: string;
+  date: string;
+  endDate: string | null;
+  period: string;
+  title: string;
+  summary: string;
+  /** 空数组表示该条没有更多详情（UI 不渲染展开控件） */
+  detail: string[];
+  category: JourneyCategory;
+  categoryMessageKey: string;
+  link: string | null;
+};
+
+/**
+ * 把 content/ 的双语数据解成当前语言的纯字符串视图。
+ * 服务端组件调用，客户端组件只消费字符串，不接触 i18n 运行时。
+ */
+export function buildJourneyItems(
+  entries: readonly JourneyEntry[],
+  lang: 'zh' | 'en',
+): JourneyItemView[] {
+  return entries.map((entry, index) => ({
+    id: `${lang}-${entry.date}-${String(index + 1).padStart(2, '0')}`,
+    date: entry.date,
+    endDate: entry.endDate ?? null,
+    period: formatJourneyPeriod(entry.date, entry.endDate),
+    title: entry.title[lang],
+    summary: entry.summary[lang],
+    detail: (entry.detail ?? []).map((paragraph) => paragraph[lang]),
+    category: entry.category,
+    categoryMessageKey: journeyCategoryMessageKey(entry.category),
+    link: entry.link ?? null,
+  }));
 }

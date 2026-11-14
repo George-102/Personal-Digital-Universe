@@ -5,10 +5,12 @@ import {
   JOURNEY_CATEGORIES,
   normalizeJourneyDate,
   journeyPeriod,
+  formatJourneyPeriod,
   sortJourney,
   journeyCategoryMessageKey,
   validateJourneyEntries,
   isValidJourneyLink,
+  buildJourneyItems,
 } from '../lib/journey.ts';
 
 const base = {
@@ -131,3 +133,41 @@ test('validateEntry 对 journey 复用同一套规则（构建期入口一致）
     assert.throws(() => validateEntry('journey', entry), pattern);
   }
 });
+
+test('formatJourneyPeriod 渲染区间与单点', () => {
+  assert.equal(formatJourneyPeriod('2023-09', '2027-06'), '2023-09 — 2027-06');
+  assert.equal(formatJourneyPeriod('2025-06'), '2025-06');
+  assert.equal(formatJourneyPeriod('2025', null), '2025');
+});
+
+test('buildJourneyItems 按语言解出纯字符串、id 唯一、无 detail 时返回空数组', () => {
+  const entries = [
+    {
+      ...base,
+      date: '2025-09',
+      endDate: '2026-06',
+      detail: [
+        { zh: '详情一', en: 'Detail one' },
+        { zh: '详情二', en: 'Detail two' },
+      ],
+      link: 'https://github.com/George-102',
+    },
+    { ...base, date: '2024-01', title: { zh: '第二条', en: 'Second' }, detail: undefined },
+  ];
+  const zh = buildJourneyItems(entries, 'zh');
+  const en = buildJourneyItems(entries, 'en');
+
+  assert.equal(zh[0].title, '入学');
+  assert.equal(en[0].title, 'Enrolled');
+  assert.equal(zh[0].period, '2025-09 — 2026-06');
+  assert.deepEqual(zh[0].detail, ['详情一', '详情二']);
+  assert.equal(zh[0].link, 'https://github.com/George-102');
+  assert.equal(zh[0].category, 'education');
+  assert.equal(zh[0].categoryMessageKey, 'categories.education');
+  assert.deepEqual(zh[1].detail, []);
+  assert.equal(zh[1].link, null);
+  // id 唯一且不依赖数组下标
+  const ids = [...zh, ...en].map((item) => item.id);
+  assert.equal(new Set(ids).size, 4);
+});
+

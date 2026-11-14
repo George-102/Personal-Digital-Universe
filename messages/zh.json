@@ -15,6 +15,7 @@
     "mainLabel": "主导航",
     "home": "首页",
     "about": "关于",
+    "journey": "时间线",
     "menu": "菜单",
     "menuClose": "关闭菜单"
   },
@@ -26,5 +27,24 @@
     "portraitLabel": "个人抽象 3D 形象",
     "avatarAlt": "抽象 3D 头像：一颗悬浮的低面数几何核心，外绕发光轨道环。",
     "avatarFallback": "3D 形象不可用，已显示静态形象。"
+  },
+  "Journey": {
+    "eyebrow": "02 / JOURNEY",
+    "title": "成长时间线",
+    "intro": "按时间顺序记录学习、研究、创造与写作中的重要节点。",
+    "listLabel": "个人经历时间线",
+    "expand": "展开详情",
+    "collapse": "收起详情",
+    "noDetail": "暂无更多细节",
+    "linkLabel": "相关链接",
+    "categories": {
+      "education": "教育",
+      "research": "研究",
+      "opensource": "开源",
+      "product": "产品",
+      "competition": "竞赛",
+      "work": "实习与工作",
+      "writing": "写作"
+    }
   }
 }
