@@ -1,5 +1,6 @@
 import type { ContentCategory } from './types.ts';
 import { PORTRAIT_PATH, CV_PATH } from '../lib/about.ts';
+import { isValidJourneyLink, normalizeJourneyDate } from '../lib/journey.ts';
 
 type Rule = {
   required: string[];
@@ -9,6 +10,10 @@ type Rule = {
   optionalLocaleLists?: string[];
   /** 可选站内资源路径 → 允许的格式 */
   optionalAssets?: Record<string, RegExp>;
+  /** 可选链接字段：站内路径或 https 外链 */
+  optionalLinks?: string[];
+  /** 可选时间区间：结束时间不得早于开始时间 */
+  dateRange?: { start: string; end: string };
 };
 
 const RULES: Record<ContentCategory, Rule> = {
@@ -24,6 +29,9 @@ const RULES: Record<ContentCategory, Rule> = {
     enums: {
       category: ['education', 'research', 'opensource', 'product', 'competition', 'work', 'writing'],
     },
+    optionalLocaleLists: ['detail'],
+    optionalLinks: ['link'],
+    dateRange: { start: 'date', end: 'endDate' },
   },
   research: {
     required: ['slug', 'title', 'problems', 'methods', 'status', 'public'],
@@ -119,6 +127,33 @@ export function validateEntry(category: ContentCategory, entry: unknown): void {
     if (value === undefined || value === null || value === '') continue;
     if (typeof value !== 'string' || !pattern.test(value)) {
       throw new Error(`${category}: ${field} 必须是站内安全路径，非法值 "${String(value)}"`);
+    }
+  }
+  // US-008a：可选链接只允许站内路径或 https 外链
+  for (const field of rule.optionalLinks ?? []) {
+    const value = readField(record, field);
+    if (value === undefined || value === null || value === '') continue;
+    if (!isValidJourneyLink(value)) {
+      throw new Error(`${category}: ${field} 只允许站内路径或 https 外链，非法值 "${String(value)}"`);
+    }
+  }
+  // US-008a：可选时间区间，结束不得早于开始
+  if (rule.dateRange) {
+    const { start, end } = rule.dateRange;
+    const startValue = readField(record, start);
+    const normalizedStart = normalizeJourneyDate(startValue);
+    if (!normalizedStart) {
+      throw new Error(`${category}: ${start} 非法或缺失 "${String(startValue)}"`);
+    }
+    const endValue = readField(record, end);
+    if (endValue !== undefined && endValue !== null && endValue !== '') {
+      const normalizedEnd = normalizeJourneyDate(endValue);
+      if (!normalizedEnd) {
+        throw new Error(`${category}: ${end} 非法 "${String(endValue)}"`);
+      }
+      if (normalizedEnd < normalizedStart) {
+        throw new Error(`${category}: ${end} 不能早于 ${start}`);
+      }
     }
   }
 }

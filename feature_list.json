@@ -1,6 +1,6 @@
 {
   "project": "Personal Digital Universe",
-  "last_updated": "2026-11-12",
+  "last_updated": "2026-11-14",
   "rules": {
     "single_active_feature": true,
     "passing_requires_evidence": true,
@@ -13,7 +13,7 @@
     "passing": "要求的验证已经通过，并且证据已经记录。"
   },
   "source": "docs/PRD.md（用户故事与验收标准）、docs/Tech.md 与 docs/Development.md（技术决策）、docs/DoD.md（完成定义）",
-  "scope_note": "首个开发需求为 US-001（3D 首页与沉浸式入口，PRD P0 首位），已连同前置任务 T-001/T-002 拆分为 11 个小任务，按 priority 顺序执行，一次只做一个。其余用户故事保留在 roadmap 中，轮到该故事时再拆分为小任务写入 features。2026-11-11 经用户确认以模板 schema 重建本文件；旧版完整清单见 git 提交 5a8d051。2026-11-11 用户确认 CI/CD 方案 A（GitHub Actions + Wrangler Direct Upload，关闭 Pages Git 自动构建）并要求尽早集成：T-004/T-005 从 roadmap 提升为 features 中 priority 13-16 的四个任务，排在所有 roadmap 故事（含 US-004）之前；T-003 保持原位不提前。方案细节见 docs/Development.md §3/§5、docs/Tech.md §6。2026-11-11 用户指定 US-002（访客与 3D 场景进行交互）为下一个需求，按 PRD 拆为 US-002a~q 共 17 个任务，priority 17-33，紧接 CI/CD（13-16）之后执行，roadmap 中 US-004 及其他故事顺延；用户确认三项决策：①点击交互物体默认平滑滚动到 #about，目标配置化、后续故事替换，不新建占位路由；②交互范围限 Hero 场景，但建立通用可交互物体注册表供后续 3D 场景复用；③队友正在进行的 CI/CD 任务（T-004a/b、T-005a/b）的编号、优先级、状态与证据一律不动。2026-11-11 用户确认本地/云端验证分工：本地默认只跑 `npm run verify:local`（lint / typecheck / build / npm test / verify:metrics，零浏览器），Playwright 四项目与 Lighthouse 重验证固定在云端 CI（push main / PR 自动触发），证据以 CI run URL 回写；`.github/workflows/verify.yml` 不改动，重验证覆盖与阈值 100% 保留。2026-11-11 用户指定 US-003（电影级页面转场）提前到 T-003/US-004 之前执行，并确认四项决策：①滚动驱动动画按 Tech.md 既定采用 GSAP ScrollTrigger；②五种转场效果（相机推拉/背景渐变/3D 物体移动旋转/粒子聚散/内容面板展开）全做、幅度克制；③范围为 hero→#about 单段完整转场 + 通用滚动进度注册机制（后续模块接入只需配置）；④拆为 US-003a~h 共 8 个任务 priority 35-42，roadmap 中 US-003 已移除。2026-11-12 用户指定 US-004（全局导航与空间化导航系统）拆分并确认决策 A：导航注册表只收录真实存在的模块（当前 Home / About），后续故事落地时逐条加入，不建空占位 section（天然满足 PRD 验收「目标模块不存在时不应产生无效跳转」，与 US-002/US-003 不建占位原则一致）；拆为 US-004a~h 共 8 个任务 priority 43-50，roadmap 中 US-004 已移除；core.spec『移动端菜单』4 项 test.fixme() 在 US-004e 移除并执行。2026-11-12 用户要求 agent 自主规划下一个需求并拆分到 features：经核对 PRD_UserStory.json（priority 1 未完成故事中排首）、claude-progress.md「下一步」第 9 条与 #about 仍为占位，推荐并获用户确认选择 US-006（个人介绍 About Me）；T-003（Vitest 迁移）保持 roadmap 原位不提前，理由为零用户可见价值且需同步改 CI 的 npm test，待内容模块成型后一次性迁移；US-005 / US-008 顺延。用户确认四项决策：①个人形象采用 3D 抽象头像（低面数、复用 R3F 与 lib/quality.ts、异步加载、WebGL/资源失败时降级为 CSS 占位）；②Download CV 暂不配置，入口条件隐藏，保留配置位并用临时文件实测两条路径后移除；③中英叙事文案由 agent 按 PRD §1.1 与 US-006 详述 4 起草并标注待用户确认，不虚构经历（PRD §8.3）；④范围限首页 #about section 填充，不新建 /about 独立路由（沿用 US-002 / US-003 / US-004 的不建占位原则）。拆为 US-006a~j 共 10 个任务 priority 51-60，roadmap 中 US-006 已移除；一次只做一个，下一步为 US-006a，全部新任务 status=not_started，实施开始时才把当前任务置 in_progress。已识别两项关键风险：#about 填充后页面变长，会改变 lib/scroll.ts 进度终点、NavBar 激活态判定与 hero 视口暂停行为，故设 US-006h 专项回归；新增 3D 头像可能推高 TBT（历史 run 43177217750 曾因此失败），由 US-006i 专项复验 Lighthouse 阈值。2026-11-12 实施结果：US-006a~i 已 passing（本地证据齐全），US-006j 保持 in_progress——PRD 五条验收已核对、全套 E2E 分批全绿、verify:local 与 CI=1 Lighthouse 均 exit 0，但云端 verify run URL 需 push 后回写；按 AGENTS.md 未把云端重验证提前标记 passing。实施中修复两处真实回归：①HeroCanvas 离屏立即暂停会让未收敛的转场冻结，改为「离屏但仍在收敛时继续渲染，收敛后暂停」；②测试中依赖短页假设的 `#about p` 严格模式多匹配与 scrollHeight*0.5 采样越过转场终点，改为语义定位与按段区间中点采样，断言强度不变。",
+  "scope_note": "首个开发需求为 US-001（3D 首页与沉浸式入口，PRD P0 首位），已连同前置任务 T-001/T-002 拆分为 11 个小任务，按 priority 顺序执行，一次只做一个。其余用户故事保留在 roadmap 中，轮到该故事时再拆分为小任务写入 features。2026-11-11 经用户确认以模板 schema 重建本文件；旧版完整清单见 git 提交 5a8d051。2026-11-11 用户确认 CI/CD 方案 A（GitHub Actions + Wrangler Direct Upload，关闭 Pages Git 自动构建）并要求尽早集成：T-004/T-005 从 roadmap 提升为 features 中 priority 13-16 的四个任务，排在所有 roadmap 故事（含 US-004）之前；T-003 保持原位不提前。方案细节见 docs/Development.md §3/§5、docs/Tech.md §6。2026-11-11 用户指定 US-002（访客与 3D 场景进行交互）为下一个需求，按 PRD 拆为 US-002a~q 共 17 个任务，priority 17-33，紧接 CI/CD（13-16）之后执行，roadmap 中 US-004 及其他故事顺延；用户确认三项决策：①点击交互物体默认平滑滚动到 #about，目标配置化、后续故事替换，不新建占位路由；②交互范围限 Hero 场景，但建立通用可交互物体注册表供后续 3D 场景复用；③队友正在进行的 CI/CD 任务（T-004a/b、T-005a/b）的编号、优先级、状态与证据一律不动。2026-11-11 用户确认本地/云端验证分工：本地默认只跑 `npm run verify:local`（lint / typecheck / build / npm test / verify:metrics，零浏览器），Playwright 四项目与 Lighthouse 重验证固定在云端 CI（push main / PR 自动触发），证据以 CI run URL 回写；`.github/workflows/verify.yml` 不改动，重验证覆盖与阈值 100% 保留。2026-11-11 用户指定 US-003（电影级页面转场）提前到 T-003/US-004 之前执行，并确认四项决策：①滚动驱动动画按 Tech.md 既定采用 GSAP ScrollTrigger；②五种转场效果（相机推拉/背景渐变/3D 物体移动旋转/粒子聚散/内容面板展开）全做、幅度克制；③范围为 hero→#about 单段完整转场 + 通用滚动进度注册机制（后续模块接入只需配置）；④拆为 US-003a~h 共 8 个任务 priority 35-42，roadmap 中 US-003 已移除。2026-11-12 用户指定 US-004（全局导航与空间化导航系统）拆分并确认决策 A：导航注册表只收录真实存在的模块（当前 Home / About），后续故事落地时逐条加入，不建空占位 section（天然满足 PRD 验收「目标模块不存在时不应产生无效跳转」，与 US-002/US-003 不建占位原则一致）；拆为 US-004a~h 共 8 个任务 priority 43-50，roadmap 中 US-004 已移除；core.spec『移动端菜单』4 项 test.fixme() 在 US-004e 移除并执行。2026-11-12 用户要求 agent 自主规划下一个需求并拆分到 features：经核对 PRD_UserStory.json（priority 1 未完成故事中排首）、claude-progress.md「下一步」第 9 条与 #about 仍为占位，推荐并获用户确认选择 US-006（个人介绍 About Me）；T-003（Vitest 迁移）保持 roadmap 原位不提前，理由为零用户可见价值且需同步改 CI 的 npm test，待内容模块成型后一次性迁移；US-005 / US-008 顺延。用户确认四项决策：①个人形象采用 3D 抽象头像（低面数、复用 R3F 与 lib/quality.ts、异步加载、WebGL/资源失败时降级为 CSS 占位）；②Download CV 暂不配置，入口条件隐藏，保留配置位并用临时文件实测两条路径后移除；③中英叙事文案由 agent 按 PRD §1.1 与 US-006 详述 4 起草并标注待用户确认，不虚构经历（PRD §8.3）；④范围限首页 #about section 填充，不新建 /about 独立路由（沿用 US-002 / US-003 / US-004 的不建占位原则）。拆为 US-006a~j 共 10 个任务 priority 51-60，roadmap 中 US-006 已移除；一次只做一个，下一步为 US-006a，全部新任务 status=not_started，实施开始时才把当前任务置 in_progress。已识别两项关键风险：#about 填充后页面变长，会改变 lib/scroll.ts 进度终点、NavBar 激活态判定与 hero 视口暂停行为，故设 US-006h 专项回归；新增 3D 头像可能推高 TBT（历史 run 43177217750 曾因此失败），由 US-006i 专项复验 Lighthouse 阈值。2026-11-12 实施结果：US-006a~i 已 passing（本地证据齐全），US-006j 保持 in_progress——PRD 五条验收已核对、全套 E2E 分批全绿、verify:local 与 CI=1 Lighthouse 均 exit 0，但云端 verify run URL 需 push 后回写；按 AGENTS.md 未把云端重验证提前标记 passing。实施中修复两处真实回归：①HeroCanvas 离屏立即暂停会让未收敛的转场冻结，改为「离屏但仍在收敛时继续渲染，收敛后暂停」；②测试中依赖短页假设的 `#about p` 严格模式多匹配与 scrollHeight*0.5 采样越过转场终点，改为语义定位与按段区间中点采样，断言强度不变。 2026-11-14 US-006 收尾：云端 run 43259860487（commit 4e210ea）verify + deploy 全绿，Lighthouse TBT 114ms / 115ms、perf 98-99，US-006a~j 全部 passing。同轮修复首屏 TBT 回归（每帧读 tooltip offset 造成强制布局、帧计数逐帧写 dataset、每帧 setState、挂载即探测 WebGL），阈值与断言一处未改。 2026-11-14 US-008 拆分为 US-008a~k 共 11 个任务（priority 61-71，roadmap 移除 US-008）。用户四项决策：①呈现形式选 3D 空间轨道（R3F），但 PRD 明确『不应设计为必须旋转 3D 场景才能阅读』，故 3D 只作视觉层（aria-hidden），DOM 时间轴始终是信息主体；②经历内容由用户提供完整清单，未拿到前 US-008b 不填推测数据，US-008a/c 可先行；③位置为首页 #journey 新 section + 导航加 Journey；④点击详情为内联展开面板（非模态）。性能约束沿用 US-006 教训。",
   "features": [
     {
       "id": "T-001a",
@@ -1214,6 +1214,187 @@
         "2026-11-12 TBT 回归修复（commit 4e210ea，上一版 run 43222980899 曾以 218-250ms 挂掉门禁）：根因是首屏每帧固定成本 —— ① HeroCanvas 每帧写 18 个 dataset 后紧接读 tooltip offsetWidth/offsetHeight，形成强制同步布局；② 帧计数逐帧写 dataset；③ sharedScrollState 每帧无条件 setSettling；④ 头像挂载即调 isWebGLAvailable 创建一次性 WebGL 上下文。修复为尺寸缓存 / window 探针 / 布尔翻转去重 / 视口内才探测，未改任何阈值。修复后 TBT 从 218-250ms 降到 114-124ms，perf 89-93 → 98-99。"
       ],
       "notes": "本任务通过即 US-006 完成。文案定稿与 CV 文件由用户后续提供，只需改 content/ 与 public/，不改组件。若云端 CI run 尚未生成，按 AGENTS.md 在 claude-progress.md 标注『待回写 CI run URL』，不得提前标记 passing。"
+    },
+    {
+      "id": "US-008a",
+      "priority": 61,
+      "area": "成长时间线",
+      "title": "Journey 内容模型补齐与构建期校验",
+      "user_visible_behavior": "非法的经历配置（未知分类、缺摘要、非法链接、乱序）在构建期被拒绝，不会产出坏页面。",
+      "status": "passing",
+      "verification": [
+        "JourneyEntry 扩展：detail 改为可选多段（LocaleText[]）、新增可选 link（站内路径或 https 外链，构建期白名单校验）、新增可选 endDate（时间区间显示）。",
+        "新增 lib/journey.ts：排序（按时间）、分类标签键映射、区间格式化；纯函数，node:test 单测覆盖。",
+        "TDD：先写 scripts/journey.test.mjs（未知 category / 空 summary / 非法 link / detail 非双语 / 重复 date+title / 排序稳定性）观察 RED，再实现转 GREEN。",
+        "构建期拒绝实测：临时注入非法条目，npm run build 必须非 0 并给出可定位错误；恢复后 build 为 0。"
+      ],
+      "evidence": [
+        "2026-11-14 RED：scripts/journey.test.mjs 报 ERR_MODULE_NOT_FOUND（lib/journey.ts 缺失）。",
+        "2026-11-14 GREEN：新增 lib/journey.ts（normalizeJourneyDate / journeyPeriod / sortJourney / journeyCategoryMessageKey / isValidJourneyLink / validateJourneyEntry / validateJourneyEntries）；content/types.ts 的 JourneyEntry 增加 endDate?/link?，detail 改为 LocaleText[]；content/validate.ts 增加 optionalLinks 与 dateRange 规则；node --test scripts/journey.test.mjs 9/9 通过，全套 node --test 101/101 通过。",
+        "2026-11-14 构建期拒绝实测：向 content/journey.ts 注入 link: 'javascript:alert(1)' 后 npm run build exit 1，输出「journey 配置校验失败：journey[0]: link 只允许站内路径或 https 外链，非法值 \"javascript:alert(1)\"」；恢复空数组后 build exit 0、content 校验通过（1 条数据）、npx tsc --noEmit 与 npm run lint 均 exit 0。",
+        "2026-11-14：content/index.ts 的 journey 出口改为 sortJourney(filterPublic(rawJourney))，排序单一来源；scripts/validate-content.mjs 增加整表校验（重复 date+title、至少一条 public）。"
+      ],
+      "notes": "不依赖真实经历内容，可先行。detail 从 LocaleText 改为 LocaleText[] 属破坏性变更，需同步 content/journey.ts（当前为空数组）与 content/validate.ts 规则。"
+    },
+    {
+      "id": "US-008b",
+      "priority": 62,
+      "area": "成长时间线",
+      "title": "真实经历数据与 Journey 双语文案",
+      "user_visible_behavior": "时间线展示的是用户提供的真实经历，中英文各一份。",
+      "status": "not_started",
+      "verification": [
+        "content/journey.ts 写入用户提供的经历条目（education / research / opensource / product / competition / work / writing），不虚构年份、机构、奖项；未提供 detail 的条目只留摘要。",
+        "messages/{zh,en}.json 新增 Journey 命名空间（eyebrow / title / categories.* / expand / collapse / noDetail / hint），中英键集一致。",
+        "npm run check:i18n 100%；构建后 out/index.html 与 out/en/index.html 均含全部条目标题与摘要。",
+        "传播性实测：临时改一条摘要并重建，产物跟随变化；恢复后重建无残留。"
+      ],
+      "evidence": [],
+      "notes": "阻塞项：需用户提供经历清单（年份/阶段 + 标题 + 简述 + 分类 + 可选详情）。未拿到前不得填入推测数据。"
+    },
+    {
+      "id": "US-008c",
+      "priority": 63,
+      "area": "成长时间线",
+      "title": "#journey 结构与静态可读（DOM 时间轴）",
+      "user_visible_behavior": "访客无需任何脚本即可读到完整经历列表，含时间、标题、摘要与分类。",
+      "status": "not_started",
+      "verification": [
+        "新增 components/JourneySection.tsx（服务端组件），渲染 eyebrow + h2 + 每条经历（时间、标题、摘要、分类标签、详情按钮）；保持 id=\"journey\"。",
+        "HomeSections 在 #about 之后渲染 JourneySection；无 JS 时（abort /_next/static/**）全部条目仍可见。",
+        "构建产物 out/index.html 与 out/en/index.html 含全部条目的 data-journey-item 与标题；标题层级不跳级（h2 → h3）。",
+        "新增 e2e/journey.spec.ts 首批用例：静态可读、中英分别显示对应文案。"
+      ],
+      "evidence": [],
+      "notes": "3D 只做视觉层，DOM 时间轴始终是信息主体（PRD 明确『不应设计为必须旋转 3D 场景才能阅读』）。"
+    },
+    {
+      "id": "US-008d",
+      "priority": 64,
+      "area": "成长时间线",
+      "title": "3D 空间轨道视觉层（低面数、视口内挂载）",
+      "user_visible_behavior": "时间线一侧有随时间顺序延伸的 3D 轨道与节点，作为空间参照；关闭或失败不影响阅读。",
+      "status": "not_started",
+      "verification": [
+        "新增 components/three/JourneyOrbit.tsx 与 components/JourneyCanvas.tsx：低面数曲线轨道 + 节点球，dpr 取 lib/quality.ts 分档。",
+        "进入视口才挂载 Canvas、离屏 frameloop=never；卸载时 dispose geometry/material；复用 lib/webgl.ts 探测。",
+        "3D 层 aria-hidden，不承载唯一信息；WebGL 不可用 / 上下文丢失 / chunk 失败三路径下 DOM 时间线完整。",
+        "不新增 npm 依赖；构建产物 size 仍 ≤1MB。"
+      ],
+      "evidence": [],
+      "notes": "性能红线：useFrame 内禁止读写布局属性、禁止写 dataset 做探针（改用 window.__journeyFrames）。"
+    },
+    {
+      "id": "US-008e",
+      "priority": 65,
+      "area": "成长时间线",
+      "title": "3D 节点与 DOM 卡片联动（hover / focus）",
+      "user_visible_behavior": "鼠标悬停或键盘聚焦某条经历时，3D 轨道上对应节点高亮；反之亦然。",
+      "status": "not_started",
+      "verification": [
+        "DOM 卡片 hover/focus → 对应 3D 节点放大与发光（通过 React 状态传递，不经 DOM 查询）。",
+        "3D 节点 hover → 对应 DOM 卡片高亮并保持摘要可见（幂等，不抖动）。",
+        "hover 状态在移动端（无 hover）不产生残留高亮；快速掠过不出现 NaN 或未捕获异常。",
+        "E2E：hover 卡片后 3D 层 data-active 与卡片 data-active 一致；无 WebGL 时该用例按设计条件跳过。"
+      ],
+      "evidence": [],
+      "notes": "联动只影响视觉，不改变 DOM 文本；避免为联动引入每帧 setState。"
+    },
+    {
+      "id": "US-008f",
+      "priority": 66,
+      "area": "成长时间线",
+      "title": "点击展开详情（内联面板、键盘可用）",
+      "user_visible_behavior": "访客点击时间节点即可展开该段经历的详细内容，再次点击收起。",
+      "status": "not_started",
+      "verification": [
+        "每条经历渲染 button（aria-expanded / aria-controls）与内联详情面板；收起后 DOM 仍保留摘要。",
+        "Esc 收起；焦点保持在触发按钮；多条目互斥展开（同时只展开一条）。",
+        "无 detail 的条目：不渲染空面板，按钮不出现或标注无详情，摘要与时间仍完整（验收 5）。",
+        "E2E：点击展开、再次点击收起、Esc 收起、无 detail 条目内容完整。"
+      ],
+      "evidence": [],
+      "notes": "不使用模态框，避免焦点陷阱与移动端全屏成本。"
+    },
+    {
+      "id": "US-008g",
+      "priority": 67,
+      "area": "成长时间线",
+      "title": "移动端触摸友好布局",
+      "user_visible_behavior": "手机上时间线变成单列竖向列表，触摸即可展开详情，不依赖 3D 或 hover。",
+      "status": "not_started",
+      "verification": [
+        "md 以下不挂载 3D 轨道，时间轴改为单列竖向（节点在左、内容在右）。",
+        "触摸目标 ≥44×44 CSS px；点击/触摸展开在 mobile-chrome 与 mobile-safari 实测通过。",
+        "1440 / 1024 / 768 / 390 / 375 五档无横向溢出（scrollWidth - clientWidth ≤1）。",
+        "overflow.spec 覆盖含 #journey 的页面仍全绿。"
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "US-008h",
+      "priority": 68,
+      "area": "成长时间线",
+      "title": "可访问性、对比度与 reduced-motion",
+      "user_visible_behavior": "键盘用户与减少动效偏好的访客同样能完整读完时间线。",
+      "status": "not_started",
+      "verification": [
+        "全流程仅键盘可达：Tab 到每条经历、Enter/Space 展开、Esc 收起、焦点环可见。",
+        "正文与节点文字对比度 ≥4.5（合成背景后计算），分类标签不靠颜色单独传达信息。",
+        "prefers-reduced-motion: reduce 下关闭 3D 与展开动画，内容完整可读（不出现高度动画卡住）。",
+        "a11y.spec 与 journey.spec 相关用例四项目通过。"
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "US-008i",
+      "priority": 69,
+      "area": "成长时间线",
+      "title": "导航注册表与滚动转场接入",
+      "user_visible_behavior": "导航出现 Journey 一项，点击准确到达 #journey，滚动时激活态正确切换。",
+      "status": "not_started",
+      "verification": [
+        "lib/nav.ts 增加 journey（order 30，href #journey）；messages Nav.journey 中英各一份；validateNavItems 通过。",
+        "lib/transitions.ts 增加 about→journey 段，不破坏既有 hero→about 段。",
+        "NavBar 激活态覆盖三个 section；导航点击后 URL hash 同步、键盘可达。",
+        "navigation.spec 扩展：Journey 到达、激活态切换、英文页同样生效；既有断言一处不删。"
+      ],
+      "evidence": [],
+      "notes": "transitions 段追加需保证既有 scroll-transition 用例仍全绿（进度映射不变）。"
+    },
+    {
+      "id": "US-008j",
+      "priority": 70,
+      "area": "成长时间线",
+      "title": "页面再次变长的专项回归",
+      "user_visible_behavior": "时间线上线后，滚动、转场、导航与 3D 暂停行为与之前一致。",
+      "status": "not_started",
+      "verification": [
+        "scroll 进度终点随页面高度重算，滚到底时 transition 收敛到 1、相机到位。",
+        "hero 与 journey 两处 3D 均在离屏且收敛后暂停（帧计数探针增量 ≤2）；两处同时挂载不互相抢资源。",
+        "NavBar 同一时刻仅一项激活；about 与 journey 交界处不闪烁。",
+        "overflow / a11y / navigation / scroll-transition / about 全套四项目 0 失败，不新增 fixme、不降阈值。"
+      ],
+      "evidence": [],
+      "notes": "US-006h 的经验：长页会让 scrollHeight*0.5 采样失效，新用例一律按段区间中点采样。"
+    },
+    {
+      "id": "US-008k",
+      "priority": 71,
+      "area": "成长时间线",
+      "title": "US-008 整体验收、文档回写与云端 CI",
+      "user_visible_behavior": "PRD 五条验收逐条可核对，时间线不影响既有质量门禁。",
+      "status": "not_started",
+      "verification": [
+        "逐条核对：完整经历可读、hover 显示摘要、点击看详情、移动端触摸布局、无详情节点仍展示基本内容；证据写入 evidence。",
+        "npm run verify:local exit 0；本地 CI=1 Lighthouse 复验（TBT 不因新增 3D 轨道回归）。",
+        "push main 后云端 verify + deploy 全绿，CI run URL 与指标回写 feature_list.json / PRD_UserStory.json / claude-progress.md；US-008 转 passing。",
+        "更新 README 内容维护章节、docs/Development.md content 表、docs/DoD.md 相关项；记录未决风险。"
+      ],
+      "evidence": [],
+      "notes": "按 AGENTS.md：云端 run URL 未回写前本任务不得标 passing。"
     }
   ],
   "roadmap": [
@@ -1221,12 +1402,6 @@
       "id": "T-003",
       "title": "Vitest 单元/集成测试基础设施（npm test 从 node:test 迁移，接入 verify 与 CI）",
       "group": "P0-技术",
-      "status": "not_started"
-    },
-    {
-      "id": "US-008",
-      "title": "成长时间线 Journey",
-      "group": "P0",
       "status": "not_started"
     },
     {

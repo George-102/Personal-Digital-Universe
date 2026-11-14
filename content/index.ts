@@ -1,4 +1,5 @@
 import { filterPublic } from './validate.ts';
+import { sortJourney } from '../lib/journey.ts';
 import { profile as rawProfile } from './profile.ts';
 import { journey as rawJourney } from './journey.ts';
 import { research as rawResearch } from './research.ts';
@@ -16,7 +17,8 @@ export function publicOnly<T extends { public: boolean }>(_category: string, ite
 export const profile = rawProfile;
 /** US-006：About 内容走统一出口，页面不直接 import content/profile.ts */
 export const about = rawProfile.about ?? null;
-export const journey = filterPublic(rawJourney);
+/** US-008：时间线统一在出口排序（最新在前），UI 不再各自排序 */
+export const journey = sortJourney(filterPublic(rawJourney));
 export const research = filterPublic(rawResearch);
 export const publications = filterPublic(rawPublications);
 export const projects = filterPublic(rawProjects);

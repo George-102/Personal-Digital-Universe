@@ -41,11 +41,17 @@ export type JourneyCategory =
   | 'writing';
 
 export interface JourneyEntry {
+  /** 开始时间：`YYYY` 或 `YYYY-MM` */
   date: string;
+  /** 可选结束时间，用于区间经历（如 2023 - 2026） */
+  endDate?: string;
   title: LocaleText;
   summary: LocaleText;
   category: JourneyCategory;
-  detail?: LocaleText;
+  /** 可选多段详情；缺省时节点只展示摘要（US-008 验收 5：无详情仍展示基本内容） */
+  detail?: LocaleText[];
+  /** 可选详情链接：站内路径或 https 外链 */
+  link?: string;
   public: boolean;
 }
 

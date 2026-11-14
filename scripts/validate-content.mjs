@@ -11,6 +11,13 @@ import { interests } from '../content/interests.ts';
 import { heroInteractiveObjects, validateInteractiveObjects } from '../lib/interactive.ts';
 import { transitionSegments, validateTransitionSegments } from '../lib/transitions.ts';
 import { navItems, validateNavItems } from '../lib/nav.ts';
+import { validateJourneyEntries } from '../lib/journey.ts';
+
+const journeyErrors = validateJourneyEntries(journey);
+if (journeyErrors.length > 0) {
+  console.error(`journey 配置校验失败：\n${journeyErrors.join('\n')}`);
+  process.exit(1);
+}
 
 const interactiveErrors = validateInteractiveObjects(heroInteractiveObjects);
 if (interactiveErrors.length > 0) {
