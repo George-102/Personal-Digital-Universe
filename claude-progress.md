@@ -48,7 +48,7 @@
 7. **T-003** Vitest 单元/集成测试基础设施（迁移时同步改 CI 的 `npm test`）
 8. ~~**US-004** 全局导航~~（2026-11-12 passing：US-004a~h 共 8 任务全 passing，本地 verify:local exit 0，云端 run [`43189384137`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43189384137) verify 全绿 280 passed / 76 skipped / 0 failed + Lighthouse 达标 + deploy success，CI run URL 已回写 US-004h 与 PRD_UserStory.json）
 9. ~~**US-006 个人介绍 About Me**~~（2026-11-12 passing：US-006a~j 共 10 任务全 passing，云端 run [`43259860487`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43259860487) verify + deploy 全绿、TBT 114/115ms、perf 98-99，CI run URL 已回写 US-006j 与 PRD_UserStory.json）
-10. **US-008 成长时间线**（下一个 P0 内容故事；`#about` 已就位，可直接沿用「content 数据 → 双语 → section」范式。开工前按 AGENTS.md 先用 AskUserQuestion 确认时间线内容与展示形式，再拆 US-008a~? 写入 feature_list.json）
+10. **US-008 成长时间线**（2026-11-14 已拆为 US-008a~k 共 11 个任务，priority 61-71，roadmap 已移除）。用户四项决策：①3D 空间轨道（R3F），但 PRD 明确「不应设计为必须旋转 3D 场景才能阅读」→ 3D 只作视觉层（aria-hidden），DOM 时间轴是信息主体；②经历内容由用户提供完整清单（**US-008b 阻塞，等清单**）；③首页 `#journey` 新 section + 导航加 Journey；④点击详情为内联展开面板。**US-008a 已 passing**（模型 + 校验 + TDD 9 项 + 构建期拒绝实测），提交 `c487ccd`，未 push。
 11. 之后按 roadmap：US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 / US-003 / US-004 / US-006 已完成）。**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
 
 ## 风险与注意事项
