@@ -1,6 +1,6 @@
 {
   "project": "Personal Digital Universe",
-  "last_updated": "2026-11-12",
+  "last_updated": "2026-11-14",
   "source": "docs/PRD.md 第三章用户故事（US-001~US-023）；状态与证据对照 feature_list.json（2026-11-11）",
   "rules": {
     "single_active_feature": true,
@@ -134,9 +134,14 @@
       "details": "设置 Journey / Experience 区域，时间线可以采用 3D 空间轨道或具有深度感的节点网络，通过时间轴位置表达时间顺序。不同时间节点代表重要个人经历，包括教育经历、科研项目、开源项目、软件产品发布、竞赛经历、实习与工作经历、文学创作。每个节点包含时间、标题、简介、分类和详细信息入口。鼠标悬停节点时显示摘要信息，点击节点时可以展开详细内容面板。不应将时间线设计为必须旋转 3D 场景才能阅读的形式。",
       "Acceptance Criteria": "- 正常场景：访客可以查看完整的个人经历。- 正常场景：鼠标悬停时间节点时，可以看到相关摘要。- 正常场景：点击时间节点可以查看对应详情。- 正常场景：时间线在移动端能够转换为适合触摸操作的布局。- 异常场景：没有详细信息的节点仍然可以展示基本内容。",
       "DoD": "五条验收逐条通过并留证；移动端有触摸友好布局；npm run verify:local 通过 + 云端 verify job 全绿并回写 CI run URL。",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "in_progress",
+      "evidence": [
+        "2026-11-14：feature_list.json 中 US-008a~j 共 10 个任务 passing，US-008k 保持 in_progress（本地证据齐全，云端 CI 待 push 后回写）；逐条证据见 feature_list.json。",
+        "2026-11-14 五条验收逐条核对：①完整经历可读（无 JS 静态 HTML 中 7 条摘要/时间/分类齐全，原生 details 可展开）；②hover 显示摘要（卡片摘要常显，hover/focus 同时联动 3D 节点高亮，实测 data-journey-active 跟随）；③点击看详情（details 展开/收起 + Esc，四项目通过）；④移动端触摸布局（1024px 以下不挂载 3D、单列、触摸目标 ≥44px、tap 展开通过）；⑤无详情节点仍展示基本内容（3 条无 detail 的条目展示摘要 + 「暂无更多细节」，不渲染空面板）。",
+        "2026-11-14：npm run verify:local exit 0（node --test 103/103、i18n 36 键 100%、size 438.78kB ≤1MB、audit 0 high）；CI=1 npm run verify:lighthouse exit 0（最优 TBT 102ms 中文 / 166ms 英文，LCP 210-227ms、CLS 0、perf 93-99、a11y 100、seo 100、bp 96）；全套四项目 372 passed / 92 skipped（4 项 about h2 断言已随新 section 同步修复，修复后 about 34 passed）。",
+        "待回写：push main 后云端 verify job 的 CI run URL 与 passed 数；US-008k 转 passing 后本故事同步转 passing。"
+      ],
+      "notes": "2026-11-14 已实现：#journey 新 section（DOM 时间轴为信息主体 + 桌面 3D 空间轨道视觉层）、hover/focus 3D-DOM 联动、内联展开详情（原生 details / 互斥 / Esc）、移动端单列与触摸优化、导航加 Journey。内容当前为模板清单（`content/journey.ts` 的 7 条 title 均带「示例 ·」前缀），等用户提供真实经历后替换；英文文案为起草稿。范围调整：未新增 transitions 注册表段，journey 用 CSS 滚动时间线淡入（原因见 scope_note）。T-003 仍 not_started。"
     },
     {
       "id": "US-009",

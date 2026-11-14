@@ -48,7 +48,7 @@
 7. **T-003** Vitest 单元/集成测试基础设施（迁移时同步改 CI 的 `npm test`）
 8. ~~**US-004** 全局导航~~（2026-11-12 passing：US-004a~h 共 8 任务全 passing，本地 verify:local exit 0，云端 run [`43189384137`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43189384137) verify 全绿 280 passed / 76 skipped / 0 failed + Lighthouse 达标 + deploy success，CI run URL 已回写 US-004h 与 PRD_UserStory.json）
 9. ~~**US-006 个人介绍 About Me**~~（2026-11-12 passing：US-006a~j 共 10 任务全 passing，云端 run [`43259860487`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43259860487) verify + deploy 全绿、TBT 114/115ms、perf 98-99，CI run URL 已回写 US-006j 与 PRD_UserStory.json）
-10. **US-008 成长时间线**（2026-11-14 已拆为 US-008a~k 共 11 个任务，priority 61-71，roadmap 已移除）。用户四项决策：①3D 空间轨道（R3F），但 PRD 明确「不应设计为必须旋转 3D 场景才能阅读」→ 3D 只作视觉层（aria-hidden），DOM 时间轴是信息主体；②经历内容由用户提供完整清单（**US-008b 阻塞，等清单**）；③首页 `#journey` 新 section + 导航加 Journey；④点击详情为内联展开面板。**US-008a 已 passing**（模型 + 校验 + TDD 9 项 + 构建期拒绝实测），提交 `c487ccd`，未 push。
+10. **US-008 成长时间线**（2026-11-14 实施：US-008a~j passing，**US-008k in_progress——待 push 后回写云端 verify run URL**）。拆为 11 个任务（priority 61-71）。用户决策：3D 空间轨道（R3F）+ 首页 `#journey` section + 导航加 Journey + 内联展开面板；内容由用户提供清单，当前为**模板数据**（`content/journey.ts` 的 title 均带「示例 ·」前缀）。PRD 红线「不应必须旋转 3D 才能阅读」→ 3D 仅 `aria-hidden` 视觉层，DOM 时间轴承载全部信息。**范围调整**：未新增 transitions 注册表段（单 target 进度源重构风险过高），改用 CSS 滚动时间线淡入（零 JS），已在 `scope_note` 与 US-008i evidence 记录。
 11. 之后按 roadmap：US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 / US-003 / US-004 / US-006 已完成）。**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
 
 ## 风险与注意事项
@@ -143,3 +143,16 @@
 - **TBT 回归根因与修复（commit 4e210ea）**：`HeroCanvas.handleFrame` 每帧写 18 个 dataset 后紧接读 `tooltip.offsetWidth/offsetHeight` → 强制同步布局，页面变长后代价放大；另加帧计数逐帧写 dataset、`setSettling` 每帧 setState、头像挂载即调 `isWebGLAvailable()`。修复为 tooltip 尺寸缓存、帧计数改 `window.__heroFrames` / `window.__avatarFrames` 探针、`setSettling` 布尔翻转去重、WebGL 探测延后到进入视口。**阈值与断言一处未改。**
 - 修复后 Lighthouse（同一门禁）：TBT 最优 **114ms（`/`）/ 115ms（`/en/`）**、LCP 208-211ms、CLS 0、perf 98-99、a11y 100、seo 100、bp 96；单次仍有 636ms 离群（lhci 按最优 run 聚合，属 runner 噪声）。
 - **未决风险**：中英文案仍是 agent 按 PRD 起草的草稿（`content/profile.ts` 注释标【待用户确认】）；CV 未配置（入口隐藏，提供 PDF 后改 `cvUrl` 一个字段即可）；T-003（Vitest 迁移）仍 `not_started`。
+
+## US-008 迭代（2026-11-14，US-008a~j passing，US-008k 待云端 CI）
+
+**成长时间线落地：DOM 时间轴为信息主体，3D 空间轨道只是桌面视觉层。**
+
+- **内容**：`content/journey.ts` 7 条模板清单，覆盖 7 个分类；`title` 统一「示例 · 」前缀（文件头写明替换 6 步），含区间 / 外链 / 无 detail 三种形态。`lib/journey.ts` 提供日期归一化、倒序排序、区间格式化、分类键、链接白名单、单条与整表校验（重复 date+title、至少一条 public），prebuild 拒绝坏数据（注入 `javascript:` 链接实测 build exit 1）。
+- **结构**：`JourneySection.tsx`（服务端取数 + i18n）→ `JourneyExperience.tsx`（client，持有 activeIndex）→ `JourneyTimeline.tsx`（原生 `<details>`）+ `JourneyCanvas.tsx`（3D）。静态 HTML 含 7 条摘要、时间、分类与全部详情段落，无 JS 也能展开（SEO 可抓）。
+- **3D**：`JourneyOrbitScene.tsx` 低面数 CatmullRom 轨道 + 节点球，dpr 取 `lib/quality.ts`；四条件（≥1024px、无 reduced-motion、WebGL、进入视口）同时满足才挂载，离屏 `frameloop=never`，`OrbitErrorBoundary` 失败静默降级。零新增依赖。
+- **交互**：hover/focus 卡片 → 3D 节点放大发光（useFrame 内只插值，不读布局、不 setState）；点击展开详情、互斥、Esc 收起、焦点留在 summary；无 detail 条目不渲染空面板。
+- **导航**：`lib/nav.ts` 加 journey（order 30），NavBar 激活态数据驱动自动覆盖；`nav.test.mjs` 顺序断言同步。
+- **验证**：`node --test` 103/103；`verify:local` exit 0（i18n 36 键、size 438.78kB）；全套四项目首跑 372 passed / 92 skipped / 4 failed（全为 `about.spec` 的 h2 计数，随新增 section 更新为「#about 内 h2/h3 各 1 + 全局 h2=2 + 层级序列不跳级」后 about 34 passed）；`journey.spec` 四项目 47 passed；`CI=1 lhci` exit 0（最优 TBT 102 / 166ms，LCP 210-227ms，CLS 0，perf 93-99）。
+- **范围调整**：US-008i 原计划的 about→journey 转场段未做。`attachScrollDriver` 是单 target 设计，多段需重构进度源并改动 scroll-transition 既有 8 个用例与 HeroScene 全部消费端；改用 CSS 滚动时间线淡入（`@supports animation-timeline: view()`，reduced-motion 关闭），零 JS、零 TBT，视觉进入效果保留。已记入 `scope_note` 与 US-008i evidence。
+- **未决风险**：时间线内容为模板（7 条 `title` 带「示例 ·」），真实经历待用户提供后替换；英文文案为起草稿；`docs/DoD.md` B 组新增「时间线不含占位内容」未打勾，等替换后复查。

@@ -35,6 +35,7 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 - 论文状态严格 `Published | Preprint | In Progress`；产品状态严格 `Released | Beta | In Development | Discontinued`。
 - 新增一条数据后重新构建，页面自动展示；可选字段缺失有默认值或条件渲染，不崩。
 - 个人介绍正文在 `content/profile.ts` 的 `about` 字段：`bio` 为叙事段落数组、`highlights` 为要点数组（均双语）；`cvUrl` 省略时不渲染下载入口，`portrait` 省略时使用 3D 抽象头像。
+- 成长时间线在 `content/journey.ts`：`date` 用 `YYYY` 或 `YYYY-MM`，区间加 `endDate`；`detail` 为可选的双语段落数组（省略则该条只展示摘要，不出现空面板）；`link` 只允许站内路径或 `https://` 外链；`category` 限 `education / research / opensource / product / competition / work / writing`。**当前为模板清单，`title` 均带「示例 ·」前缀，替换真实经历后删除前缀即可。** 排序在 `content/index.ts` 统一完成（最新在前），组件不再各自排序。
 - GitHub 仓库数据在 CI 构建时抓取为 `content/github-cache.json`，Token 只存在于 Actions secrets，不进前端 bundle。
 
 修改 `messages/*.json` 后运行 `npm run check:i18n` 确认键覆盖率 100%。

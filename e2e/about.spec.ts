@@ -77,8 +77,21 @@ test.describe('US-006 个人介绍', () => {
     await expect(page.locator('[data-about-bio]').first()).toContainText('third-year undergraduate');
     await expect(page.locator('[data-about-highlight]').first()).toContainText('3rd-year');
     await expect(page.locator('h1')).toHaveCount(1);
-    await expect(page.locator('h2')).toHaveCount(1);
-    await expect(page.locator('h3')).toHaveCount(1);
+    await expect(page.locator('#about h2')).toHaveCount(1);
+    await expect(page.locator('#about h3')).toHaveCount(1);
+    // US-008 之后每个内容 section 各一个 h2（About + Journey）
+    await expect(page.locator('h2')).toHaveCount(2);
+    // 层级不跳级：按文档顺序，每个标题最多比前一个深一级
+    const levels = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('h1, h2, h3, h4')).map((el) => Number(el.tagName.slice(1))),
+    );
+    expect(levels[0]).toBe(1);
+    for (let index = 1; index < levels.length; index += 1) {
+      expect(
+        levels[index] - levels[index - 1],
+        `标题层级跳级：${levels.join(' → ')}`,
+      ).toBeLessThanOrEqual(1);
+    }
   });
 
   test('3D 头像有文本替代；无 WebGL 时静态形象与正文完整', async ({ page }) => {
