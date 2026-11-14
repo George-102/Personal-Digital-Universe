@@ -49,6 +49,8 @@
 8. ~~**US-004** 全局导航~~（2026-11-12 passing：US-004a~h 共 8 任务全 passing，本地 verify:local exit 0，云端 run [`43189384137`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43189384137) verify 全绿 280 passed / 76 skipped / 0 failed + Lighthouse 达标 + deploy success，CI run URL 已回写 US-004h 与 PRD_UserStory.json）
 9. ~~**US-006 个人介绍 About Me**~~（2026-11-12 passing：US-006a~j 共 10 任务全 passing，云端 run [`43259860487`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43259860487) verify + deploy 全绿、TBT 114/115ms、perf 98-99，CI run URL 已回写 US-006j 与 PRD_UserStory.json）
 10. **US-008 成长时间线**（2026-11-14 实施：US-008a~j passing，**US-008k in_progress——待 push 后回写云端 verify run URL**）。拆为 11 个任务（priority 61-71）。用户决策：3D 空间轨道（R3F）+ 首页 `#journey` section + 导航加 Journey + 内联展开面板；内容由用户提供清单，当前为**模板数据**（`content/journey.ts` 的 title 均带「示例 ·」前缀）。PRD 红线「不应必须旋转 3D 才能阅读」→ 3D 仅 `aria-hidden` 视觉层，DOM 时间轴承载全部信息。**范围调整**：未新增 transitions 注册表段（单 target 进度源重构风险过高），改用 CSS 滚动时间线淡入（零 JS），已在 `scope_note` 与 US-008i evidence 记录。
+    - **阻塞：本地提交尚未推送**（`c487ccd`、`4269ffd`、`f488e98`、`1c49141`）。本轮 push 被安全策略拒绝（SSH 私钥读取 + 代码外传），需用户在本机执行 `git push origin main`。推送后取 CI run URL 回写 US-008k 与 PRD_UserStory 的 US-008 转 passing。
+    - 开工下一轮前先确认：`git status` 应只有 `AGENTS.md` / `docs/PRD.md`（他人未提交）与未跟踪的 `test-out.txt`。
 11. 之后按 roadmap：US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 / US-003 / US-004 / US-006 已完成）。**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
 
 ## 风险与注意事项
