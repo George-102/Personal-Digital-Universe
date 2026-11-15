@@ -16,6 +16,7 @@
     "home": "Home",
     "about": "About",
     "journey": "Journey",
+    "contact": "Contact",
     "menu": "Menu",
     "menuClose": "Close menu"
   },
@@ -46,5 +47,21 @@
       "work": "Work",
       "writing": "Writing"
     }
+  },
+  "Contact": {
+    "eyebrow": "03 / CONTACT",
+    "title": "Get in Touch",
+    "intro": "If you want to talk about research, open source, products, or anything worth a serious conversation, write to me.",
+    "emailLabel": "Email",
+    "mailtoLabel": "Send an email",
+    "copy": "Copy email",
+    "copied": "Copied to clipboard",
+    "copyFailed": "Automatic copy failed — please select the address and copy it manually",
+    "copyUnavailable": "Automatic copy is unavailable here — please select the address and copy it manually",
+    "linksLabel": "Elsewhere",
+    "collaborationsLabel": "Collaboration",
+    "footerEmailLabel": "Email me",
+    "routeTitle": "Contact — Christopher Chang",
+    "routeDescription": "Get in touch with Christopher Chang about research collaboration, open source, software development, startups and technical discussions."
   }
 }

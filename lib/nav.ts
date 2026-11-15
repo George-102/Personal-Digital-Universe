@@ -19,6 +19,7 @@ export const navItems: readonly NavItem[] = [
   { id: 'home', labelKey: 'Nav.home', href: '#home', order: 10 },
   { id: 'about', labelKey: 'Nav.about', href: '#about', order: 20 },
   { id: 'journey', labelKey: 'Nav.journey', href: '#journey', order: 30 },
+  { id: 'contact', labelKey: 'Nav.contact', href: '#contact', order: 40 },
 ];
 
 export function sortNavItems(items: readonly NavItem[]): NavItem[] {

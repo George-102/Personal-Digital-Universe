@@ -9,7 +9,6 @@ const PENDING_ROUTE_STORY: Record<string, string> = {
   '/en/research': 'US-010',
   '/projects': 'US-012',
   '/writing': 'US-014',
-  '/contact': 'US-018',
 };
 
 test.describe('SEO', () => {

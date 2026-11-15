@@ -9,7 +9,7 @@ const VIEWPORTS = [
   { width: 375, height: 667 },
 ];
 
-const ROUTES = ['/', '/en', '/research', '/projects', '/writing'];
+const ROUTES = ['/', '/en', '/research', '/projects', '/writing', '/contact', '/en/contact'];
 
 test.describe('响应式无横向溢出', () => {
   for (const viewport of VIEWPORTS) {

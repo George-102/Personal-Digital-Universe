@@ -5,6 +5,7 @@ import HeroCanvas from '@/components/three/HeroCanvas';
 import ScrollDriver from '@/components/ScrollDriver';
 import AboutSection from '@/components/AboutSection';
 import JourneySection from '@/components/JourneySection';
+import ContactSection from '@/components/ContactSection';
 
 export default async function HomeSections({ lang }: { lang: 'zh' | 'en' }) {
   const t = await getTranslations({ locale: lang, namespace: 'Home' });
@@ -57,6 +58,7 @@ export default async function HomeSections({ lang }: { lang: 'zh' | 'en' }) {
       </section>
       <AboutSection lang={lang} />
       <JourneySection lang={lang} />
+      <ContactSection lang={lang} />
     </>
   );
 }

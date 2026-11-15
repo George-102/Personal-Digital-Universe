@@ -8,7 +8,7 @@
 
 - [ ] 桌面 Chrome / Edge / Firefox / Safari 最近两个版本可正常打开。
 - [ ] iOS Safari 与 Android Chrome 可正常打开，无横向溢出。
-- [ ] 无 WebGL 时，所有文字、导航、联系方式仍完整可见；3D 区域显示静态背景或 CSS 动态背景。
+- [x] 无 WebGL 时，所有文字、导航、联系方式仍完整可见；3D 区域显示静态背景或 CSS 动态背景。（US-018c/f/h：Contact 的 3D 为 `aria-hidden` 纯视觉层，no-webgl 与无 JS 下邮箱、mailto、合作方向全部在静态 HTML 中可读）
 - [ ] 3D 资源（GLB、纹理）加载失败时，不白屏、不阻塞阅读；对应区域使用封面图或 CSS 占位。
 - [ ] 3D 上下文丢失时，尝试恢复一次；失败则自动切换到静态模式，不出现未捕获异常。
 - [ ] 首屏文字不依赖 3D 加载完成；LCP 元素不是 Canvas。
@@ -25,9 +25,9 @@
 - [ ] 产品状态真实：Released / Beta / In Development / Discontinued 与实际一致。
 - [ ] 《法渊》等作品未完成时标记 **Writing / In Progress**。
 - [ ] DAC 3D 空域可视化带有 **“Conceptual illustration, not simulation data”** 标注。
-- [x] 未配置的 CV、链接、图片不显示无效入口。（US-006f：默认无 `cvUrl` 时静态 HTML 无 download 链接，配置后临时构建实测入口与 `/cv.pdf` 200）
+- [x] 未配置的 CV、链接、图片不显示无效入口。（US-006f：默认无 `cvUrl` 时静态 HTML 无 download 链接，配置后临时构建实测入口与 `/cv.pdf` 200；US-018b/e：`contact.links` 为空时 0 外链、0 空 href、0 404，配置态临时构建实测入口可见可跳转后移除临时数据）
 - [ ] 成长时间线不含占位内容：`content/journey.ts` 中不得残留「示例 ·」前缀，条目时间与真实经历一致，无 detail 的条目不出现空展开面板。（US-008：模板清单已就位，`title` 统一带「示例 ·」前缀，替换真实数据后须复查此条）
-- [ ] 中英双语均可切换；关键页面（首页、About、Journey、Research、Projects、Writing、Contact）中文和英文文案均存在。
+- [ ] 中英双语均可切换；关键页面（首页、About、Journey、Research、Projects、Writing、Contact）中文和英文文案均存在。（US-018j：Contact 的 `/contact` 与 `/en/contact` 双语页面已落地并通过验收；Research / Projects / Writing 仍随后续故事）
 - [ ] 所有可点击外链可打开；失效外链不导致页面报错。
 
 ---

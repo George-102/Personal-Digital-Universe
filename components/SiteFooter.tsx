@@ -1,7 +1,9 @@
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 import { profile } from '@/content/profile';
+import { isValidEmail, mailtoHref } from '@/lib/contact';
 
-export default function SiteFooter({
+export default async function SiteFooter({
   lang,
   languageName,
   languageHref,
@@ -11,12 +13,27 @@ export default function SiteFooter({
   languageHref: string;
 }) {
   const isZh = lang === 'zh';
+  const t = await getTranslations({ locale: lang, namespace: 'Contact' });
+  // US-018i：Footer 邮箱入口。未配置或非法邮箱时不渲染无效链接（PRD 验收 4）
+  const email = profile.contact?.email ?? profile.email ?? '';
 
   return (
     <footer className="px-6 py-8 text-center text-sm opacity-60">
       {/* eslint-disable @next/next/no-html-link-for-pages -- /LICENSE* 是 public/ 下的静态文件，不是 Next 页面路由，必须用原生 a 标签 */}
       <div className="flex flex-col items-center gap-2">
-        <Link href={languageHref}>{languageName}</Link>
+        <Link href={languageHref} data-language-switch>
+          {languageName}
+        </Link>
+        {isValidEmail(email) && (
+          <a
+            href={mailtoHref(email)}
+            data-footer-email
+            aria-label={t('footerEmailLabel')}
+            className="contact-action"
+          >
+            {t('footerEmailLabel')}
+          </a>
+        )}
         <p>
           © 2026 {profile.name.zh} / {profile.name.en}
           {' · '}

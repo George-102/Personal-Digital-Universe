@@ -12,6 +12,7 @@ import { heroInteractiveObjects, validateInteractiveObjects } from '../lib/inter
 import { transitionSegments, validateTransitionSegments } from '../lib/transitions.ts';
 import { navItems, validateNavItems } from '../lib/nav.ts';
 import { validateJourneyEntries } from '../lib/journey.ts';
+import { validateContact } from '../lib/contact.ts';
 
 const journeyErrors = validateJourneyEntries(journey);
 if (journeyErrors.length > 0) {
@@ -34,6 +35,13 @@ if (transitionErrors.length > 0) {
 const navErrors = validateNavItems(navItems);
 if (navErrors.length > 0) {
   console.error(`nav 配置校验失败：\n${navErrors.join('\n')}`);
+  process.exit(1);
+}
+
+// US-018a：联系方式整表校验（空 links 合法；非法 URL / 单语标签 / 重复 id 在构建期拒绝）
+const contactErrors = validateContact(profile.contact ?? {});
+if (contactErrors.length > 0) {
+  console.error(`contact 配置校验失败：\n${contactErrors.join('\n')}`);
   process.exit(1);
 }
 

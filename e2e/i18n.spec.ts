@@ -19,7 +19,8 @@ test.describe('中英双语', () => {
   test('语言切换链接指向另一语言版本', async ({ page }) => {
     await page.goto('/');
     await settle(page);
-    const enLink = page.getByRole('link', { name: /en|english/i }).first();
+    // 精确锚定 Footer 的语言切换入口：邮箱等新增链接的文本也可能含 "en"
+    const enLink = page.locator('[data-language-switch]').first();
     if (await enLink.count()) {
       await expect(enLink).toHaveAttribute('href', /\/en/);
     }

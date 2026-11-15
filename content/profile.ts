@@ -1,5 +1,8 @@
 import type { Profile } from './types.ts';
 
+/** 已确认的公开邮箱：Person JSON-LD 与 Contact 区域共用同一来源 */
+const PUBLIC_EMAIL = 'zhangchaowen@stu.scu.edu.cn';
+
 export const profile: Profile = {
   name: { zh: '苏子豪', en: 'Christopher Chang' },
   tagline: {
@@ -7,9 +10,28 @@ export const profile: Profile = {
     en: 'Computer Scientist · Researcher · Developer · Writer · Explorer',
   },
   status: { zh: 'Building, Researching, Creating.', en: 'Building, Researching, Creating.' },
-  email: 'zhangchaowen@stu.scu.edu.cn',
+  email: PUBLIC_EMAIL,
   links: [],
   public: true,
+  /**
+   * US-018 联系方式。
+   * 【真实社交链接待用户提供】links 留空 → 页面不渲染任何无效入口（PRD 验收 4）。
+   * 用户提供后往 links 加一条即可，例如：
+   * { id: 'github', kind: 'github', label: { zh: 'GitHub', en: 'GitHub' },
+   *   url: 'https://github.com/<your-id>', public: true }
+   * 五项合作方向按 PRD 详述 6 的意向原文，不虚构已完成事项（§8.3）。
+   */
+  contact: {
+    email: PUBLIC_EMAIL,
+    links: [],
+    collaborations: [
+      { zh: '科研合作', en: 'Research Collaboration' },
+      { zh: '开源协作', en: 'Open Source Collaboration' },
+      { zh: '软件开发', en: 'Software Development' },
+      { zh: '创业与产品探索', en: 'Startup & Entrepreneurship' },
+      { zh: '技术讨论', en: 'Technical Discussion' },
+    ],
+  },
   /**
    * US-006 个人介绍正文。
    * 来源：docs/PRD.md §1.1 与 US-006 详述 4 的七项事实；遵循 §8.3 内容真实性

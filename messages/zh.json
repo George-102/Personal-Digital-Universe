@@ -16,6 +16,7 @@
     "home": "首页",
     "about": "关于",
     "journey": "时间线",
+    "contact": "联系",
     "menu": "菜单",
     "menuClose": "关闭菜单"
   },
@@ -46,5 +47,21 @@
       "work": "实习与工作",
       "writing": "写作"
     }
+  },
+  "Contact": {
+    "eyebrow": "03 / CONTACT",
+    "title": "联系我",
+    "intro": "如果你希望交流研究、开源、产品或任何值得认真讨论的想法，欢迎写信。",
+    "emailLabel": "邮箱",
+    "mailtoLabel": "发送邮件",
+    "copy": "复制邮箱",
+    "copied": "已复制到剪贴板",
+    "copyFailed": "自动复制失败，请手动选中邮箱复制",
+    "copyUnavailable": "当前环境不支持自动复制，请手动选中邮箱复制",
+    "linksLabel": "其他平台",
+    "collaborationsLabel": "合作方向",
+    "footerEmailLabel": "给我发邮件",
+    "routeTitle": "联系方式 — 苏子豪",
+    "routeDescription": "联系苏子豪，交流科研合作、开源协作、软件开发、创业探索与技术讨论。"
   }
 }

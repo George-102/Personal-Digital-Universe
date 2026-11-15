@@ -7,5 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: `${SITE_URL}/`, lastModified: new Date() },
     { url: `${SITE_URL}/en/`, lastModified: new Date() },
+    { url: `${SITE_URL}/contact/`, lastModified: new Date() },
+    { url: `${SITE_URL}/en/contact/`, lastModified: new Date() },
   ];
 }

@@ -1,6 +1,7 @@
 import type { ContentCategory } from './types.ts';
 import { PORTRAIT_PATH, CV_PATH } from '../lib/about.ts';
 import { isValidJourneyLink, normalizeJourneyDate } from '../lib/journey.ts';
+import { validateContact } from '../lib/contact.ts';
 
 type Rule = {
   required: string[];
@@ -14,6 +15,8 @@ type Rule = {
   optionalLinks?: string[];
   /** 可选时间区间：结束时间不得早于开始时间 */
   dateRange?: { start: string; end: string };
+  /** US-018a：可选 Contact 对象路径，交给 lib/contact.ts 校验 */
+  optionalContactObjects?: string[];
 };
 
 const RULES: Record<ContentCategory, Rule> = {
@@ -22,6 +25,7 @@ const RULES: Record<ContentCategory, Rule> = {
     localeText: ['name', 'tagline', 'status'],
     optionalLocaleLists: ['about.bio', 'about.highlights'],
     optionalAssets: { 'about.portrait': PORTRAIT_PATH, 'about.cvUrl': CV_PATH },
+    optionalContactObjects: ['contact'],
   },
   journey: {
     required: ['date', 'title', 'summary', 'category', 'public'],
@@ -135,6 +139,15 @@ export function validateEntry(category: ContentCategory, entry: unknown): void {
     if (value === undefined || value === null || value === '') continue;
     if (!isValidJourneyLink(value)) {
       throw new Error(`${category}: ${field} 只允许站内路径或 https 外链，非法值 "${String(value)}"`);
+    }
+  }
+  // US-018a：Contact 对象一旦配置就必须是合法的联系方式（空 links 合法）
+  for (const field of rule.optionalContactObjects ?? []) {
+    const value = readField(record, field);
+    if (value === undefined || value === null) continue;
+    const errors = validateContact(value);
+    if (errors.length > 0) {
+      throw new Error(`${category}: ${field} 配置校验失败：${errors.join('；')}`);
     }
   }
   // US-008a：可选时间区间，结束不得早于开始

@@ -471,3 +471,159 @@ html {
     opacity: 1;
   }
 }
+
+/* US-018c/g：Contact 信息面板（玻璃质感）+ 3D 视觉层布局 */
+.contact-layout {
+  position: relative;
+  display: grid;
+  gap: 2rem;
+}
+
+.contact-panel {
+  position: relative;
+  z-index: 1;
+  border: 1px solid rgb(232 234 246 / 14%);
+  border-radius: 1.25rem;
+  background: rgb(11 14 31 / 72%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+  padding: 1.75rem;
+  box-shadow: 0 0 60px rgb(124 108 255 / 10%);
+}
+
+.contact-intro {
+  color: #c6cbe0;
+}
+
+.contact-label {
+  color: #a8aec6;
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.contact-email-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.contact-email-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1rem;
+  color: #e8eaf6;
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  text-decoration-color: rgb(34 211 238 / 55%);
+  text-underline-offset: 4px;
+}
+
+.contact-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgb(34 211 238 / 50%);
+  border-radius: 999px;
+  background: rgb(34 211 238 / 8%);
+  color: #7ee7f7;
+  font-size: 0.88rem;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.contact-action:hover,
+.contact-action:focus-visible {
+  background: rgb(34 211 238 / 18%);
+  border-color: var(--color-accent);
+}
+
+.contact-action:focus-visible,
+.contact-email-link:focus-visible,
+[data-footer-email]:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.contact-copy-wrap {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* hydration 前后占位尺寸一致，避免 CLS */
+.contact-copy-placeholder {
+  display: inline-block;
+  min-width: 6rem;
+  height: 44px;
+}
+
+.contact-copy-status {
+  color: #7ee7f7;
+  font-size: 0.78rem;
+}
+
+.contact-links,
+.contact-collaborations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contact-collaborations li {
+  padding: 0.3rem 0.75rem;
+  border: 1px solid rgb(124 108 255 / 40%);
+  border-radius: 999px;
+  color: #e8eaf6;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.contact-visual {
+  display: none;
+}
+
+.contact-3d {
+  position: absolute;
+  inset: 0;
+}
+
+.contact-3d canvas {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .contact-layout {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+  .contact-visual {
+    display: block;
+    position: relative;
+    min-height: 22rem;
+    opacity: 0.95;
+  }
+}
+
+@media (max-width: 640px) {
+  .contact-panel {
+    padding: 1.25rem;
+  }
+  .contact-email-link {
+    font-size: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-action {
+    transition: none;
+  }
+}

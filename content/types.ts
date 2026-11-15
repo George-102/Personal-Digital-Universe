@@ -10,6 +10,26 @@ export interface SocialLink {
 }
 
 /**
+ * US-018：公开联系方式。
+ * links 为空是合法状态——不渲染任何无效入口（PRD 验收 4）。
+ */
+export type ContactKind = 'github' | 'blog' | 'social' | 'other';
+
+export interface ContactLink {
+  id: string;
+  kind: ContactKind;
+  label: LocaleText;
+  url: string;
+  public: boolean;
+}
+
+export interface ContactContent {
+  email?: string;
+  links: ContactLink[];
+  collaborations: LocaleText[];
+}
+
+/**
  * US-006：个人介绍内容。正文/要点为双语数组，资源路径为站内静态资源。
  * portrait / cvUrl 省略时页面不渲染对应入口（不显示无效链接）。
  */
@@ -29,6 +49,8 @@ export interface Profile {
   public: boolean;
   /** 可选：缺失时 About 区域安全降级，不崩溃（T-002c 缺字段容错） */
   about?: AboutContent;
+  /** 可选：联系方式；缺失或 links 为空时只渲染已配置的真实入口 */
+  contact?: ContactContent;
 }
 
 export type JourneyCategory =

@@ -364,4 +364,38 @@ test.describe('空间化导航', () => {
       .poll(() => aboutLink.evaluate((el) => getComputedStyle(el).color))
       .toBe('rgb(34, 211, 238)');
   });
+
+  test('US-018i 点击 Contact 准确到达 #contact 并同步 URL hash', async ({ page }) => {
+    const errors: Error[] = [];
+    page.on('pageerror', (error) => errors.push(error));
+    await page.goto('/');
+    await settle(page);
+
+    await clickNav(page, 'contact');
+    await expect(page.locator('#contact')).toBeInViewport({ timeout: 10_000 });
+    await expect.poll(() => new URL(page.url()).hash).toBe('#contact');
+    await expect.poll(() => activeIds(page)).toEqual(['contact']);
+    expect(errors).toEqual([]);
+  });
+
+  test('US-018i 英文页 Contact 导航同样到达并激活', async ({ page }) => {
+    await page.goto('/en');
+    await settle(page);
+    await clickNav(page, 'contact');
+    await expect(page.locator('#contact')).toBeInViewport({ timeout: 10_000 });
+    await expect.poll(() => new URL(page.url()).hash).toBe('#contact');
+    await expect.poll(() => activeIds(page)).toEqual(['contact']);
+  });
+
+  test('US-018i 滚动到 Contact 时激活态唯一，回到顶部收回到 home', async ({ page }) => {
+    await page.goto('/');
+    await settle(page);
+    await page.evaluate(() =>
+      document.getElementById('contact')?.scrollIntoView({ behavior: 'instant', block: 'start' }),
+    );
+    await expect.poll(() => activeIds(page)).toEqual(['contact']);
+
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await expect.poll(() => activeIds(page)).toEqual(['home']);
+  });
 });
