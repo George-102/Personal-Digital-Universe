@@ -1,6 +1,6 @@
 {
   "project": "Personal Digital Universe",
-  "last_updated": "2026-11-14",
+  "last_updated": "2026-11-15",
   "rules": {
     "single_active_feature": true,
     "passing_requires_evidence": true,
@@ -13,7 +13,7 @@
     "passing": "要求的验证已经通过，并且证据已经记录。"
   },
   "source": "docs/PRD.md（用户故事与验收标准）、docs/Tech.md 与 docs/Development.md（技术决策）、docs/DoD.md（完成定义）",
-  "scope_note": "首个开发需求为 US-001（3D 首页与沉浸式入口，PRD P0 首位），已连同前置任务 T-001/T-002 拆分为 11 个小任务，按 priority 顺序执行，一次只做一个。其余用户故事保留在 roadmap 中，轮到该故事时再拆分为小任务写入 features。2026-11-11 经用户确认以模板 schema 重建本文件；旧版完整清单见 git 提交 5a8d051。2026-11-11 用户确认 CI/CD 方案 A（GitHub Actions + Wrangler Direct Upload，关闭 Pages Git 自动构建）并要求尽早集成：T-004/T-005 从 roadmap 提升为 features 中 priority 13-16 的四个任务，排在所有 roadmap 故事（含 US-004）之前；T-003 保持原位不提前。方案细节见 docs/Development.md §3/§5、docs/Tech.md §6。2026-11-11 用户指定 US-002（访客与 3D 场景进行交互）为下一个需求，按 PRD 拆为 US-002a~q 共 17 个任务，priority 17-33，紧接 CI/CD（13-16）之后执行，roadmap 中 US-004 及其他故事顺延；用户确认三项决策：①点击交互物体默认平滑滚动到 #about，目标配置化、后续故事替换，不新建占位路由；②交互范围限 Hero 场景，但建立通用可交互物体注册表供后续 3D 场景复用；③队友正在进行的 CI/CD 任务（T-004a/b、T-005a/b）的编号、优先级、状态与证据一律不动。2026-11-11 用户确认本地/云端验证分工：本地默认只跑 `npm run verify:local`（lint / typecheck / build / npm test / verify:metrics，零浏览器），Playwright 四项目与 Lighthouse 重验证固定在云端 CI（push main / PR 自动触发），证据以 CI run URL 回写；`.github/workflows/verify.yml` 不改动，重验证覆盖与阈值 100% 保留。2026-11-11 用户指定 US-003（电影级页面转场）提前到 T-003/US-004 之前执行，并确认四项决策：①滚动驱动动画按 Tech.md 既定采用 GSAP ScrollTrigger；②五种转场效果（相机推拉/背景渐变/3D 物体移动旋转/粒子聚散/内容面板展开）全做、幅度克制；③范围为 hero→#about 单段完整转场 + 通用滚动进度注册机制（后续模块接入只需配置）；④拆为 US-003a~h 共 8 个任务 priority 35-42，roadmap 中 US-003 已移除。2026-11-12 用户指定 US-004（全局导航与空间化导航系统）拆分并确认决策 A：导航注册表只收录真实存在的模块（当前 Home / About），后续故事落地时逐条加入，不建空占位 section（天然满足 PRD 验收「目标模块不存在时不应产生无效跳转」，与 US-002/US-003 不建占位原则一致）；拆为 US-004a~h 共 8 个任务 priority 43-50，roadmap 中 US-004 已移除；core.spec『移动端菜单』4 项 test.fixme() 在 US-004e 移除并执行。2026-11-12 用户要求 agent 自主规划下一个需求并拆分到 features：经核对 PRD_UserStory.json（priority 1 未完成故事中排首）、claude-progress.md「下一步」第 9 条与 #about 仍为占位，推荐并获用户确认选择 US-006（个人介绍 About Me）；T-003（Vitest 迁移）保持 roadmap 原位不提前，理由为零用户可见价值且需同步改 CI 的 npm test，待内容模块成型后一次性迁移；US-005 / US-008 顺延。用户确认四项决策：①个人形象采用 3D 抽象头像（低面数、复用 R3F 与 lib/quality.ts、异步加载、WebGL/资源失败时降级为 CSS 占位）；②Download CV 暂不配置，入口条件隐藏，保留配置位并用临时文件实测两条路径后移除；③中英叙事文案由 agent 按 PRD §1.1 与 US-006 详述 4 起草并标注待用户确认，不虚构经历（PRD §8.3）；④范围限首页 #about section 填充，不新建 /about 独立路由（沿用 US-002 / US-003 / US-004 的不建占位原则）。拆为 US-006a~j 共 10 个任务 priority 51-60，roadmap 中 US-006 已移除；一次只做一个，下一步为 US-006a，全部新任务 status=not_started，实施开始时才把当前任务置 in_progress。已识别两项关键风险：#about 填充后页面变长，会改变 lib/scroll.ts 进度终点、NavBar 激活态判定与 hero 视口暂停行为，故设 US-006h 专项回归；新增 3D 头像可能推高 TBT（历史 run 43177217750 曾因此失败），由 US-006i 专项复验 Lighthouse 阈值。2026-11-12 实施结果：US-006a~i 已 passing（本地证据齐全），US-006j 保持 in_progress——PRD 五条验收已核对、全套 E2E 分批全绿、verify:local 与 CI=1 Lighthouse 均 exit 0，但云端 verify run URL 需 push 后回写；按 AGENTS.md 未把云端重验证提前标记 passing。实施中修复两处真实回归：①HeroCanvas 离屏立即暂停会让未收敛的转场冻结，改为「离屏但仍在收敛时继续渲染，收敛后暂停」；②测试中依赖短页假设的 `#about p` 严格模式多匹配与 scrollHeight*0.5 采样越过转场终点，改为语义定位与按段区间中点采样，断言强度不变。 2026-11-14 US-006 收尾：云端 run 43259860487（commit 4e210ea）verify + deploy 全绿，Lighthouse TBT 114ms / 115ms、perf 98-99，US-006a~j 全部 passing。同轮修复首屏 TBT 回归（每帧读 tooltip offset 造成强制布局、帧计数逐帧写 dataset、每帧 setState、挂载即探测 WebGL），阈值与断言一处未改。 2026-11-14 US-008 拆分为 US-008a~k 共 11 个任务（priority 61-71，roadmap 移除 US-008）。用户四项决策：①呈现形式选 3D 空间轨道（R3F），但 PRD 明确『不应设计为必须旋转 3D 场景才能阅读』，故 3D 只作视觉层（aria-hidden），DOM 时间轴始终是信息主体；②经历内容由用户提供完整清单，未拿到前 US-008b 不填推测数据，US-008a/c 可先行；③位置为首页 #journey 新 section + 导航加 Journey；④点击详情为内联展开面板（非模态）。性能约束沿用 US-006 教训。 2026-11-14 US-008b~j 实施完成：journey 模板清单 7 条（title 带「示例 ·」前缀，等用户替换真实经历）、DOM 时间轴（原生 details，无 JS 可展开）、3D 空间轨道（桌面/视口内/reduced-motion 关闭才挂载，离屏暂停，ErrorBoundary 降级）、hover/focus 联动、内联展开详情（互斥 + Esc）、移动端单列、可访问性与对比度、导航接入。**范围调整**：US-008i 原计划的 about→journey 转场段未做——transitions 是单 target 进度源，多段重构会牵连 scroll-transition 的既有断言与 HeroScene 全部消费端；改为 CSS 滚动时间线淡入（零 JS），视觉进入效果保留，US-003 的 hero→about 转场未受影响。全套四项目首跑 372 passed / 4 failed（均 about.spec 的 h2 计数），修复后 about 34 passed；journey 47 passed；navigation+journey 86 passed。verify:local exit 0（size 438.78kB、i18n 36 键）、CI=1 Lighthouse 结果见 US-008k。 2026-11-15 首次云端 verify（run 43709349190）因 TBT 超标失败（中文最优 219.5ms > 200），随后做两处性能修复并保留全部断言：①JourneyTimeline 服务端化 + JourneyExperience 事件委托（时间线不再进入客户端组件树）；②JourneyCanvas 增加「已离开首屏」门槛，避免 Lighthouse 全页截图误触发第二个 WebGL 上下文。本地 A/B 排除过 CSS 滚动动画与 requestIdleCallback 延后方案（后者劣化英文页 TBT，已回退）。CSS 滚动时间线淡入保留。",
+  "scope_note": "首个开发需求为 US-001（3D 首页与沉浸式入口，PRD P0 首位），已连同前置任务 T-001/T-002 拆分为 11 个小任务，按 priority 顺序执行，一次只做一个。其余用户故事保留在 roadmap 中，轮到该故事时再拆分为小任务写入 features。2026-11-11 经用户确认以模板 schema 重建本文件；旧版完整清单见 git 提交 5a8d051。2026-11-11 用户确认 CI/CD 方案 A（GitHub Actions + Wrangler Direct Upload，关闭 Pages Git 自动构建）并要求尽早集成：T-004/T-005 从 roadmap 提升为 features 中 priority 13-16 的四个任务，排在所有 roadmap 故事（含 US-004）之前；T-003 保持原位不提前。方案细节见 docs/Development.md §3/§5、docs/Tech.md §6。2026-11-11 用户指定 US-002（访客与 3D 场景进行交互）为下一个需求，按 PRD 拆为 US-002a~q 共 17 个任务，priority 17-33，紧接 CI/CD（13-16）之后执行，roadmap 中 US-004 及其他故事顺延；用户确认三项决策：①点击交互物体默认平滑滚动到 #about，目标配置化、后续故事替换，不新建占位路由；②交互范围限 Hero 场景，但建立通用可交互物体注册表供后续 3D 场景复用；③队友正在进行的 CI/CD 任务（T-004a/b、T-005a/b）的编号、优先级、状态与证据一律不动。2026-11-11 用户确认本地/云端验证分工：本地默认只跑 `npm run verify:local`（lint / typecheck / build / npm test / verify:metrics，零浏览器），Playwright 四项目与 Lighthouse 重验证固定在云端 CI（push main / PR 自动触发），证据以 CI run URL 回写；`.github/workflows/verify.yml` 不改动，重验证覆盖与阈值 100% 保留。2026-11-11 用户指定 US-003（电影级页面转场）提前到 T-003/US-004 之前执行，并确认四项决策：①滚动驱动动画按 Tech.md 既定采用 GSAP ScrollTrigger；②五种转场效果（相机推拉/背景渐变/3D 物体移动旋转/粒子聚散/内容面板展开）全做、幅度克制；③范围为 hero→#about 单段完整转场 + 通用滚动进度注册机制（后续模块接入只需配置）；④拆为 US-003a~h 共 8 个任务 priority 35-42，roadmap 中 US-003 已移除。2026-11-12 用户指定 US-004（全局导航与空间化导航系统）拆分并确认决策 A：导航注册表只收录真实存在的模块（当前 Home / About），后续故事落地时逐条加入，不建空占位 section（天然满足 PRD 验收「目标模块不存在时不应产生无效跳转」，与 US-002/US-003 不建占位原则一致）；拆为 US-004a~h 共 8 个任务 priority 43-50，roadmap 中 US-004 已移除；core.spec『移动端菜单』4 项 test.fixme() 在 US-004e 移除并执行。2026-11-12 用户要求 agent 自主规划下一个需求并拆分到 features：经核对 PRD_UserStory.json（priority 1 未完成故事中排首）、claude-progress.md「下一步」第 9 条与 #about 仍为占位，推荐并获用户确认选择 US-006（个人介绍 About Me）；T-003（Vitest 迁移）保持 roadmap 原位不提前，理由为零用户可见价值且需同步改 CI 的 npm test，待内容模块成型后一次性迁移；US-005 / US-008 顺延。用户确认四项决策：①个人形象采用 3D 抽象头像（低面数、复用 R3F 与 lib/quality.ts、异步加载、WebGL/资源失败时降级为 CSS 占位）；②Download CV 暂不配置，入口条件隐藏，保留配置位并用临时文件实测两条路径后移除；③中英叙事文案由 agent 按 PRD §1.1 与 US-006 详述 4 起草并标注待用户确认，不虚构经历（PRD §8.3）；④范围限首页 #about section 填充，不新建 /about 独立路由（沿用 US-002 / US-003 / US-004 的不建占位原则）。拆为 US-006a~j 共 10 个任务 priority 51-60，roadmap 中 US-006 已移除；一次只做一个，下一步为 US-006a，全部新任务 status=not_started，实施开始时才把当前任务置 in_progress。已识别两项关键风险：#about 填充后页面变长，会改变 lib/scroll.ts 进度终点、NavBar 激活态判定与 hero 视口暂停行为，故设 US-006h 专项回归；新增 3D 头像可能推高 TBT（历史 run 43177217750 曾因此失败），由 US-006i 专项复验 Lighthouse 阈值。2026-11-12 实施结果：US-006a~i 已 passing（本地证据齐全），US-006j 保持 in_progress——PRD 五条验收已核对、全套 E2E 分批全绿、verify:local 与 CI=1 Lighthouse 均 exit 0，但云端 verify run URL 需 push 后回写；按 AGENTS.md 未把云端重验证提前标记 passing。实施中修复两处真实回归：①HeroCanvas 离屏立即暂停会让未收敛的转场冻结，改为「离屏但仍在收敛时继续渲染，收敛后暂停」；②测试中依赖短页假设的 `#about p` 严格模式多匹配与 scrollHeight*0.5 采样越过转场终点，改为语义定位与按段区间中点采样，断言强度不变。 2026-11-14 US-006 收尾：云端 run 43259860487（commit 4e210ea）verify + deploy 全绿，Lighthouse TBT 114ms / 115ms、perf 98-99，US-006a~j 全部 passing。同轮修复首屏 TBT 回归（每帧读 tooltip offset 造成强制布局、帧计数逐帧写 dataset、每帧 setState、挂载即探测 WebGL），阈值与断言一处未改。 2026-11-14 US-008 拆分为 US-008a~k 共 11 个任务（priority 61-71，roadmap 移除 US-008）。用户四项决策：①呈现形式选 3D 空间轨道（R3F），但 PRD 明确『不应设计为必须旋转 3D 场景才能阅读』，故 3D 只作视觉层（aria-hidden），DOM 时间轴始终是信息主体；②经历内容由用户提供完整清单，未拿到前 US-008b 不填推测数据，US-008a/c 可先行；③位置为首页 #journey 新 section + 导航加 Journey；④点击详情为内联展开面板（非模态）。性能约束沿用 US-006 教训。 2026-11-14 US-008b~j 实施完成：journey 模板清单 7 条（title 带「示例 ·」前缀，等用户替换真实经历）、DOM 时间轴（原生 details，无 JS 可展开）、3D 空间轨道（桌面/视口内/reduced-motion 关闭才挂载，离屏暂停，ErrorBoundary 降级）、hover/focus 联动、内联展开详情（互斥 + Esc）、移动端单列、可访问性与对比度、导航接入。**范围调整**：US-008i 原计划的 about→journey 转场段未做——transitions 是单 target 进度源，多段重构会牵连 scroll-transition 的既有断言与 HeroScene 全部消费端；改为 CSS 滚动时间线淡入（零 JS），视觉进入效果保留，US-003 的 hero→about 转场未受影响。全套四项目首跑 372 passed / 4 failed（均 about.spec 的 h2 计数），修复后 about 34 passed；journey 47 passed；navigation+journey 86 passed。verify:local exit 0（size 438.78kB、i18n 36 键）、CI=1 Lighthouse 结果见 US-008k。 2026-11-15 首次云端 verify（run 43709349190）因 TBT 超标失败（中文最优 219.5ms > 200），随后做两处性能修复并保留全部断言：①JourneyTimeline 服务端化 + JourneyExperience 事件委托（时间线不再进入客户端组件树）；②JourneyCanvas 增加「已离开首屏」门槛，避免 Lighthouse 全页截图误触发第二个 WebGL 上下文。本地 A/B 排除过 CSS 滚动动画与 requestIdleCallback 延后方案（后者劣化英文页 TBT，已回退）。CSS 滚动时间线淡入保留。 2026-11-15 用户指定 US-018（联系方式 Contact）为下一个需求并要求先做拆分：经核对 PRD_UserStory.json（priority 1 未完成故事，用户指定提前）、docs/PRD.md §4.1/§4.2/§6.8 与 US-018 详述 1~6 及五条验收、e2e/seo.spec.ts 的 /contact fixme，拆为 US-018a~l 共 12 个任务 priority 72-83，roadmap 移除 US-018；全部 status=not_started，一次只做一个，实施开始才把当前任务置 in_progress；T-003 保持 roadmap 原位不提前，US-010/012/013/014/021/023 顺延。用户四项决策：①页面形态选「首页 #contact section + 真实 /contact 与 /en/contact 独立路由」——同时满足 PRD_UserStory DoD 的 /contact 路由实质验收（移除对应 fixme）与 PRD §4.1 把 Contact 列为首页第 10 个模块，两处复用同一 ContactSection 组件，导航仍走 #contact 锚点（lib/nav.ts 的 href 校验不扩展）；②数据仅启用已确认的真实 email（zhangchaowen@stu.scu.edu.cn），GitHub / 技术博客 / 其他社交建立结构化配置位但留空，用临时外链实测「配置后入口可见且可跳转」后移除（同 US-006f CV 做法），上线不展示任何无效入口，真实 URL 待用户提供后只改 content/ 一个文件；③视觉选 3D 空间场景（用户明确选择，非 agent 推荐的零 3D 玻璃面板方案）——必须遵守 PRD「DOM 是信息主体」：3D 层 aria-hidden 纯视觉、进入视口才挂载、离屏暂停、ErrorBoundary 降级、卸载 dispose、零 useFrame 布局读写、window 探针、复用 lib/quality.ts 与 lib/webgl.ts、不新增 npm 依赖；④范围含 PRD 详述 6 的五项合作方向（中英静态标签）与 Footer 的 Email 入口。已识别风险：①US-008k 记录中文页最优 TBT 186ms 距 200ms 阈值仅 14ms，Contact 3D 会成为新的潜在 WebGL 上下文，须加「已离开首屏 scrollY>0」门槛防 Lighthouse 全页截图误触发（US-008k 同类修复），US-018k 专项复验 Lighthouse 最优 run，三次都超标即为真实回归，禁止调阈值 / 删断言 / 加 fixme；②首页 section 与独立路由内容重复，路由页需独立 title / description / OG 与 canonical，sitemap / robots 同步；③e2e/seo.spec.ts 的 PENDING_ROUTE_STORY 共 5 条 pending 路由，本故事只负责移除 '/contact': 'US-018' 一条（×4 项目 = 4 项断言恢复执行），其余 4 条分属 US-010/012/014，不得一并移除；④/contact 是本项目首个内容型独立路由（此前只有 / 与 /en/），需验证静态导出、双语预生成、语言切换 href、sitemap 收录与 overflow 新增路由；⑤页面第三次变长，滚动进度终点、NavBar 激活态与 hero / about / journey / contact 各处 3D 离屏暂停需专项回归，滚动采样一律按段区间中点（US-008j 教训）。本轮仅规划拆分，未改任何代码、未跑 ./init.ps1；实施轮开工按 AGENTS.md 执行。",
   "features": [
     {
       "id": "T-001a",
@@ -1438,6 +1438,204 @@
         "2026-11-15 云端重验证通过：https://github.com/George-102/Personal-Digital-Universe/actions/runs/43717927691 （head `2d4a449`，verify + deploy 全绿，acceptance 376 passed / 92 skipped / 0 failed，Cloudflare Pages 部署成功）。Lighthouse 中文三次 746（冷启动离群）/ 225 / 186ms、英文 162 / 146 / 156ms，门禁按最优 run 聚合取中文 186ms、英文 146ms 均 ≤200；LCP 207-231ms、CLS 0、perf 92-97、a11y 100、seo 100、bp 96。稳定 run 的长任务数由失败 run 的 2-3 个降为 1 个，印证第二个 WebGL 上下文不再进入 TBT 窗口。"
       ],
       "notes": "云端 run URL 已回写。本地 Lighthouse 单机噪声大（同一份原代码两次跑英文页最优 179ms 与 223ms），以云端 verify job 为最终判据。未决风险：中文页最优 TBT 186ms 距 200ms 阈值仅 14ms 余量，若后续 runner 变慢需继续削首屏 JS/GPU 工作；`content/journey.ts` 仍是模板清单，真实经历待用户提供。"
+    },
+    {
+      "id": "US-018a",
+      "priority": 72,
+      "area": "联系方式",
+      "title": "Contact 内容模型与构建期校验",
+      "user_visible_behavior": "非法联系方式（javascript: 外链、单语标签、重复 id、非法邮箱）在构建期被拒绝；缺可选字段时页面不崩溃。",
+      "status": "not_started",
+      "verification": [
+        "扩展 content/types.ts：SocialLink 升级为结构化 ContactLink（id / kind: github|blog|social|other / label 双语 / url / public），Profile 新增可选 contact 对象（email、links、collaborations 双语数组）；接入 content/index.ts 单一出口，页面只从该出口取数。",
+        "新增 lib/contact.ts 纯函数：isValidContactUrl（只允许 https 外链与站内安全路径，拒绝 javascript: / data: / http: / 协议相对 URL）、isValidEmail、validateContactLinks（重复 id / 单语 label / 非法 kind / 非法 URL）、public 过滤、mailto href 构造；node:test 覆盖。",
+        "TDD：scripts/contact.test.mjs 先观察到 RED（ERR_MODULE_NOT_FOUND 或校验未拒绝），再转 GREEN；npm test 全套通过。",
+        "接入 scripts/validate-content.mjs 的 prebuild 与 content/validate.ts 的 profile 规则；实测注入非法 link 后 npm run build exit 1 且错误可定位，恢复后 exit 0。",
+        "沿用 T-002c 的 public 过滤与缺字段容错；空 links 数组是合法状态（不套用 US-008a 的至少一条 public 规则）；npm test / lint / typecheck / build 通过。"
+      ],
+      "evidence": [],
+      "notes": "不改 profile 现有 name / tagline / status / about 字段，避免 T-002b 与 US-006a 回归。配置位留空也要能通过构建期校验。"
+    },
+    {
+      "id": "US-018b",
+      "priority": 73,
+      "area": "联系方式",
+      "title": "双语文案与真实数据配置位",
+      "user_visible_behavior": "中英两页都能读到 Contact 标题、邮箱标签、Copy 提示与五项合作方向；只有已确认的真实邮箱上线，未配置的社交链接不出现任何占位文案。",
+      "status": "not_started",
+      "verification": [
+        "messages/zh.json 与 en.json 新增 Contact 命名空间（eyebrow / title / intro / emailLabel / copy / copied / copyFailed / copyUnavailable / mailtoLabel / linksLabel / collaborationsLabel / 五项合作方向）+ Nav.contact；键集一致，npm run check:i18n 100%。",
+        "content/profile.ts 填入 contact：email 沿用真实值 zhangchaowen@stu.scu.edu.cn、links: []、collaborations 五项中英（Research Collaboration / Open Source Collaboration / Software Development / Startup & Entrepreneurship / Technical Discussion，按 PRD 详述 6 原文，不虚构身份或成果）；注释标注【真实社交链接待用户提供】。",
+        "组件零硬编码文案：标题 / 标签 / 状态提示取 messages，邮箱 / 链接 / 合作方向取 content/；/ 显示中文、/en/ 显示英文。",
+        "传播性实测：临时改一条合作方向文案并重建，out/index.html 与 out/en/index.html 对应变化；恢复后重建无残留。",
+        "未配置数据不产生任何占位链接、占位文案或空 <a>；静态 HTML grep 实测。"
+      ],
+      "evidence": [],
+      "notes": "PRD §8.3 内容真实性：五项合作方向是意向说明，不是已完成事项，不得写成合作成果。真实 URL 由用户后续提供，只改 content/。"
+    },
+    {
+      "id": "US-018c",
+      "priority": 74,
+      "area": "联系方式",
+      "title": "#contact 区域结构与静态可读（替换无占位）",
+      "user_visible_behavior": "访客滚动到 Contact 区域即可读到邮箱与全部联系方式；无 JS、无 WebGL 时信息完整可读，且邮箱可被搜索引擎抓取。",
+      "status": "not_started",
+      "verification": [
+        "新增 components/ContactSection.tsx（服务端组件）与面板组件：id=contact，内含 eyebrow + h2 + intro + 邮箱（可选中文本 + mailto 链接 + Copy 位）+ 合作方向列表 + 外链列表；HomeSections 在 JourneySection 之后渲染，保持 h2→h3 层级不跳级、全页仍只有一个 h1。",
+        "不套用 .about-panel（US-003f 的 minOpacity 红线属 hero→about 转场，新 section 不引入折叠态）；不创建空占位 section，落地即真实内容。",
+        "npm run build 后 out/index.html 与 out/en/index.html 均含邮箱、全部文案与 data-contact 标记；新增 e2e/contact.spec.ts 首批用例：静态可读（abort /_next/static/** 后仍完整）、中英分别显示对应文案、mailto href 与邮箱一致。",
+        "回归 core / about / journey / navigation 全部 #about / #journey 定位与可见性断言，四项目 0 失败（不删断言、不降阈值）。"
+      ],
+      "evidence": [],
+      "notes": "DOM 面板是唯一信息主体；3D 只做视觉层（US-018f）。邮箱必须是真实文本节点，不能只放在 canvas 或 JS 状态里。"
+    },
+    {
+      "id": "US-018d",
+      "priority": 75,
+      "area": "联系方式",
+      "title": "Copy Email 与复制失败降级",
+      "user_visible_behavior": "点击 Copy Email 复制邮箱并给出反馈；剪贴板不可用时访客仍可手动选中复制，页面不报错（PRD 验收 2 / 5）。",
+      "status": "not_started",
+      "verification": [
+        "Copy 按钮仅在用户手势内调用 navigator.clipboard.writeText；成功 / 失败 / 不可用三种状态经 aria-live 播报，文案取 messages；可访问名称、键盘 Enter / Space、focus 可见样式齐全。",
+        "降级链：clipboard API 不存在 / writeText 抛错 / 权限被拒时，回退选中邮箱文本 + document.execCommand('copy')，仍失败则只保留可选中文本并给出提示，绝不抛未捕获异常；无 JS 时按钮不渲染（不出现点了没反应的无效按钮）。",
+        "E2E 四项目：授予 clipboard 权限后点击，读取剪贴板内容等于真实邮箱且 aria-live 切换为已复制；模拟 clipboard 不可用（initScript 删除 navigator.clipboard / 让 writeText reject）后，邮箱文本可选中、手动复制路径可用、pageerror 为空。",
+        "无新增 npm 依赖；reduced-motion 下无过渡动画；npm test / lint / typecheck 通过。"
+      ],
+      "evidence": [],
+      "notes": "对应 PRD 详述 4 与验收 2 / 5。E2E 断言 clipboard 内容时注意 Playwright 权限模型与四项目差异（WebKit 走等价的选中文本断言，不得因此删除断言）。"
+    },
+    {
+      "id": "US-018e",
+      "priority": 76,
+      "area": "联系方式",
+      "title": "外链安全属性与未配置降级（两条路径实测）",
+      "user_visible_behavior": "点击 GitHub / 博客等链接打开对应平台；某个联系方式未配置时不展示无效入口、不产生 404（PRD 验收 3 / 4、§6.8）。",
+      "status": "not_started",
+      "verification": [
+        "每条 link 渲染 <a href target=_blank rel=noopener noreferrer>，可访问名称取 label[lang]，键盘可达、focus 可见；rel 与 href 在静态 HTML 中可 grep；外链 URL 由 lib/contact.ts 白名单校验。",
+        "默认 links=[]：不渲染任何外链、无空 <a>、无占位文案、无 404；contact.spec 与 degradation no-webgl 项目断言。",
+        "配置态实测：临时注入一条真实格式 https 外链（GitHub）与一条 public:false 条目后重建，E2E 断言入口可见、href 与 rel 正确、点击打开对应平台（popup / 新 tab 事件）、非公开条目不出现；验证后移除临时数据并重建，恢复 0 入口、无残留。",
+        "临时移除 email 时区域不显示 mailto 与 Copy 且页面不崩溃（缺字段容错复验），恢复真实数据后重建。"
+      ],
+      "evidence": [],
+      "notes": "同 US-006f CV 的临时文件/临时配置实测法，临时数据不得留在交付里。验收 3 靠配置态实测覆盖，上线态只展示真实 Email，符合用户决策②与 PRD §8.3。"
+    },
+    {
+      "id": "US-018f",
+      "priority": 77,
+      "area": "联系方式",
+      "title": "3D 空间场景视觉层（低面数、视口内挂载）",
+      "user_visible_behavior": "Contact 区域一侧有与 Hero 同设计语言的低面数 3D 空间场景；关闭或失败时不影响任何联系方式的阅读。",
+      "status": "not_started",
+      "verification": [
+        "新增 components/three/ContactOrbitScene.tsx 与 components/ContactCanvas.tsx：低面数轨道 / 节点 / 发光核心，复用 lib/quality.ts 与 lib/webgl.ts，参数集中配置，不新增 npm 依赖；dynamic import + ssr:false + Suspense fallback 不阻塞文字。",
+        "3D 层 aria-hidden 且不含唯一信息（PRD §6.7 与 US-008 的 DOM 主体红线）；WebGL 不可用 / 上下文丢失 / 场景 chunk abort 三路径下 DOM 面板完整、pageerror 为空；ErrorBoundary 置 data-contact-3d=error 降级。",
+        "挂载门槛五者同时满足：视口 ≥1024px + 无 reduced-motion + WebGL 可用 + 进入视口 + 已离开首屏（scrollY>0，防 Lighthouse 全页截图误触发，US-008k 教训）；WebGL 探测延后到挂载前，离屏 frameloop=never，卸载 dispose geometry / material 与 gl。",
+        "性能红线：useFrame 内禁止读 offsetWidth / getBoundingClientRect 等布局属性、禁止每帧写 dataset 探针（改用 window.__contactFrames）、禁止每帧 setState；E2E 帧计数实测视口内增长、离屏 800ms 增量 ≤2。",
+        "E2E 四项目（no-webgl 与窄屏条件跳过）+ npm run size ≤1MB。"
+      ],
+      "evidence": [],
+      "notes": "用户明确选择 3D 方案。此任务是全故事最高性能风险：hero / about avatar / journey orbit 已有三处潜在 WebGL 上下文，Contact 必须保证不进入首屏 TBT 窗口，专项复验在 US-018k。"
+    },
+    {
+      "id": "US-018g",
+      "priority": 78,
+      "area": "联系方式",
+      "title": "玻璃质感面板与响应式布局",
+      "user_visible_behavior": "桌面端 3D 与玻璃质感信息面板左右分栏，移动端单列；5 档视口无横向溢出，触摸目标够大。",
+      "status": "not_started",
+      "verification": [
+        "面板玻璃质感沿用 SiteNav 的半透明背景 + backdrop-blur + 细边框变量体系；桌面左右分栏、md 以下单列且隐藏 3D 层；合作方向与外链为可换行列表，不挤压邮箱文本。",
+        "1440 / 1024 / 768 / 390 / 375 五档 scrollWidth - clientWidth ≤1；overflow.spec 的 ROUTES 增加 /contact（不删现有路由），四项目回归 0 失败。",
+        "触摸目标 ≥44×44 CSS px（Copy 按钮、mailto、外链）；hover / focus 态明显；邮箱不因长字符串溢出（word-break 处理）。",
+        "移动端 useEffect 不挂载 ContactCanvas 的断言与 frame 计数复验；reduced-motion 下无过渡动画。"
+      ],
+      "evidence": [],
+      "notes": "PRD 详述 3 允许 3D 场景或玻璃面板，本故事两者并存：3D 作视觉层、玻璃面板承载信息。"
+    },
+    {
+      "id": "US-018h",
+      "priority": 79,
+      "area": "联系方式",
+      "title": "可访问性、对比度与 reduced-motion",
+      "user_visible_behavior": "键盘用户与减少动效偏好的访客同样能完整读完并操作 Contact 区域。",
+      "status": "not_started",
+      "verification": [
+        "键盘全流程：Tab 依次到 mailto / Copy / 每个外链，Enter / Space 触发，focus 可见（outline 非 none）；aria-live 状态变化可被断言；无模态、无焦点陷阱。",
+        "正文、邮箱、标签与背景合成后对比度 ≥4.5（沿用 US-004g / US-008g 计算口径）；合作方向不靠颜色单独传达信息；3D 层有等价文本（DOM 面板本身即等价内容）。",
+        "prefers-reduced-motion: reduce 下不挂载 3D、无展开/过渡动画，内容完整可读且 Copy 仍可用；a11y.spec 与 contact.spec 四项目通过。",
+        "no-webgl / no-JS 项目复验：邮箱与全部文案仍可见，无 pageerror；不新增 fixme。"
+      ],
+      "evidence": [],
+      "notes": "PRD §6.7 七条与 US-022 的基础适配；US-022 整体验收仍在 roadmap，不在本故事范围。"
+    },
+    {
+      "id": "US-018i",
+      "priority": 80,
+      "area": "联系方式",
+      "title": "导航 / Footer 接入与页面第三次变长专项回归",
+      "user_visible_behavior": "导航出现 Contact 并准确到达 #contact，激活态正确切换；Footer 提供邮箱入口；页面变长后滚动、转场与各处 3D 暂停行为不退化。",
+      "status": "not_started",
+      "verification": [
+        "lib/nav.ts 增加 contact（order 40，href #contact）+ messages Nav.contact；validateNavItems 通过，scripts/nav.test.mjs 顺序断言同步；NavBar 激活态数据驱动自动覆盖四个 section，同一时刻唯一激活。",
+        "navigation.spec 扩展：点击 Contact 到达 #contact 且 hash 同步、滚动激活态切换、about / journey / contact 交界不闪烁、英文页同样生效；既有断言一条不删。",
+        "Footer 增加 Email 入口（mailto、双语可访问名称、无 JS 可用），不影响现有版权与许可证断言。",
+        "页面变长专项：scroll 进度终点按实时高度重算且转场收敛到 1；hero / about / journey / contact 各 3D 在离屏且收敛后暂停（帧计数增量 ≤2），不同时抢首屏资源；滚动采样一律按段区间中点（US-008j 教训）。",
+        "scroll-transition / navigation / about / journey / core / degradation 全套四项目 0 失败，不新增 fixme、不降阈值。"
+      ],
+      "evidence": [],
+      "notes": "US-006h / US-008j 同类风险第三次出现：每次新增长 section 都会改变 maxScroll、40% 判定线与 atBottom 分支，必须重新实证。"
+    },
+    {
+      "id": "US-018j",
+      "priority": 81,
+      "area": "联系方式",
+      "title": "独立 /contact 路由与 SEO fixme 恢复",
+      "user_visible_behavior": "访客可直接访问 /contact 与 /en/contact，页面有独立标题与描述、单一 h1，且内容与首页 Contact 区域一致。",
+      "status": "not_started",
+      "verification": [
+        "新增 app/contact/page.tsx 与 app/[locale]/contact/page.tsx（generateStaticParams 仅预生成 en，与 / 和 /en/ 同构），复用 ContactSection + SiteNav + SiteFooter + languageHref；输出 out/contact/index.html 与 out/en/contact/index.html。",
+        "独立 metadata：title / description / og:title 双语且各自独立、canonical 指向自身、语义化单 h1；sitemap.ts 收录两条 URL，robots 不变；语言切换 href 在子路由下指向对应语言页面而非首页。",
+        "移除 e2e/seo.spec.ts 中 PENDING_ROUTE_STORY 的 '/contact': 'US-018' 一条（仅此一条，其余 4 条分属 US-010/012/014 保留），恢复 title / description / og:title / 单 h1 四项原断言，四项目实跑通过。",
+        "e2e/overflow.spec.ts 的 ROUTES 增加 /contact（不删现有路由）；contact.spec 增加独立路由用例：中英内容一致、无 JS 可读、导航与语言切换正确、pageerror 为空。",
+        "npm run build（静态导出新增 2 页）、check:i18n、lint、typecheck 通过。"
+      ],
+      "evidence": [],
+      "notes": "本项目首个内容型独立路由。PRD_UserStory US-018 的 DoD 明确要求移除 /contact fixme；不得顺手移除其他故事的 fixme，也不得把首页 section 当成路由验收。"
+    },
+    {
+      "id": "US-018k",
+      "priority": 82,
+      "area": "联系方式",
+      "title": "性能、TBT 专项与质量门禁",
+      "user_visible_behavior": "新增 3D 场景与独立路由后首屏性能、SEO 与全部质量门禁不退化。",
+      "status": "not_started",
+      "verification": [
+        "Lighthouse 复验（本地 CI=1 + 云端 verify）：perf ≥0.85 / a11y ≥0.95 / seo ≥0.95 / bp ≥0.90，LCP ≤2.5s、CLS ≤0.1、TBT ≤200ms；按 3 run 最优值聚合，三次都超标即判真实回归，禁止调阈值 / 删断言 / 加 fixme。",
+        "中文页 TBT 专项（基线余量仅 14ms）：确认 Contact 3D 的 WebGL 上下文不在首屏 TBT 窗口内创建（挂载门槛 + scrollY>0 生效）；LCP 元素仍为文字非 CANVAS；长任务数与 US-008k 稳定 run 基线（1 个）对比。",
+        "npm run verify:local exit 0（lint / typecheck / build / npm test / verify:metrics）；size ≤1MB、i18n 100%、audit 0 high、不新增 npm 依赖；静态 HTML 含核心联系方式，无 JS / 无 WebGL / 资源 abort 路径复验。",
+        "全套 E2E 四项目 0 失败（不新增 fixme、不删断言、不降阈值）；Person JSON-LD 与 sitemap / robots 未因新增路由退化。"
+      ],
+      "evidence": [],
+      "notes": "重验证按 T-007 固定在云端 CI；本地 Lighthouse 单机噪声大，以云端 verify job 为最终判据。若 3D 方案确实推高 TBT，优先收紧挂载门槛 / 降低低画质档成本，不得削弱阈值。"
+    },
+    {
+      "id": "US-018l",
+      "priority": 83,
+      "area": "联系方式",
+      "title": "US-018 整体验收、文档回写与云端 CI",
+      "user_visible_behavior": "PRD 五条验收逐条可核对，联系方式不影响既有行为与质量门禁。",
+      "status": "not_started",
+      "verification": [
+        "逐条核对五条验收：可查看公开联系方式（US-018c）、Copy Email 可复制（d）、点击外链打开平台（e 配置态实测）、未配置不展示无效入口（b/e）、复制不可用仍可手动复制（d）；PRD 详述 1~6 逐条映射，证据写入 evidence。",
+        "全套 E2E 四项目 0 失败（不新增 fixme、不删断言、不降阈值）；npm run verify:local 通过；/contact 与 /en/contact 实质验收已恢复断言。",
+        "更新 PRD_UserStory.json 的 US-018 为 passing 并写 evidence / CI run URL；更新 docs/DoD.md（B/C 组联系方式与外链相关项）、README 内容维护章节、docs/Development.md 的 content 表；claude-progress.md 记录本轮。",
+        "push main 后云端 verify + deploy 全绿，CI run URL 与 passed 数回写 feature_list.json / PRD_UserStory.json / claude-progress.md；未回写前不得标记 passing（AGENTS.md）。",
+        "记录未决风险：真实社交链接待用户提供、中英文案待用户确认、中文页 TBT 余量、T-003 仍 not_started、content/journey.ts 仍为模板清单。"
+      ],
+      "evidence": [],
+      "notes": "本任务通过即 US-018 完成。提交时显式列文件，排除并行会话未提交的 AGENTS.md 与 docs/PRD.md。"
     }
   ],
   "roadmap": [
@@ -1468,12 +1666,6 @@
     {
       "id": "US-014",
       "title": "文学作品（《法渊》等）",
-      "group": "P0",
-      "status": "not_started"
-    },
-    {
-      "id": "US-018",
-      "title": "联系方式 Contact",
       "group": "P0",
       "status": "not_started"
     },
