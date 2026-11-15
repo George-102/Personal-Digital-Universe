@@ -49,8 +49,8 @@
 8. ~~**US-004** 全局导航~~（2026-11-12 passing：US-004a~h 共 8 任务全 passing，本地 verify:local exit 0，云端 run [`43189384137`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43189384137) verify 全绿 280 passed / 76 skipped / 0 failed + Lighthouse 达标 + deploy success，CI run URL 已回写 US-004h 与 PRD_UserStory.json）
 9. ~~**US-006 个人介绍 About Me**~~（2026-11-12 passing：US-006a~j 共 10 任务全 passing，云端 run [`43259860487`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43259860487) verify + deploy 全绿、TBT 114/115ms、perf 98-99，CI run URL 已回写 US-006j 与 PRD_UserStory.json）
 10. **US-008 成长时间线**（2026-11-14 实施：US-008a~j passing，**US-008k in_progress——待 push 后回写云端 verify run URL**）。拆为 11 个任务（priority 61-71）。用户决策：3D 空间轨道（R3F）+ 首页 `#journey` section + 导航加 Journey + 内联展开面板；内容由用户提供清单，当前为**模板数据**（`content/journey.ts` 的 title 均带「示例 ·」前缀）。PRD 红线「不应必须旋转 3D 才能阅读」→ 3D 仅 `aria-hidden` 视觉层，DOM 时间轴承载全部信息。**范围调整**：未新增 transitions 注册表段（单 target 进度源重构风险过高），改用 CSS 滚动时间线淡入（零 JS），已在 `scope_note` 与 US-008i evidence 记录。
-    - **阻塞：本地提交尚未推送**（`c487ccd`、`4269ffd`、`f488e98`、`1c49141`）。本轮 push 被安全策略拒绝（SSH 私钥读取 + 代码外传），需用户在本机执行 `git push origin main`。推送后取 CI run URL 回写 US-008k 与 PRD_UserStory 的 US-008 转 passing。
-    - 开工下一轮前先确认：`git status` 应只有 `AGENTS.md` / `docs/PRD.md`（他人未提交）与未跟踪的 `test-out.txt`。
+    - **2026-11-15 云端首次 verify 失败**：用户 push 后 run `43709349190` 的 Lighthouse TBT 超标（中文最优 219.5ms > 200），deploy / preview skipped。已完成修复并通过全套本地验证，**等待修复提交 push 后的新 run URL 回写 US-008k 与 PRD US-008**；详见下方「2026-11-15 云端 CI 失败与修复」章节。
+    - 开工下一轮前先确认：`git status` 应只有 `AGENTS.md` / `docs/PRD.md`（他人未提交）；`test-out.txt` 已加入 `.gitignore`。
 11. 之后按 roadmap：US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 / US-003 / US-004 / US-006 已完成）。**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
 
 ## 风险与注意事项
@@ -151,10 +151,18 @@
 **成长时间线落地：DOM 时间轴为信息主体，3D 空间轨道只是桌面视觉层。**
 
 - **内容**：`content/journey.ts` 7 条模板清单，覆盖 7 个分类；`title` 统一「示例 · 」前缀（文件头写明替换 6 步），含区间 / 外链 / 无 detail 三种形态。`lib/journey.ts` 提供日期归一化、倒序排序、区间格式化、分类键、链接白名单、单条与整表校验（重复 date+title、至少一条 public），prebuild 拒绝坏数据（注入 `javascript:` 链接实测 build exit 1）。
-- **结构**：`JourneySection.tsx`（服务端取数 + i18n）→ `JourneyExperience.tsx`（client，持有 activeIndex）→ `JourneyTimeline.tsx`（原生 `<details>`）+ `JourneyCanvas.tsx`（3D）。静态 HTML 含 7 条摘要、时间、分类与全部详情段落，无 JS 也能展开（SEO 可抓）。
+- **结构**：`JourneySection.tsx`（服务端取数 + i18n）→ `JourneyExperience.tsx`（client，唯一客户端边界，document 级事件委托 + activeIndex）→ `JourneyTimeline.tsx`（**服务端组件**，7 条卡片为静态 HTML，原生 `<details>`）+ `JourneyCanvas.tsx`（3D）。静态 HTML 含 7 条摘要、时间、分类与全部详情段落，无 JS 也能展开（SEO 可抓）。2026-11-15 起时间线不再进入客户端组件树，交互由事件委托负责。
 - **3D**：`JourneyOrbitScene.tsx` 低面数 CatmullRom 轨道 + 节点球，dpr 取 `lib/quality.ts`；四条件（≥1024px、无 reduced-motion、WebGL、进入视口）同时满足才挂载，离屏 `frameloop=never`，`OrbitErrorBoundary` 失败静默降级。零新增依赖。
 - **交互**：hover/focus 卡片 → 3D 节点放大发光（useFrame 内只插值，不读布局、不 setState）；点击展开详情、互斥、Esc 收起、焦点留在 summary；无 detail 条目不渲染空面板。
 - **导航**：`lib/nav.ts` 加 journey（order 30），NavBar 激活态数据驱动自动覆盖；`nav.test.mjs` 顺序断言同步。
 - **验证**：`node --test` 103/103；`verify:local` exit 0（i18n 36 键、size 438.78kB）；全套四项目首跑 372 passed / 92 skipped / 4 failed（全为 `about.spec` 的 h2 计数，随新增 section 更新为「#about 内 h2/h3 各 1 + 全局 h2=2 + 层级序列不跳级」后 about 34 passed）；`journey.spec` 四项目 47 passed；`CI=1 lhci` exit 0（最优 TBT 102 / 166ms，LCP 210-227ms，CLS 0，perf 93-99）。
 - **范围调整**：US-008i 原计划的 about→journey 转场段未做。`attachScrollDriver` 是单 target 设计，多段需重构进度源并改动 scroll-transition 既有 8 个用例与 HeroScene 全部消费端；改用 CSS 滚动时间线淡入（`@supports animation-timeline: view()`，reduced-motion 关闭），零 JS、零 TBT，视觉进入效果保留。已记入 `scope_note` 与 US-008i evidence。
 - **未决风险**：时间线内容为模板（7 条 `title` 带「示例 ·」），真实经历待用户提供后替换；英文文案为起草稿；`docs/DoD.md` B 组新增「时间线不含占位内容」未打勾，等替换后复查。
+
+### 2026-11-15 云端 CI 失败与修复（US-008k）
+
+- **失败**：用户 push 后 run `43709349190`（head `688f547`）的 `verify / Run Lighthouse CI` 报 `total-blocking-time` 超标：中文页三次 772.5 / 252 / 219.5ms（最优 219.5 > 阈值 200），英文页 222 / 210 / 197ms；其余 job 全绿，`deploy` / `preview` 被 skip。下载该 run 的 6 份报告与通过的 `43262756111` 对比：主线程 Other +100ms、Script Evaluation +100ms、最长任务 166-211ms → 260-297ms（归因到 three/R3F 首屏 chunk）。
+- **排除的错误方案（均已回退）**：①停用 CSS `animation-timeline: view()` 无改善；②把非首屏 3D 延后到 `requestIdleCallback` 反而把 WebGL 初始化推进 TBT 窗口，英文页由 179ms 劣化到 223ms；③把 7 条 item 级动画合并成 1 条容器级动画同样劣化。教训：**「延后」不等于「减少」，落在 TBT 窗口内的延后会制造额外长任务**。
+- **采用的修复**：①`JourneyTimeline` 改服务端组件（7 条卡片纯静态 HTML），`JourneyExperience` 只留一个 document 级事件委托（互斥展开 / Esc / hover-focus 联动），去掉 7×4 个 React 合成事件与客户端组件树；展开/收起文案由 `details[open]` 的 CSS 切换。②`JourneyCanvas` 增加「已离开首屏（`scrollY > 0`）」门槛，Lighthouse 全页截图扩展视口时不会误判 `#journey` 可见、不会在 TBT 窗口内编译第二个 WebGL 上下文；门槛一次性判定，无每帧 setState。断言未删、阈值未降。
+- **最终本地验证**：`tsc` / `lint` / `build` 均 0；`journey.spec` 四项目 47 passed / 13 skipped；全套四项目 **376 passed / 92 skipped / 0 failed**；`verify:local` exit 0（i18n 36 键、size 438.57kB、audit 0 high）；`CI=1 lhci` **exit 0**，中文最优 TBT 128ms、英文 134ms，LCP 222-255ms、CLS 0、perf 96-98。
+- **待办**：修复提交 push 后取新的云端 verify run URL，回写 `feature_list.json` US-008k、`PRD_UserStory.json` US-008 与本节，两者再转 passing。

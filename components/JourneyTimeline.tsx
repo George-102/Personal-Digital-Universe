@@ -1,6 +1,3 @@
-'use client';
-
-import { useCallback, useState } from 'react';
 import type { JourneyItemView } from '@/lib/journey';
 
 type CategoryLabels = Record<JourneyItemView['category'], string>;
@@ -17,45 +14,20 @@ export type JourneyLabels = {
 type Props = {
   items: JourneyItemView[];
   labels: JourneyLabels;
-  /** US-008e：当前 hover/focus 的条目下标，用于高亮 3D 轨道上对应节点 */
-  activeIndex: number | null;
-  onActiveChange: (index: number | null) => void;
 };
 
 /**
  * US-008c/f：DOM 时间轴是信息主体（3D 只是视觉层）。
- * - 用原生 <details>：无 JS 也能展开详情，SEO 抓得到全文；
- * - 有 detail 的条目才渲染折叠控件，无 detail 的条目直接展示摘要（验收 5）；
- * - 互斥展开 + Esc 收起，焦点留在 summary 上。
+ *
+ * 这是服务端组件：7 条卡片全部是静态 HTML，无 JS / 无 hydration，
+ * 原生 <details> 保证无 JS 也能展开详情、SEO 抓得到全文。
+ * 互斥展开、Esc 收起、hover/focus 联动由 JourneyExperience 的事件委托负责。
  */
-export default function JourneyTimeline({
-  items,
-  labels,
-  activeIndex,
-  onActiveChange,
-}: Props) {
-  const [openId, setOpenId] = useState<string | null>(null);
-
-  const handleToggle = useCallback((id: string, open: boolean) => {
-    if (open) {
-      setOpenId(id);
-      return;
-    }
-    // 互斥关闭时本组件会程序化关闭其它 details，那也会派发 toggle；
-    // 只有「当前展开项自己被关掉」才清空，否则刚打开的项会被误关。
-    setOpenId((current) => (current === id ? null : current));
-  }, []);
-
-  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLOListElement>) => {
-    if (event.key !== 'Escape') return;
-    setOpenId(null);
-  }, []);
-
+export default function JourneyTimeline({ items, labels }: Props) {
   return (
-    <ol className="journey-list" aria-label={labels.listLabel} onKeyDown={handleKeyDown}>
-      {items.map((item, index) => {
+    <ol className="journey-list" aria-label={labels.listLabel}>
+      {items.map((item) => {
         const hasDetail = item.detail.length > 0;
-        const isOpen = openId === item.id;
         const panelId = `${item.id}-panel`;
         const heading = (
           <>
@@ -83,25 +55,18 @@ export default function JourneyTimeline({
             data-journey-item
             data-category={item.category}
             data-has-detail={hasDetail ? 'true' : 'false'}
-            data-open={isOpen ? 'true' : 'false'}
-            data-active={activeIndex === index ? 'true' : 'false'}
-            onMouseEnter={() => onActiveChange(index)}
-            onMouseLeave={() => onActiveChange(null)}
-            onFocus={() => onActiveChange(index)}
-            onBlur={() => onActiveChange(null)}
+            data-open="false"
+            data-active="false"
           >
             <span className="journey-marker" aria-hidden="true" />
             <div className="journey-card">
               {hasDetail ? (
-                <details
-                  className="journey-details"
-                  open={isOpen}
-                  onToggle={(event) => handleToggle(item.id, event.currentTarget.open)}
-                >
+                <details className="journey-details">
                   <summary className="journey-summary-row">
                     {heading}
                     <span className="journey-toggle-hint" aria-hidden="true">
-                      {isOpen ? labels.collapse : labels.expand}
+                      <span className="hint-expand">{labels.expand}</span>
+                      <span className="hint-collapse">{labels.collapse}</span>
                     </span>
                   </summary>
                   <div className="journey-panel" id={panelId} data-journey-panel>

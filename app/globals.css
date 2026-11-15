@@ -379,6 +379,17 @@ html {
   color: #8b90a8;
 }
 
+/* 展开/收起文案由原生 details 的 open 属性切换，无需 JS 状态 */
+.journey-details .hint-collapse {
+  display: none;
+}
+.journey-details[open] .hint-expand {
+  display: none;
+}
+.journey-details[open] .hint-collapse {
+  display: inline;
+}
+
 .journey-panel {
   margin-top: 0.9rem;
   padding-top: 0.9rem;

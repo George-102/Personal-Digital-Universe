@@ -139,7 +139,8 @@
         "2026-11-14：feature_list.json 中 US-008a~j 共 10 个任务 passing，US-008k 保持 in_progress（本地证据齐全，云端 CI 待 push 后回写）；逐条证据见 feature_list.json。",
         "2026-11-14 五条验收逐条核对：①完整经历可读（无 JS 静态 HTML 中 7 条摘要/时间/分类齐全，原生 details 可展开）；②hover 显示摘要（卡片摘要常显，hover/focus 同时联动 3D 节点高亮，实测 data-journey-active 跟随）；③点击看详情（details 展开/收起 + Esc，四项目通过）；④移动端触摸布局（1024px 以下不挂载 3D、单列、触摸目标 ≥44px、tap 展开通过）；⑤无详情节点仍展示基本内容（3 条无 detail 的条目展示摘要 + 「暂无更多细节」，不渲染空面板）。",
         "2026-11-14：npm run verify:local exit 0（node --test 103/103、i18n 36 键 100%、size 438.78kB ≤1MB、audit 0 high）；CI=1 npm run verify:lighthouse exit 0（最优 TBT 102ms 中文 / 166ms 英文，LCP 210-227ms、CLS 0、perf 93-99、a11y 100、seo 100、bp 96）；全套四项目 372 passed / 92 skipped（4 项 about h2 断言已随新 section 同步修复，修复后 about 34 passed）。",
-        "待回写：push main 后云端 verify job 的 CI run URL 与 passed 数；US-008k 转 passing 后本故事同步转 passing。"
+        "2026-11-15 首次云端 CI 未通过：run 43709349190 的 Lighthouse TBT 中文页最优 219.5ms > 200ms（三次 772.5 / 252 / 219.5），英文页 197-222ms；其余 job 全绿，deploy / preview skipped。修复：JourneyTimeline 服务端化 + 事件委托减少 hydration、JourneyCanvas 增加「已离开首屏」门槛避免在 TBT 窗口内创建第二个 WebGL 上下文；CSS 滚动动画与 requestIdleCallback 延后方案经本地 A/B 排除后回退。逐条证据见 feature_list.json US-008k。",
+        "2026-11-15 修复后本地验证：全套四项目 376 passed / 92 skipped / 0 failed、journey.spec 47 passed、verify:local exit 0（i18n 36 键、size 438.57kB）、CI=1 Lighthouse exit 0（最优 TBT 128ms 中文 / 134ms 英文，LCP 222-255ms、CLS 0、perf 96-98）、tsc / lint / build 均 0。待回写：云端 verify job 全绿后的 CI run URL 与指标；US-008k 转 passing 后本故事同步转 passing。"
       ],
       "notes": "2026-11-14 已实现：#journey 新 section（DOM 时间轴为信息主体 + 桌面 3D 空间轨道视觉层）、hover/focus 3D-DOM 联动、内联展开详情（原生 details / 互斥 / Esc）、移动端单列与触摸优化、导航加 Journey。内容当前为模板清单（`content/journey.ts` 的 7 条 title 均带「示例 ·」前缀），等用户提供真实经历后替换；英文文案为起草稿。范围调整：未新增 transitions 注册表段，journey 用 CSS 滚动时间线淡入（原因见 scope_note）。T-003 仍 not_started。"
     },

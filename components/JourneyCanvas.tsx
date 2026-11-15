@@ -42,7 +42,9 @@ type Props = {
 /**
  * US-008d/e：时间线的 3D 装饰层。
  * 与 DOM 时间轴完全解耦：这里的任何失败都不影响阅读（失败即不渲染）。
- * 只有同时满足「桌面视口 + 无 reduced-motion + WebGL 可用 + 进入视口」才挂载 Canvas。
+ * 只有同时满足「已离开首屏 + 桌面视口 + 无 reduced-motion + WebGL 可用 + 进入视口」才挂载 Canvas。
+ * 「已离开首屏」是 2026-11-15 云端 TBT 回归后加的门槛：Lighthouse 全页截图会扩展视口，
+ * 让 IntersectionObserver 误判 #journey 已可见，从而在 TBT 窗口内编译第二个 WebGL 上下文。
  */
 export default function JourneyCanvas({ count, activeIndex }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -50,6 +52,8 @@ export default function JourneyCanvas({ count, activeIndex }: Props) {
   const [desktop, setDesktop] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [inView, setInView] = useState(false);
+  const [leftHero, setLeftHero] = useState(false);
+  const leftHeroRef = useRef(false);
   const [tier, setTier] = useState<QualityTier | null>(null);
   const [mounted, setMounted] = useState(false);
   const [mode, setMode] = useState<'off' | 'pending' | '3d' | 'no-webgl' | 'error'>('off');
@@ -70,6 +74,19 @@ export default function JourneyCanvas({ count, activeIndex }: Props) {
     };
   }, []);
 
+  // 只在「用户真正滚离首屏」后放行；一次性判定，滚动期间不产生每帧 setState
+  useEffect(() => {
+    const onScroll = () => {
+      if (leftHeroRef.current || window.scrollY <= 0) return;
+      leftHeroRef.current = true;
+      setLeftHero(true);
+      window.removeEventListener('scroll', onScroll);
+    };
+    onScroll();
+    if (!leftHeroRef.current) window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   useEffect(() => {
     const el = wrapperRef.current;
     if (!el) return;
@@ -82,18 +99,18 @@ export default function JourneyCanvas({ count, activeIndex }: Props) {
 
   // WebGL 探测延后到「真正要挂载」时，避免首屏创建一次性上下文
   useEffect(() => {
-    if (!desktop || reducedMotion || !inView || tier) return;
+    if (!leftHero || !desktop || reducedMotion || !inView || tier) return;
     if (!isWebGLAvailable()) {
       setMode('no-webgl');
       return;
     }
     setTier(getQualityTier(window.innerWidth, window.devicePixelRatio || 1));
     setMode('pending');
-  }, [desktop, reducedMotion, inView, tier]);
+  }, [leftHero, desktop, reducedMotion, inView, tier]);
 
   useEffect(() => {
-    if (tier && desktop && !reducedMotion && inView) setMounted(true);
-  }, [tier, desktop, reducedMotion, inView]);
+    if (tier && leftHero && desktop && !reducedMotion && inView) setMounted(true);
+  }, [tier, leftHero, desktop, reducedMotion, inView]);
 
   const handleFrame = useCallback(() => {
     frames.current += 1;
