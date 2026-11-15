@@ -52,7 +52,8 @@
     - 2026-11-15 首次云端 verify（run `43709349190`）因 TBT 219.5ms 超标失败，已修复（hydration 瘦身 + 非首屏 WebGL 门槛）并重新绿，详见下方章节。**未决风险**：中文页最优 TBT 186ms 距阈值仅 14ms，runner 变慢时可能再超标。
     - 开工下一轮前先确认：`git status` 应只有 `AGENTS.md` / `docs/PRD.md`（他人未提交）；`test-out.txt` 已加入 `.gitignore`。
 11. 之后按 roadmap：US-010 → US-012 → US-013 → US-014 → US-021 → US-023 → P1 故事（US-002 / US-003 / US-004 / US-006 / US-008 已完成；US-018 已由用户指定提前，见第 12 条）。**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
-12. **US-018 联系方式（用户指定提前，2026-11-15 已拆分，尚未实施）**：`feature_list.json` 新增 US-018a~l 共 12 个任务（priority 72-83，roadmap 移除 US-018），全部 `not_started`，下一步为 **US-018a Contact 内容模型与构建期校验**；一次只做一个，实施开始才把当前任务置 `in_progress`。用户四项决策：①首页 `#contact` section + 真实 `/contact` 与 `/en/contact` 独立路由（复用同一组件，导航仍走锚点，移除 `e2e/seo.spec.ts` 的 `/contact` fixme 恢复四项断言）；②仅启用已确认的真实 email，GitHub / 博客 / 社交留结构化配置位并用临时外链实测配置态后移除；③视觉选 **3D 空间场景**（`aria-hidden` 纯视觉层、DOM 面板为信息主体、视口内 + 已离开首屏才挂载、离屏暂停、卸载 dispose）；④含 PRD 详述 6 的五项合作方向与 Footer 邮箱入口。**风险**：中文页最优 TBT 186ms 距 200ms 阈值仅 14ms，Contact 3D 不得进入首屏 TBT 窗口（US-018k 专项复验）；`/contact` 是首个内容型独立路由；页面第三次变长需回归滚动终点 / 导航激活态 / 多处 3D 暂停；真实社交链接与文案定稿待用户提供。本轮仅规划拆分，未改任何代码、未跑 `./init.ps1`；实施轮开工按 AGENTS.md 跑 `./init.ps1` 与前置 smoke。
+12. ~~**US-018 联系方式**~~（2026-11-15 **passing**：US-018a~l 共 12 任务全 passing，云端 run [43727267960](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43727267960) verify + deploy 全绿，acceptance 488 passed / 88 skipped / 0 failed，Lighthouse 门禁通过）。实现：首页 #contact + /contact / /en/contact 独立路由（首个内容型独立路由，移除 /contact SEO fixme 恢复四项断言）、真实 Email + Copy Email 三级降级、外链配置位与 public 过滤、3D 空间场景（aria-hidden、五重挂载门槛、离屏暂停）、玻璃质感面板与五项合作方向、导航 Contact 与 Footer 邮箱入口。本地修复两处既有测试过时定位与计数（i18n.spec / about.spec），断言强度未降。**未决风险**：真实社交链接待用户提供（links 仍为空）；中英文案为起草稿待确认；content/journey.ts 仍为模板清单；T-003 与其余 roadmap 故事顺延。
+13. 之后按 roadmap：US-010 → US-012 → US-013 → US-014 → US-021 → US-023 → P1 故事；**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
 
 ## 风险与注意事项
 

@@ -271,9 +271,13 @@
       "details": "设置 Contact 区域，展示公开联系方式：Email、GitHub、技术博客、其他社交媒体。联系区域可以采用具有空间感的 3D 场景或简洁的玻璃质感面板。设置 Copy Email 按钮；点击 Email 时调用系统邮件客户端。可以展示合作方向：Research Collaboration、Open Source Collaboration、Software Development、Startup & Entrepreneurship、Technical Discussion。",
       "Acceptance Criteria": "- 正常场景：访客可以查看公开联系方式。- 正常场景：点击 Copy Email 可以复制邮箱。- 正常场景：点击 GitHub 等链接可以打开对应平台。- 异常场景：某个联系方式未配置时，不展示无效入口。- 异常场景：复制功能不可用时，访客仍然可以手动复制邮箱。",
       "DoD": "五条验收逐条通过并留证；/contact 路由实质验收（移除对应 fixme）；npm run verify:local 通过 + 云端 verify job 全绿并回写 CI run URL。",
-      "status": "not_started",
-      "evidence": [],
-      "notes": "/contact 路由当前为 404 占位；未来路由 SEO fixme ×5 绑定本故事。profile.ts 已含 email 字段（社交链接暂未配置）。"
+      "status": "passing",
+      "evidence": [
+        "2026-11-15：US-018a~l 共 12 任务全部 passing，逐条证据见 feature_list.json。五条验收：公开联系方式在静态 HTML 可读（c）；Copy Email 复制成功且剪贴板失败时可手动选中复制（d）；外链配置态实测可打开对应平台（e）；links 为空或 email 缺省时不展示无效入口（b/e）；无 JS / 无 WebGL / 3D chunk 失败时信息完整（c/f/h）。",
+        "npm run verify:local exit 0（单测 112/112、i18n 100%、size 441.39kB、audit 0 high）；CI=1 npm run verify:lighthouse exit 0（中文最优 TBT 86ms / 英文 149ms，LCP 216-252ms、CLS 0、perf 93-99）。",
+        "2026-11-15 云端 run 43727267960（commit 932d6ae，https://github.com/George-102/Personal-Digital-Universe/actions/runs/43727267960）：verify success（488 passed / 88 skipped / 0 failed，Lighthouse 门禁通过）、deploy success；/contact SEO fixme 已移除并恢复四项断言。"
+      ],
+      "notes": "/contact 与 /en/contact 独立路由已落地（US-018j），首页 #contact section 并存；仅真实 Email 上线，GitHub / 博客 / 社交留结构化配置位待用户提供；中英文案为 agent 起草稿待用户确认；T-003 仍 not_started。"
     },
     {
       "id": "US-019",
