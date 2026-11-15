@@ -48,10 +48,10 @@
 7. **T-003** Vitest 单元/集成测试基础设施（迁移时同步改 CI 的 `npm test`）
 8. ~~**US-004** 全局导航~~（2026-11-12 passing：US-004a~h 共 8 任务全 passing，本地 verify:local exit 0，云端 run [`43189384137`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43189384137) verify 全绿 280 passed / 76 skipped / 0 failed + Lighthouse 达标 + deploy success，CI run URL 已回写 US-004h 与 PRD_UserStory.json）
 9. ~~**US-006 个人介绍 About Me**~~（2026-11-12 passing：US-006a~j 共 10 任务全 passing，云端 run [`43259860487`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43259860487) verify + deploy 全绿、TBT 114/115ms、perf 98-99，CI run URL 已回写 US-006j 与 PRD_UserStory.json）
-10. **US-008 成长时间线**（2026-11-14 实施：US-008a~j passing，**US-008k in_progress——待 push 后回写云端 verify run URL**）。拆为 11 个任务（priority 61-71）。用户决策：3D 空间轨道（R3F）+ 首页 `#journey` section + 导航加 Journey + 内联展开面板；内容由用户提供清单，当前为**模板数据**（`content/journey.ts` 的 title 均带「示例 ·」前缀）。PRD 红线「不应必须旋转 3D 才能阅读」→ 3D 仅 `aria-hidden` 视觉层，DOM 时间轴承载全部信息。**范围调整**：未新增 transitions 注册表段（单 target 进度源重构风险过高），改用 CSS 滚动时间线淡入（零 JS），已在 `scope_note` 与 US-008i evidence 记录。
-    - **2026-11-15 云端首次 verify 失败**：用户 push 后 run `43709349190` 的 Lighthouse TBT 超标（中文最优 219.5ms > 200），deploy / preview skipped。已完成修复并通过全套本地验证，**等待修复提交 push 后的新 run URL 回写 US-008k 与 PRD US-008**；详见下方「2026-11-15 云端 CI 失败与修复」章节。
+10. ~~**US-008 成长时间线**~~（2026-11-15 **passing**：US-008a~k 共 11 任务全 passing，云端 run [`43717927691`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43717927691) verify + deploy 全绿、acceptance 376 passed / 92 skipped、Lighthouse 最优 TBT 中文 186ms / 英文 146ms，CI run URL 已回写 US-008k 与 PRD_UserStory.json）。拆为 11 个任务（priority 61-71）。用户决策：3D 空间轨道（R3F）+ 首页 `#journey` section + 导航加 Journey + 内联展开面板；内容当前为**模板数据**（`content/journey.ts` 的 title 均带「示例 ·」前缀，等用户提供真实经历）。PRD 红线「不应必须旋转 3D 才能阅读」→ 3D 仅 `aria-hidden` 视觉层，DOM 时间轴承载全部信息。**范围调整**：未新增 transitions 注册表段，改用 CSS 滚动时间线淡入（见 `scope_note` 与 US-008i evidence）。
+    - 2026-11-15 首次云端 verify（run `43709349190`）因 TBT 219.5ms 超标失败，已修复（hydration 瘦身 + 非首屏 WebGL 门槛）并重新绿，详见下方章节。**未决风险**：中文页最优 TBT 186ms 距阈值仅 14ms，runner 变慢时可能再超标。
     - 开工下一轮前先确认：`git status` 应只有 `AGENTS.md` / `docs/PRD.md`（他人未提交）；`test-out.txt` 已加入 `.gitignore`。
-11. 之后按 roadmap：US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 / US-003 / US-004 / US-006 已完成）。**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
+11. 之后按 roadmap：US-010 → US-012 → US-013 → US-014 → US-018 → US-021 → US-023 → P1 故事（US-002 / US-003 / US-004 / US-006 / US-008 已完成）。**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
 
 ## 风险与注意事项
 
@@ -165,4 +165,5 @@
 - **排除的错误方案（均已回退）**：①停用 CSS `animation-timeline: view()` 无改善；②把非首屏 3D 延后到 `requestIdleCallback` 反而把 WebGL 初始化推进 TBT 窗口，英文页由 179ms 劣化到 223ms；③把 7 条 item 级动画合并成 1 条容器级动画同样劣化。教训：**「延后」不等于「减少」，落在 TBT 窗口内的延后会制造额外长任务**。
 - **采用的修复**：①`JourneyTimeline` 改服务端组件（7 条卡片纯静态 HTML），`JourneyExperience` 只留一个 document 级事件委托（互斥展开 / Esc / hover-focus 联动），去掉 7×4 个 React 合成事件与客户端组件树；展开/收起文案由 `details[open]` 的 CSS 切换。②`JourneyCanvas` 增加「已离开首屏（`scrollY > 0`）」门槛，Lighthouse 全页截图扩展视口时不会误判 `#journey` 可见、不会在 TBT 窗口内编译第二个 WebGL 上下文；门槛一次性判定，无每帧 setState。断言未删、阈值未降。
 - **最终本地验证**：`tsc` / `lint` / `build` 均 0；`journey.spec` 四项目 47 passed / 13 skipped；全套四项目 **376 passed / 92 skipped / 0 failed**；`verify:local` exit 0（i18n 36 键、size 438.57kB、audit 0 high）；`CI=1 lhci` **exit 0**，中文最优 TBT 128ms、英文 134ms，LCP 222-255ms、CLS 0、perf 96-98。
-- **待办**：修复提交 push 后取新的云端 verify run URL，回写 `feature_list.json` US-008k、`PRD_UserStory.json` US-008 与本节，两者再转 passing。
+- **已收尾**：修复提交 `2d4a449` push 后，云端 run [`43717927691`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43717927691) verify + deploy 全绿（acceptance 376 passed / 92 skipped / 0 failed），Lighthouse 中文三次 746（冷启动离群）/ 225 / 186ms、英文 162 / 146 / 156ms，最优聚合 186 / 146ms 均 ≤200；LCP 207-231ms、CLS 0、perf 92-97、a11y/seo 100、bp 96。稳定 run 的长任务数由 2-3 降为 1。US-008k 与 PRD US-008 已转 passing。
+- **遗留风险**：中文页最优 TBT 186ms 仅剩 14ms 余量；时间线仍是模板清单（7 条「示例 ·」），中英文案为起草稿。真实经历替换后需重跑 `npm run build` 并复查 Lighthouse。

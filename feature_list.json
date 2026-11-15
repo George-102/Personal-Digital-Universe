@@ -1423,7 +1423,7 @@
       "area": "成长时间线",
       "title": "US-008 整体验收、文档回写与云端 CI",
       "user_visible_behavior": "PRD 五条验收逐条可核对，时间线不影响既有质量门禁。",
-      "status": "in_progress",
+      "status": "passing",
       "verification": [
         "逐条核对：完整经历可读、hover 显示摘要、点击看详情、移动端触摸布局、无详情节点仍展示基本内容；证据写入 evidence。",
         "npm run verify:local exit 0；本地 CI=1 Lighthouse 复验（TBT 不因新增 3D 轨道回归）。",
@@ -1434,9 +1434,10 @@
         "2026-11-15 首次云端 CI 失败：run 43709349190（head 688f547）verify 的 Run Lighthouse CI 报 total-blocking-time 超标，中文页三次 772.5 / 252 / 219.5ms（最优 219.5 > 阈值 200），英文页 222 / 210 / 197ms；其余 job（lint / typecheck / build / unit / quality / acceptance）全绿，deploy 与 preview 被 skip。",
         "2026-11-15 诊断：下载该 run 的 6 份 Lighthouse 报告与通过的 43262756111 对比，主线程 Other +100ms、Script Evaluation +100ms、Style & Layout +30ms，单个最长任务由 166-211ms 涨到 260-297ms（归因到 three/R3F 首屏 chunk）；本地 A/B 逐一排除两种猜测——停用 CSS 滚动驱动动画无改善、把非首屏 3D 延后到 requestIdleCallback 反而把 WebGL 初始化推进 TBT 窗口使英文页从 179ms 涨到 223ms，均已回退。",
         "2026-11-15 修复：①JourneyTimeline 改为服务端组件（7 条卡片是纯静态 HTML，无 JS 也可展开），JourneyExperience 只留一个 document 级事件委托负责互斥展开 / Esc / hover-focus 联动，去掉 7×4 个 React 合成事件与客户端组件树；②JourneyCanvas 增加「已离开首屏（scrollY>0）」门槛，阻止 Lighthouse 全页截图扩展视口时误判 #journey 可见、在 TBT 窗口内编译第二个 WebGL 上下文；③展开/收起文案改由 details[open] 的 CSS 切换。行为不变，断言未删、阈值未降。",
-        "2026-11-15 本地验证：npx tsc --noEmit / npm run lint / npm run build 均 exit 0；journey.spec 四项目 47 passed / 13 skipped；全套四项目 376 passed / 92 skipped / 0 failed；npm run verify:local exit 0（i18n 36 键 100%、size 438.57kB ≤1MB、audit 0 high）；CI=1 npm run verify:lighthouse exit 0（中文最优 TBT 128ms、英文 134ms，LCP 222-255ms、CLS 0、perf 96-98，长任务数由 4-5 降到 2-3）。云端重验证 run URL 待回写，本条按 AGENTS.md 保持 in_progress。"
+        "2026-11-15 本地验证：npx tsc --noEmit / npm run lint / npm run build 均 exit 0；journey.spec 四项目 47 passed / 13 skipped；全套四项目 376 passed / 92 skipped / 0 failed；npm run verify:local exit 0（i18n 36 键 100%、size 438.57kB ≤1MB、audit 0 high）；CI=1 npm run verify:lighthouse exit 0（中文最优 TBT 128ms、英文 134ms，LCP 222-255ms、CLS 0、perf 96-98，长任务数由 4-5 降到 2-3）。",
+        "2026-11-15 云端重验证通过：https://github.com/George-102/Personal-Digital-Universe/actions/runs/43717927691 （head `2d4a449`，verify + deploy 全绿，acceptance 376 passed / 92 skipped / 0 failed，Cloudflare Pages 部署成功）。Lighthouse 中文三次 746（冷启动离群）/ 225 / 186ms、英文 162 / 146 / 156ms，门禁按最优 run 聚合取中文 186ms、英文 146ms 均 ≤200；LCP 207-231ms、CLS 0、perf 92-97、a11y 100、seo 100、bp 96。稳定 run 的长任务数由失败 run 的 2-3 个降为 1 个，印证第二个 WebGL 上下文不再进入 TBT 窗口。"
       ],
-      "notes": "按 AGENTS.md：云端 run URL 未回写前本任务不得标 passing。本地 Lighthouse 在本机波动大（同一份原代码两次跑英文页最优 179ms 与 223ms），以云端 verify job 为最终判据。"
+      "notes": "云端 run URL 已回写。本地 Lighthouse 单机噪声大（同一份原代码两次跑英文页最优 179ms 与 223ms），以云端 verify job 为最终判据。未决风险：中文页最优 TBT 186ms 距 200ms 阈值仅 14ms 余量，若后续 runner 变慢需继续削首屏 JS/GPU 工作；`content/journey.ts` 仍是模板清单，真实经历待用户提供。"
     }
   ],
   "roadmap": [
