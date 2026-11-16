@@ -70,6 +70,7 @@
 - **失败**：push 后 run [`43792969057`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43792969057)（commit `b8d3695`）acceptance 622 passed / 1 flaky / 89 skipped 全绿，但 `Run Lighthouse CI` 挂门禁：中文 TBT `474 / 275.5 / 221.5`、英文 `222.5 / 244 / 233.5`（最优 221.5 / 222.5 > 200），deploy/preview skip。对比此前通过的 US-008 run `43717927691`，长任务从 ~236ms 涨到 ~280ms，并多出 ~60ms 第二长任务；未删断言、未降阈值。
 - **修复（US-010k）**：①首页 `#research` 转纯文字概览（方向 + 概述 + 核心问题 + 详情入口），方法与关键词完整保留在 `/research` 列表与详情页；②新建 `ResearchVisual.tsx`，3D 只由列表页通过 `visual` prop 注入，首页模块图彻底不引用 ResearchCanvas；③`ResearchCanvas` 改轻量门控 + `next/dynamic` 载入 `ResearchStage`（R3F Canvas/场景延后），保留五重门槛、错误边界与全部探针；④精简中英 overview/intro（详情段落不变）。3D 仍满足 AC3/4，只是位置从首页移到列表页。
 - **验证**：RED 先行（旧产物上首页「无 methods/keywords/3D」断言失败）→ GREEN；research.spec 四项目 55 passed / 9 skipped；受影响批次 410 passed / 22 skipped / 0 failed；verify:local exit 0（size 450.94kB、单测全通过、i18n 70 键 100%）；本地 CI=1 Lighthouse 中文最优 87ms / 英文 134ms。待同 commit push 后回写云端 verify，k 与 j 才可转 passing。
+- **当前阻塞**：修复已本地提交 `3d8f436`，但 `git push origin main` 被本机安全策略拒绝（读取 `~/.ssh/id_ed25519` 私钥的请求遭自动审批否决），未触发云端 verify。需用户手动 push 或放行 SSH key 读取后回写新 run URL；在云端全绿前不得把 US-010k / US-010j / PRD US-010 标 passing。
 
 ## 风险与注意事项
 
