@@ -77,12 +77,21 @@ export interface JourneyEntry {
   public: boolean;
 }
 
+export type ResearchStatus = 'In Progress' | 'Completed';
+
 export interface ResearchArea {
   slug: string;
   title: LocaleText;
+  /** 详情页概述（US-010a） */
+  overview: LocaleText;
   problems: LocaleText[];
   methods: string[];
-  status: 'In Progress' | 'Completed';
+  /** 可选详细段落，缺省时详情页只展示概述/问题/方法 */
+  detail?: LocaleText[];
+  keywords: string[];
+  /** 可选相关链接：站内路径或 https 外链 */
+  link?: string;
+  status: ResearchStatus;
   public: boolean;
 }
 

@@ -398,4 +398,38 @@ test.describe('空间化导航', () => {
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
     await expect.poll(() => activeIds(page)).toEqual(['home']);
   });
+
+  test('US-010h 点击 Research 准确到达 #research 并同步 URL hash', async ({ page }) => {
+    const errors: Error[] = [];
+    page.on('pageerror', (error) => errors.push(error));
+    await page.goto('/');
+    await settle(page);
+
+    await clickNav(page, 'research');
+    await expect(page.locator('#research')).toBeInViewport({ timeout: 10_000 });
+    await expect.poll(() => new URL(page.url()).hash).toBe('#research');
+    await expect.poll(() => activeIds(page)).toEqual(['research']);
+    expect(errors).toEqual([]);
+  });
+
+  test('US-010h 英文页 Research 导航同样到达并激活', async ({ page }) => {
+    await page.goto('/en');
+    await settle(page);
+    await clickNav(page, 'research');
+    await expect(page.locator('#research')).toBeInViewport({ timeout: 10_000 });
+    await expect.poll(() => new URL(page.url()).hash).toBe('#research');
+    await expect.poll(() => activeIds(page)).toEqual(['research']);
+  });
+
+  test('US-010h 滚动到 Research 时激活态唯一，回到顶部收回到 home', async ({ page }) => {
+    await page.goto('/');
+    await settle(page);
+    await page.evaluate(() =>
+      document.getElementById('research')?.scrollIntoView({ behavior: 'instant', block: 'start' }),
+    );
+    await expect.poll(() => activeIds(page)).toEqual(['research']);
+
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await expect.poll(() => activeIds(page)).toEqual(['home']);
+  });
 });

@@ -13,6 +13,7 @@ import { transitionSegments, validateTransitionSegments } from '../lib/transitio
 import { navItems, validateNavItems } from '../lib/nav.ts';
 import { validateJourneyEntries } from '../lib/journey.ts';
 import { validateContact } from '../lib/contact.ts';
+import { validateResearchList } from '../lib/research.ts';
 
 const journeyErrors = validateJourneyEntries(journey);
 if (journeyErrors.length > 0) {
@@ -42,6 +43,14 @@ if (navErrors.length > 0) {
 const contactErrors = validateContact(profile.contact ?? {});
 if (contactErrors.length > 0) {
   console.error(`contact 配置校验失败：\n${contactErrors.join('\n')}`);
+  process.exit(1);
+}
+
+
+// US-010a：研究方向整表校验（slug 唯一、至少一条 public、非法链接构建期拒绝）
+const researchErrors = validateResearchList(research);
+if (researchErrors.length > 0) {
+  console.error(`research 配置校验失败：\n${researchErrors.join('\n')}`);
   process.exit(1);
 }
 

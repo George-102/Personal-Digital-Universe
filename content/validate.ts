@@ -38,9 +38,11 @@ const RULES: Record<ContentCategory, Rule> = {
     dateRange: { start: 'date', end: 'endDate' },
   },
   research: {
-    required: ['slug', 'title', 'problems', 'methods', 'status', 'public'],
-    localeText: ['title'],
+    required: ['slug', 'title', 'overview', 'problems', 'methods', 'keywords', 'status', 'public'],
+    localeText: ['title', 'overview', 'problems'],
     enums: { status: ['In Progress', 'Completed'] },
+    optionalLocaleLists: ['detail'],
+    optionalLinks: ['link'],
   },
   publications: {
     required: ['title', 'authors', 'year', 'status', 'public'],

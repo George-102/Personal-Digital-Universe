@@ -24,10 +24,10 @@
 - [ ] 论文只展示 **名称 + 状态（Published / Preprint / In Progress）**，未发表论文不得标记为 Published。
 - [ ] 产品状态真实：Released / Beta / In Development / Discontinued 与实际一致。
 - [ ] 《法渊》等作品未完成时标记 **Writing / In Progress**。
-- [ ] DAC 3D 空域可视化带有 **“Conceptual illustration, not simulation data”** 标注。
+- [x] DAC 3D 空域可视化带有 **“Conceptual illustration, not simulation data”** 标注。（US-010f：`#research` 的 3D 空域概念示意旁固定渲染中英双语标注——中文「概念性示意图，非真实仿真数据」、英文 “Conceptual illustration, not simulation data”，E2E 断言文本存在且 3D 层 aria-hidden）
 - [x] 未配置的 CV、链接、图片不显示无效入口。（US-006f：默认无 `cvUrl` 时静态 HTML 无 download 链接，配置后临时构建实测入口与 `/cv.pdf` 200；US-018b/e：`contact.links` 为空时 0 外链、0 空 href、0 404，配置态临时构建实测入口可见可跳转后移除临时数据）
 - [ ] 成长时间线不含占位内容：`content/journey.ts` 中不得残留「示例 ·」前缀，条目时间与真实经历一致，无 detail 的条目不出现空展开面板。（US-008：模板清单已就位，`title` 统一带「示例 ·」前缀，替换真实数据后须复查此条）
-- [ ] 中英双语均可切换；关键页面（首页、About、Journey、Research、Projects、Writing、Contact）中文和英文文案均存在。（US-018j：Contact 的 `/contact` 与 `/en/contact` 双语页面已落地并通过验收；Research / Projects / Writing 仍随后续故事）
+- [ ] 中英双语均可切换；关键页面（首页、About、Journey、Research、Projects、Writing、Contact）中文和英文文案均存在。（US-018j：Contact 双语页面已落地；US-010d/e：Research 的 `/research`、`/en/research` 列表与 3 条详情页双语已落地并通过验收；Projects / Writing 仍随后续故事）
 - [ ] 所有可点击外链可打开；失效外链不导致页面报错。
 
 ---

@@ -4,9 +4,8 @@ import { settle } from './helpers';
 const SEO_ROUTES = ['/', '/en', '/research', '/en/research', '/projects', '/writing', '/contact'];
 
 // 未实现路由 → roadmap 故事 ID。对应故事落地后删除映射项即可恢复原有断言。
+// US-010 已落地：/research 与 /en/research 的映射已移除，断言恢复实跑。
 const PENDING_ROUTE_STORY: Record<string, string> = {
-  '/research': 'US-010',
-  '/en/research': 'US-010',
   '/projects': 'US-012',
   '/writing': 'US-014',
 };

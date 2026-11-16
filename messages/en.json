@@ -18,7 +18,8 @@
     "journey": "Journey",
     "contact": "Contact",
     "menu": "Menu",
-    "menuClose": "Close menu"
+    "menuClose": "Close menu",
+    "research": "Research"
   },
   "About": {
     "eyebrow": "01 / ABOUT ME",
@@ -49,7 +50,7 @@
     }
   },
   "Contact": {
-    "eyebrow": "03 / CONTACT",
+    "eyebrow": "04 / CONTACT",
     "title": "Get in Touch",
     "intro": "If you want to talk about research, open source, products, or anything worth a serious conversation, write to me.",
     "emailLabel": "Email",
@@ -63,5 +64,25 @@
     "footerEmailLabel": "Email me",
     "routeTitle": "Contact — Christopher Chang",
     "routeDescription": "Get in touch with Christopher Chang about research collaboration, open source, software development, startups and technical discussions."
+  },
+  "Research": {
+    "eyebrow": "03 / RESEARCH",
+    "title": "Research",
+    "intro": "Research exploration on Dynamic Airspace Configuration (DAC) and LLM + MARL, with a focus on dynamic decision-making and collaborative optimization.",
+    "listLabel": "Research directions list",
+    "listIntro": "Each direction has its own detail page with core problems, methods and keywords.",
+    "routeTitle": "Research — Christopher Chang",
+    "routeDescription": "Research directions of Christopher Chang: Dynamic Airspace Configuration & Sectorization, LLM + Multi-Agent Reinforcement Learning, and intelligent decision support for ATM.",
+    "overviewLabel": "Overview",
+    "problemsLabel": "Core Problems",
+    "methodsLabel": "Methods & Techniques",
+    "keywordsLabel": "Keywords",
+    "detailLabel": "More Details",
+    "statusInProgress": "In Progress",
+    "statusCompleted": "Completed",
+    "viewDetail": "View details",
+    "viewAll": "View all research",
+    "backToList": "Back to research list",
+    "conceptNote": "Conceptual illustration, not simulation data"
   }
 }

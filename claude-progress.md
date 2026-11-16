@@ -53,7 +53,17 @@
     - 开工下一轮前先确认：`git status` 应只有 `AGENTS.md` / `docs/PRD.md`（他人未提交）；`test-out.txt` 已加入 `.gitignore`。
 11. 之后按 roadmap：US-010 → US-012 → US-013 → US-014 → US-021 → US-023 → P1 故事（US-002 / US-003 / US-004 / US-006 / US-008 已完成；US-018 已由用户指定提前，见第 12 条）。**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
 12. ~~**US-018 联系方式**~~（2026-11-15 **passing**：US-018a~l 共 12 任务全 passing，云端 run [43727267960](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43727267960) verify + deploy 全绿，acceptance 488 passed / 88 skipped / 0 failed，Lighthouse 门禁通过）。实现：首页 #contact + /contact / /en/contact 独立路由（首个内容型独立路由，移除 /contact SEO fixme 恢复四项断言）、真实 Email + Copy Email 三级降级、外链配置位与 public 过滤、3D 空间场景（aria-hidden、五重挂载门槛、离屏暂停）、玻璃质感面板与五项合作方向、导航 Contact 与 Footer 邮箱入口。本地修复两处既有测试过时定位与计数（i18n.spec / about.spec），断言强度未降。**未决风险**：真实社交链接待用户提供（links 仍为空）；中英文案为起草稿待确认；content/journey.ts 仍为模板清单；T-003 与其余 roadmap 故事顺延。
-13. 之后按 roadmap：US-010 → US-012 → US-013 → US-014 → US-021 → US-023 → P1 故事；**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
+13. ~~之后按 roadmap：US-010~~（2026-11-16 实施中，见下方 US-010 章节）。之后：US-012 → US-013 → US-014 → US-021 → US-023 → P1 故事；**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
+
+## US-010 迭代（2026-11-16，US-010a~i passing，US-010j 待云端 CI）
+
+**科研方向 Research 落地：DOM 是信息主体，3D 空域只是概念示意视觉层。** 用户三项决策：①详情形态选独立详情路由 `/research/[slug]` 与 `/en/research/[slug]`（静态生成）；②3D 选**动态扇区动画 + 轨迹流动**（用户明确选择，未采纳 agent 推荐的轻量线框）；③文案由 agent 按 PRD 起草标【待用户确认】。形态沿用 US-018 双轨：首页 `#research` section + `/research` 列表路由 + 详情路由。拆为 US-010a~j 共 10 任务（priority 84-93）。
+
+- **内容与校验（a/b）**：`content/types.ts` 的 ResearchArea 扩展 overview/detail?/keywords/link?/ResearchStatus；`lib/research.ts`（validateResearch / validateResearchList 重复 slug 与至少一条 public / findResearchBySlug / researchHref / researchDetailHref）；`content/research.ts` 3 条研究方向（DAC&扇区化 / LLM+MARL / Agentic AI for ATM），覆盖 PRD 六领域关键词与五类核心问题，status 全 In Progress，注释标【待用户确认】；messages Research 18 键 + Nav.research，Contact.eyebrow 顺延 04。构建期注入 `Bad Slug` 与 `javascript:` link 均 exit 1 实测。
+- **路由（c/d/e）**：ResearchSection（服务端，卡片静态 HTML）+ /research、/en/research 列表 + [slug] 详情（generateStaticParams ×3 slug 双语，未知 slug 404）；sitemap 收录列表+6 详情；seo.spec 移除 `/research`、`/en/research` 两条 PENDING 映射恢复断言（/projects、/writing 保留）；about.spec 全局 h2 断言 3→4 并新增 #research 计数（增强未降强度）。修复一处真实缺陷：详情返回链接触摸高度不足 → CSS min-height 44px（断言 ≥20 增强为 ≥44）。
+- **3D（f/g）**：`ResearchAirspaceScene`（gridHelper 网格 + 4 动态扇区闭环线形变 + 2 条 CatmullRom 轨迹 + 3 流动标记 + 悬停命中垫高亮）+ `ResearchCanvas`（五重挂载门槛：≥1024px / 无 reduced-motion / WebGL / 进入视口 / 首页需已离开首屏；standalone 页免 hero 门槛传 requireLeftHero=false）。概念标注 DOM 常驻（中文「概念性示意图，非真实仿真数据」、英文 “Conceptual illustration, not simulation data”）。探针 `window.__researchFrames` / `__researchHoverSector`；useFrame 零布局读写零 setState；ErrorBoundary + no-webgl + chunk abort + 离屏暂停 + DisposeOnUnmount。
+- **导航与回归（h/i）**：nav 注册 research（order 35）；navigation.spec +3（点击到达/英文/激活态）；overflow 扩 10 路由（含 2 详情）200/200；verify:local exit 0（123/123 单测、i18n 70 键、size 451.61kB）；CI=1 Lighthouse exit 0——**中文 TBT 最优 119ms / 英文 111ms（阈值 200）**，较 US-008k 的 14ms 余量扩到 81ms；全套 E2E 分 6 批四项目 0 失败。
+- **未决风险**：中英 Research 文案为起草稿待用户确认；content/journey.ts 模板清单未替换；T-003 仍 not_started；US-010j 待 push 后回写 CI run URL（此前不得标 passing）。
 
 ## 风险与注意事项
 

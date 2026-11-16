@@ -86,7 +86,7 @@
 | --- | --- | --- |
 | profile.ts | 姓名/笔名/英文名、身份、社交链接、个人介绍、联系方式 | name{zh,en}, tagline{zh,en}, links[], email, about{bio[], highlights[], portrait?, cvUrl?}, contact{email, links[{id, kind, label{zh,en}, url, public}], collaborations[{zh,en}]} |
 | journey.ts | 经历时间线 | date, endDate?, title{zh,en}, summary{zh,en}, category, detail?{zh,en}[], link?, public |
-| research.ts | 研究方向 | slug, title{zh,en}, problems[], methods[], status, public |
+| research.ts | 研究方向 | slug, title{zh,en}, overview{zh,en}, problems[]{zh,en}, methods[], detail[]{zh,en}?, keywords[], link?, status, public |
 | publications.ts | 论文 | title（原文）, authors, year, status（三值）, links?, public |
 | projects.ts | 开源项目 | repo, description{zh,en}, stack[], featured, fallback 数据, public |
 | products.ts | 软件产品 | name, logo?, cover?, status（四值）, url?, public |

@@ -18,7 +18,8 @@
     "journey": "时间线",
     "contact": "联系",
     "menu": "菜单",
-    "menuClose": "关闭菜单"
+    "menuClose": "关闭菜单",
+    "research": "研究"
   },
   "About": {
     "eyebrow": "01 / ABOUT ME",
@@ -49,7 +50,7 @@
     }
   },
   "Contact": {
-    "eyebrow": "03 / CONTACT",
+    "eyebrow": "04 / CONTACT",
     "title": "联系我",
     "intro": "如果你希望交流研究、开源、产品或任何值得认真讨论的想法，欢迎写信。",
     "emailLabel": "邮箱",
@@ -63,5 +64,25 @@
     "footerEmailLabel": "给我发邮件",
     "routeTitle": "联系方式 — 苏子豪",
     "routeDescription": "联系苏子豪，交流科研合作、开源协作、软件开发、创业探索与技术讨论。"
+  },
+  "Research": {
+    "eyebrow": "03 / RESEARCH",
+    "title": "科研方向",
+    "intro": "聚焦动态空域配置（DAC）与 LLM + MARL 结合的科研探索，关注动态决策与协同优化。",
+    "listLabel": "研究方向列表",
+    "listIntro": "每个方向均可进入独立详情页查看核心问题、方法与关键词。",
+    "routeTitle": "科研方向 — 苏子豪",
+    "routeDescription": "苏子豪的科研方向：动态空域配置与扇区化、LLM + 多智能体强化学习、面向空管的智能决策。",
+    "overviewLabel": "概述",
+    "problemsLabel": "核心问题",
+    "methodsLabel": "方法与技术",
+    "keywordsLabel": "关键词",
+    "detailLabel": "更多细节",
+    "statusInProgress": "进行中",
+    "statusCompleted": "已完成",
+    "viewDetail": "查看方向详情",
+    "viewAll": "查看全部研究方向",
+    "backToList": "返回研究列表",
+    "conceptNote": "概念性示意图，非真实仿真数据"
   }
 }
