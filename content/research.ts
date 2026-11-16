@@ -15,8 +15,8 @@ export const research: ResearchArea[] = [
       en: 'Dynamic Airspace Configuration & Sectorization',
     },
     overview: {
-      zh: '围绕动态交通需求下的空域结构重构问题，探索动态空域配置（DAC）与动态扇区化方法，目标是在容量、安全与管制员工作负载之间取得平衡。',
-      en: 'Exploring airspace structure reconfiguration under dynamic traffic demand — Dynamic Airspace Configuration (DAC) and dynamic sectorization — aiming to balance capacity, safety, and controller workload.',
+      zh: '面向动态交通需求，探索动态空域配置（DAC）与动态扇区化，在容量、安全与管制员负载间取得平衡。',
+      en: 'Exploring DAC and dynamic sectorization to balance capacity, safety and controller workload under changing traffic demand.',
     },
     problems: [
       {
@@ -66,8 +66,8 @@ export const research: ResearchArea[] = [
       en: 'LLM + Multi-Agent Reinforcement Learning',
     },
     overview: {
-      zh: '探索将大语言模型（LLM）与多智能体强化学习（MARL）结合的科研路径，用于复杂约束下的动态决策与协同优化问题。',
-      en: 'Exploring research paths that combine Large Language Models (LLMs) with Multi-Agent Reinforcement Learning (MARL) for dynamic decision-making and collaborative optimization under complex constraints.',
+      zh: '探索 LLM 与多智能体强化学习（MARL）结合，用于复杂约束下的动态决策与协同优化。',
+      en: 'Combining LLMs with MARL for dynamic decision-making and multi-agent coordination under complex constraints.',
     },
     problems: [
       {
@@ -113,8 +113,8 @@ export const research: ResearchArea[] = [
       en: 'Intelligent Decision Support for ATM (Agentic AI)',
     },
     overview: {
-      zh: '研究人工智能（含 Agentic AI）在空中交通管理中的应用，关注智能体式决策支持与人机协同的可行路径。',
-      en: 'Studying applications of AI — including Agentic AI — in Air Traffic Management, with a focus on agent-style decision support and human-machine collaboration.',
+      zh: '研究人工智能（含 Agentic AI）在空中交通管理中的应用，关注智能决策支持与人机协同。',
+      en: 'Applying AI and Agentic AI to air traffic management, focusing on decision support and human-machine collaboration.',
     },
     problems: [
       {

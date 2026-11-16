@@ -59,7 +59,7 @@ export default async function HomeSections({ lang }: { lang: 'zh' | 'en' }) {
       </section>
       <AboutSection lang={lang} />
       <JourneySection lang={lang} />
-      <ResearchSection lang={lang} />
+      <ResearchSection lang={lang} compact />
       <ContactSection lang={lang} />
     </>
   );

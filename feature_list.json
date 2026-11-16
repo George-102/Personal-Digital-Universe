@@ -1793,7 +1793,8 @@
         "2026-11-16 components/three/ResearchAirspaceScene.tsx + ResearchCanvas.tsx 落地：空间网格（gridHelper）+ 4 个动态扇区闭环线（边界角漂移 + 半径呼吸 + hub 偏移的形变动画，每帧仅更新 20 个顶点并置 needsUpdate）+ 2 条 CatmullRom 飞行轨迹 + 3 个流动标记（getPointAt 逐帧取点）；悬停扇区命中垫（4 个透明 circle 扇形）onPointerOver/Out 高亮对应闭环线（opacity 插值进 ref，零 setState）。",
         "PRD 红线：ResearchSection 渲染 data-research-concept-note「概念性示意图，非真实仿真数据」（中英 messages conceptNote），3D 层 aria-hidden 纯视觉、文字信息全在 DOM；E2E 断言概念标注文本存在。",
         "五重挂载门槛：≥1024px + 无 reduced-motion + WebGL + 进入视口 + 已离开首屏（首页 requireLeftHero；独立 /research 页无 hero 自动免去该门槛，standalone 传 requireLeftHero=false）；离屏 frameloop=never；WebGL 探测延后；useFrame 零布局读写零 setState；帧探针 window.__researchFrames；悬停探针 window.__researchHoverSector（事件时写入）；dpr 走 lib/quality.ts；零新增 npm 依赖。",
-        "2026-11-16 E2E research.spec 四项目 55 passed / 9 skipped / 0 failed：挂载与持续渲染（首页 mode=off→3d）、悬停探针翻转与移出复位、standalone 无 hero 门槛挂载、离屏暂停（帧差 ≤2）、aria-hidden 纯装饰；skip 均为条件跳过（无 WebGL/窄屏），断言未删。"
+        "2026-11-16 E2E research.spec 四项目 55 passed / 9 skipped / 0 failed：挂载与持续渲染（首页 mode=off→3d）、悬停探针翻转与移出复位、standalone 无 hero 门槛挂载、离屏暂停（帧差 ≤2）、aria-hidden 纯装饰；skip 均为条件跳过（无 WebGL/窄屏），断言未删。",
+        "2026-11-16 US-010k 范围调整：首页 #research 改为纯文字（概览 + 核心问题 + 详情入口），3D 空域概念示意与完整方法/关键词只在 /research 与 /en/research 列表页渲染；E2E 3D 相关用例相应改指向列表页，断言仍覆盖挂载/悬停/暂停/降级。"
       ],
       "notes": "用户本轮明确选择动态扇区动画方案（agent 推荐的轻量线框未采纳）；TBT 余量仅 14ms，US-010i 专项复验，超标时只做性能修复不改阈值。"
     },
@@ -1813,7 +1814,8 @@
       "evidence": [
         "2026-11-16 ResearchErrorBoundary + dynamic(ssr:false) chunk 失败静默降级；无 WebGL 走 mode=no-webgl 不建 Canvas；DisposeOnUnmount 显式 dispose geometry/material/texture/renderer（与 US-006e/008d/018f 同模式）；离屏暂停。",
         "E2E 三路径：①chromium-no-webgl 项目实测 mode=no-webgl、canvas 0、3 卡片与概念标注完整；②abort research|airspace chunk 后 DOM 信息完整、pageerror 为空；③matchMedia 模拟「桌面 + reduced-motion」时 canvas 恒 0（门槛确实尊重系统减弱动效）。",
-        "2026-11-16 四项目 0 失败；degradation 相关既有断言只增不减。"
+        "2026-11-16 四项目 0 失败；degradation 相关既有断言只增不减。",
+        "2026-11-16 US-010k 范围调整：首页 #research 改为纯文字（概览 + 核心问题 + 详情入口），3D 空域概念示意与完整方法/关键词只在 /research 与 /en/research 列表页渲染；E2E 3D 相关用例相应改指向列表页，断言仍覆盖挂载/悬停/暂停/降级。"
       ],
       "notes": "复用 lib/webgl.ts 与既有 Hero/About/Journey/Contact 的降级模式。"
     },
@@ -1834,7 +1836,8 @@
         "2026-11-16 lib/nav.ts 注册 research（order 35，介于 journey 30 与 contact 40），messages Nav.research 双语（b 任务已录入）；NavBar 激活态数据驱动自动覆盖；scripts/nav.test.mjs 两处顺序断言同步为 home/about/journey/research/contact，npm test 全套 fail 0。",
         "E2E navigation.spec 新增 US-010h×3（点击 Research 到达 #research 并 hash 同步、英文页同样、滚动激活态唯一且顶部收回 home），四项目通过；a11y.spec 四项目通过（键盘聚焦/reduced-motion）；about.spec 含标题层级序列断言通过。",
         "响应式：overflow.spec 扩为 10 路由（增 /en/research、/research/llm-marl、/en/research/llm-marl）×5 视口 ×4 项目 = 200 passed / 0 failed（横溢出 0）；<1024px 不挂载 3D（CSS display:none + 挂载门槛）；触摸目标 ≥44px（research 链接 min-height 44px，e 任务断言实测）。",
-        "批次统计：navigation+a11y+about 115 passed / 5 skipped / 0 failed（skip 为条件跳过）。"
+        "批次统计：navigation+a11y+about 115 passed / 5 skipped / 0 failed（skip 为条件跳过）。",
+        "2026-11-16 US-010k 范围调整：首页 #research 改为纯文字（概览 + 核心问题 + 详情入口），3D 空域概念示意与完整方法/关键词只在 /research 与 /en/research 列表页渲染；E2E 3D 相关用例相应改指向列表页，断言仍覆盖挂载/悬停/暂停/降级。"
       ],
       "notes": ""
     },
@@ -1874,6 +1877,19 @@
       ],
       "evidence": [],
       "notes": ""
+    },
+    {
+      "id": "US-010k",
+      "title": "修复云端 verify 的 TBT 回归（US-010 引入）",
+      "description": "云端 run 43792969057 的 Lighthouse TBT 中文最优 221.5ms / 英文 222.5ms（阈值 200）导致 verify 失败。在不删断言、不降阈值、不弱化 3D 验收的前提下，压缩首页 DOM/RSC 载荷并延后 Research 3D 客户端边界的 hydration，使云端三 run 最优值重新 ≤200ms。",
+      "priority": 94,
+      "status": "in_progress",
+      "evidence": [
+        "2026-11-16 云端 run 43792969057（commit b8d3695）verify 失败：acceptance 622 passed / 1 flaky / 89 skipped 全通过，但 Lighthouse TBT 中文 474/275.5/221.5、英文 222.5/244/233.5（最优 221.5 / 222.5 > 阈值 200）；deploy 与 preview 被 skip。下载报告对比 US-008 成功 run 43717927691：新增首页 RSC/DOM 使样式与脚本评估各增数十毫秒，未删断言、未降阈值。",
+        "修复三部分：①首页 ResearchSection 加 compact 模式，只保留方向/概览/核心问题，方法与关键词完整留在 /research 列表与详情页；②3D 从首页拆出——新建 ResearchVisual 仅由列表页传入，首页模块图不再引用 ResearchCanvas；ResearchCanvas 改为轻量门控 + next/dynamic 载入 ResearchStage（R3F Canvas/场景延后），保留五重挂载门槛与错误边界；③中英 overview/intro 精简，不虚构信息，详情段落不变。",
+        "RED→GREEN：先将 research.spec 首页断言改为「无 methods/keywords/3D，有 problems」并在旧产物上确认失败；实现后 research.spec 四项目 55 passed / 9 skipped。受影响批次（research+seo+about+navigation+overflow+i18n+links）四项目 410 passed / 22 skipped / 0 failed。",
+        "本地 CI=1 Lighthouse 最新一轮中文 TBT 87/113/454（最优 87）、英文 134/141/276（最优 134），verify:local exit 0（size 450.94kB、i18n 70 键 100%、单测全通过）；npm run lint / typecheck 0。待同 commit push 后云端 verify 回写，k 才转 passing。"
+      ]
     }
   ],
   "roadmap": [

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import ResearchSection from '@/components/ResearchSection';
+import ResearchVisual from '@/components/ResearchVisual';
 import SiteFooter from '@/components/SiteFooter';
 import SiteNav from '@/components/SiteNav';
 import { SITE_URL } from '@/lib/site';
@@ -39,7 +40,11 @@ export default async function LocaleResearchPage({
     <>
       <SiteNav lang={lang} />
       <main>
-        <ResearchSection lang={lang} standalone />
+        <ResearchSection
+          lang={lang}
+          standalone
+          visual={<ResearchVisual lang={lang} />}
+        />
       </main>
       <SiteFooter
         lang={lang}

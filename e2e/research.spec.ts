@@ -101,6 +101,11 @@ test.describe('US-010 科研方向', () => {
 
     await expect(page.locator('#research')).toBeVisible();
     await expect(page.locator('#research [data-research-item]')).toHaveCount(3);
+    // US-010k：首页只保留方向 + 核心问题，方法与关键词完整保留在 /research 列表与详情页。
+    await expect(page.locator('#research [data-research-problems]').first()).toBeVisible();
+    await expect(page.locator('#research [data-research-methods]')).toHaveCount(0);
+    await expect(page.locator('#research [data-research-keywords]')).toHaveCount(0);
+    await expect(page.locator('#research [data-research-3d]')).toHaveCount(0);
     await expect(page.locator('#research [data-research-all]')).toHaveAttribute(
       'href',
       '/research/',
@@ -117,7 +122,7 @@ test.describe('US-010 科研方向', () => {
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('h1')).toHaveText('LLM + 多智能体强化学习');
     await expect(page.locator('[data-research-status="in-progress"]')).toBeVisible();
-    await expect(page.locator('[data-research-overview]')).toContainText('大语言模型');
+    await expect(page.locator('[data-research-overview]')).toContainText('LLM');
     await expect(page.locator('[data-research-problems] li')).not.toHaveCount(0);
     await expect(page.locator('[data-research-methods] li')).not.toHaveCount(0);
     await expect(page.locator('[data-research-keywords] li')).not.toHaveCount(0);
@@ -136,7 +141,9 @@ test.describe('US-010 科研方向', () => {
     await expect(page.locator('h1')).toHaveText(
       'Dynamic Airspace Configuration & Sectorization',
     );
-    await expect(page.locator('[data-research-overview]')).toContainText('airspace');
+    await expect(page.locator('[data-research-overview]')).toContainText(
+      'dynamic sectorization',
+    );
     await expect(page.locator('[data-research-back]')).toHaveAttribute(
       'href',
       '/en/research/',
@@ -179,11 +186,10 @@ test.describe('US-010 科研方向', () => {
 
   // ---------- US-010f：3D 空域概念示意 ----------
 
-  test('3D 空域示意离开首屏进入视口后挂载并渲染，概念标注在 DOM', async ({ page }) => {
-    await page.goto('/');
+  test('列表页 3D 空域示意进入视口后挂载并渲染，概念标注在 DOM', async ({ page }) => {
+    await page.goto('/research');
     await settle(page);
-    // 首页：未离开首屏时不得挂载（US-008k TBT 门槛）
-    await expect(page.locator('[data-research-3d]')).toHaveAttribute('data-research-mode', 'off');
+    // US-010k：首页保持纯文字，3D 只在列表页挂载，避免首页 hydration/TBT 回归。
     await expect(page.locator('[data-research-concept-note]')).toHaveText(
       '概念性示意图，非真实仿真数据',
     );
@@ -207,7 +213,7 @@ test.describe('US-010 科研方向', () => {
   });
 
   test('悬停扇区产生交互反馈（探针翻转）', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/research');
     await settle(page);
     const canMount = (await webglAvailable(page)) && (await isDesktop(page));
     test.skip(!canMount, '悬停交互只在桌面 WebGL 环境验证（降级路径另有覆盖）');
@@ -248,7 +254,7 @@ test.describe('US-010 科研方向', () => {
   });
 
   test('离屏后暂停渲染', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/research');
     await settle(page);
     const canMount = (await webglAvailable(page)) && (await isDesktop(page));
     test.skip(!canMount, '暂停行为只在桌面 WebGL 环境验证');
@@ -257,7 +263,9 @@ test.describe('US-010 科研方向', () => {
     await expect(page.locator('[data-research-3d]')).toHaveAttribute('data-research-mode', '3d', {
       timeout: 15_000,
     });
-    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await page.evaluate(() =>
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }),
+    );
     await page.waitForTimeout(500);
     const pausedStart = await researchFrames(page);
     await page.waitForTimeout(800);
@@ -267,11 +275,10 @@ test.describe('US-010 科研方向', () => {
   // ---------- US-010g：降级与容错 ----------
 
   test('无 WebGL 时不挂载 3D，研究文字与概念标注完整', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/research');
     await settle(page);
     test.skip(await webglAvailable(page), '该用例只在无 WebGL 环境执行');
 
-    await scrollToResearch(page);
     await expect(page.locator('[data-research-3d]')).toHaveAttribute(
       'data-research-mode',
       'no-webgl',
@@ -289,9 +296,8 @@ test.describe('US-010 科研方向', () => {
       if (/research|airspace/i.test(url)) return route.abort();
       return route.continue();
     });
-    await page.goto('/');
+    await page.goto('/research');
     await settle(page);
-    await scrollToResearch(page);
 
     await expect(page.locator('#research [data-research-item]')).toHaveCount(3);
     await expect(page.locator('#research [data-research-overview]').first()).toBeVisible();

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import ResearchSection from '@/components/ResearchSection';
+import ResearchVisual from '@/components/ResearchVisual';
 import SiteFooter from '@/components/SiteFooter';
 import SiteNav from '@/components/SiteNav';
 import { SITE_URL } from '@/lib/site';
@@ -28,7 +29,11 @@ export default async function ResearchPage() {
       <body>
         <SiteNav lang="zh" />
         <main>
-          <ResearchSection lang="zh" standalone />
+          <ResearchSection
+            lang="zh"
+            standalone
+            visual={<ResearchVisual lang="zh" />}
+          />
         </main>
         <SiteFooter
           lang="zh"

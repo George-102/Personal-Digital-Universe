@@ -68,9 +68,9 @@
   "Research": {
     "eyebrow": "03 / RESEARCH",
     "title": "科研方向",
-    "intro": "聚焦动态空域配置（DAC）与 LLM + MARL 结合的科研探索，关注动态决策与协同优化。",
+    "intro": "聚焦动态空域配置（DAC）与 LLM + MARL，关注动态决策与协同优化。",
     "listLabel": "研究方向列表",
-    "listIntro": "每个方向均可进入独立详情页查看核心问题、方法与关键词。",
+    "listIntro": "每个方向均有独立详情页，含核心问题、方法与关键词。",
     "routeTitle": "科研方向 — 苏子豪",
     "routeDescription": "苏子豪的科研方向：动态空域配置与扇区化、LLM + 多智能体强化学习、面向空管的智能决策。",
     "overviewLabel": "概述",

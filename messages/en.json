@@ -68,9 +68,9 @@
   "Research": {
     "eyebrow": "03 / RESEARCH",
     "title": "Research",
-    "intro": "Research exploration on Dynamic Airspace Configuration (DAC) and LLM + MARL, with a focus on dynamic decision-making and collaborative optimization.",
+    "intro": "Research on DAC and LLM + MARL, focused on dynamic decision-making and collaboration.",
     "listLabel": "Research directions list",
-    "listIntro": "Each direction has its own detail page with core problems, methods and keywords.",
+    "listIntro": "Each direction has a detail page with problems, methods and keywords.",
     "routeTitle": "Research — Christopher Chang",
     "routeDescription": "Research directions of Christopher Chang: Dynamic Airspace Configuration & Sectorization, LLM + Multi-Agent Reinforcement Learning, and intelligent decision support for ATM.",
     "overviewLabel": "Overview",

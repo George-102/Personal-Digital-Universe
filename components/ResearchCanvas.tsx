@@ -2,16 +2,13 @@
 
 import dynamic from 'next/dynamic';
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Canvas } from '@react-three/fiber';
 import { isWebGLAvailable } from '@/lib/webgl';
 import { getQualityTier, type QualityTier } from '@/lib/quality';
 
-const ResearchAirspaceScene = dynamic(
-  () => import('@/components/three/ResearchAirspaceScene'),
-  { ssr: false },
-);
+/** US-010k：R3F Canvas 与场景只在全部挂载门槛满足后才进入首屏之后的 chunk。 */
+const ResearchStage = dynamic(() => import('@/components/ResearchStage'), { ssr: false });
 
-/** 场景 chunk 加载/渲染失败静默降级：3D 是概念示意，不影响研究文字（PRD 验收 4） */
+/** chunk 加载/渲染失败静默降级：3D 是概念示意，不影响研究文字（PRD 验收 4） */
 class ResearchErrorBoundary extends Component<
   { children: ReactNode; onError: () => void },
   { failed: boolean }
@@ -43,22 +40,23 @@ type Props = {
   requireLeftHero?: boolean;
 };
 
+type Mode = 'off' | 'pending' | '3d' | 'no-webgl' | 'error';
+
 /**
- * US-010f：Research 的 3D 空域概念示意层。
- * 挂载门槛：桌面 + 无 reduced-motion + WebGL 可用 + 进入视口（+ 首页时已离开首屏）。
+ * US-010k：轻量门控层。 hydration 时不引入 R3F Canvas；只在桌面 + 无 reduced-motion
+ * + WebGL + 进入视口（+ 首页已离开首屏）后动态载入 ResearchStage。
  * 父容器 aria-hidden，全部信息在 DOM；概念性标注由 ResearchSection 提供。
  */
 export default function ResearchCanvas({ requireLeftHero = true }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const frames = useRef(0);
+  const leftHeroRef = useRef(false);
+  const checkedRef = useRef(false);
   const [desktop, setDesktop] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [inView, setInView] = useState(false);
   const [leftHero, setLeftHero] = useState(false);
-  const leftHeroRef = useRef(false);
   const [tier, setTier] = useState<QualityTier | null>(null);
-  const [mounted, setMounted] = useState(false);
-  const [mode, setMode] = useState<'off' | 'pending' | '3d' | 'no-webgl' | 'error'>('off');
+  const [mode, setMode] = useState<Mode>('off');
 
   useEffect(() => {
     const desktopQuery = window.matchMedia('(min-width: 1024px)');
@@ -105,25 +103,18 @@ export default function ResearchCanvas({ requireLeftHero = true }: Props) {
 
   // WebGL 探测延后到真正要挂载时，避免首屏创建一次性上下文
   useEffect(() => {
-    if (!leftHero || !desktop || reducedMotion || !inView || tier) return;
+    if (!leftHero || !desktop || reducedMotion || !inView || checkedRef.current) return;
+    checkedRef.current = true;
     if (!isWebGLAvailable()) {
       setMode('no-webgl');
       return;
     }
     setTier(getQualityTier(window.innerWidth, window.devicePixelRatio || 1));
     setMode('pending');
-  }, [leftHero, desktop, reducedMotion, inView, tier]);
-
-  useEffect(() => {
-    if (tier && leftHero && desktop && !reducedMotion && inView) setMounted(true);
-  }, [tier, leftHero, desktop, reducedMotion, inView]);
-
-  const handleFrame = useCallback(() => {
-    frames.current += 1;
-    window.__researchFrames = frames.current;
-  }, []);
+  }, [leftHero, desktop, reducedMotion, inView]);
 
   const handleCreated = useCallback(() => setMode('3d'), []);
+  const handleError = useCallback(() => setMode('error'), []);
 
   return (
     <div
@@ -133,21 +124,14 @@ export default function ResearchCanvas({ requireLeftHero = true }: Props) {
       data-research-mode={mode}
       aria-hidden="true"
     >
-      {mounted && tier ? (
-        <ResearchErrorBoundary onError={() => setMode('error')}>
-          <Canvas
-            dpr={tier.pixelRatio}
-            frameloop={inView ? (reducedMotion ? 'demand' : 'always') : 'never'}
-            camera={{ position: [0, 2.6, 4.8], fov: 42 }}
-            gl={{ antialias: true, powerPreference: 'low-power', alpha: true }}
+      {tier && leftHero && desktop && !reducedMotion && inView ? (
+        <ResearchErrorBoundary onError={handleError}>
+          <ResearchStage
+            tier={tier}
+            reducedMotion={reducedMotion}
+            active={inView}
             onCreated={handleCreated}
-          >
-            <ResearchAirspaceScene
-              lowQuality={tier.particles < 700}
-              reducedMotion={reducedMotion}
-              onFrame={handleFrame}
-            />
-          </Canvas>
+          />
         </ResearchErrorBoundary>
       ) : null}
     </div>
