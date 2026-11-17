@@ -1888,7 +1888,9 @@
         "2026-11-16 云端 run 43792969057（commit b8d3695）verify 失败：acceptance 622 passed / 1 flaky / 89 skipped 全通过，但 Lighthouse TBT 中文 474/275.5/221.5、英文 222.5/244/233.5（最优 221.5 / 222.5 > 阈值 200）；deploy 与 preview 被 skip。下载报告对比 US-008 成功 run 43717927691：新增首页 RSC/DOM 使样式与脚本评估各增数十毫秒，未删断言、未降阈值。",
         "修复三部分：①首页 ResearchSection 加 compact 模式，只保留方向/概览/核心问题，方法与关键词完整留在 /research 列表与详情页；②3D 从首页拆出——新建 ResearchVisual 仅由列表页传入，首页模块图不再引用 ResearchCanvas；ResearchCanvas 改为轻量门控 + next/dynamic 载入 ResearchStage（R3F Canvas/场景延后），保留五重挂载门槛与错误边界；③中英 overview/intro 精简，不虚构信息，详情段落不变。",
         "RED→GREEN：先将 research.spec 首页断言改为「无 methods/keywords/3D，有 problems」并在旧产物上确认失败；实现后 research.spec 四项目 55 passed / 9 skipped。受影响批次（research+seo+about+navigation+overflow+i18n+links）四项目 410 passed / 22 skipped / 0 failed。",
-        "本地 CI=1 Lighthouse 最新一轮中文 TBT 87/113/454（最优 87）、英文 134/141/276（最优 134），verify:local exit 0（size 450.94kB、i18n 70 键 100%、单测全通过）；npm run lint / typecheck 0。待同 commit push 后云端 verify 回写，k 才转 passing。"
+        "本地 CI=1 Lighthouse 最新一轮中文 TBT 87/113/454（最优 87）、英文 134/141/276（最优 134），verify:local exit 0（size 450.94kB、i18n 70 键 100%、单测全通过）；npm run lint / typecheck 0。待同 commit push 后云端 verify 回写，k 才转 passing。",
+        "2026-11-17 第二轮（run 43869269844 仍失败，中文最优 231ms）：定位到 HeroScene useFrame 每帧 getBoundingClientRect 强制同步布局（违反项目性能红线）+ hero 每帧写 18 个 dataset。修复：①canvas 视口矩形缓存（ResizeObserver + passive scroll 更新），useFrame 只读 ref；②删除无测试消费的 particleY/dragY/ndcY 写入；③桌面粒子 1200→900、dpr 上限 2→1.5、torus 段 96→64、gridHelper 30→20、powerPreference high→low（antialias 保持 true）。",
+        "本地验证：verify:local exit 0（size 451.06kB）；受影响 E2E（research/interaction/hero-entry/hero-scene/scroll-transition/navigation）四项目 203 passed / 57 skipped / 0 failed；CI=1 Lighthouse 全绿——中文 104/111/112、英文 114/123/151（最优 104 / 114，均 ≤200）。"
       ]
     }
   ],

@@ -132,11 +132,11 @@ function Orbits() {
   return (
     <group ref={ref}>
       <mesh rotation={[Math.PI / 2.4, 0, 0]}>
-        <torusGeometry args={[2.2, 0.008, 8, 96]} />
+        <torusGeometry args={[2.2, 0.008, 8, 64]} />
         <meshBasicMaterial color="#7c6cff" transparent opacity={0.4} />
       </mesh>
       <mesh rotation={[Math.PI / 1.9, 0.4, 0]}>
-        <torusGeometry args={[2.9, 0.006, 8, 96]} />
+        <torusGeometry args={[2.9, 0.006, 8, 64]} />
         <meshBasicMaterial color="#22d3ee" transparent opacity={0.25} />
       </mesh>
     </group>
@@ -165,6 +165,8 @@ export default function HeroScene({
   const particleOffset = useRef<Vec2>({ x: 0, y: 0 });
   const cameraBase = useRef<{ z: number } | null>(null);
   const shellRef = useRef(1);
+  // US-010k：缓存 canvas 视口矩形，避免 useFrame 每帧 getBoundingClientRect 触发强制同步布局
+  const rectRef = useRef({ left: 0, top: 0, width: 1, height: 1 });
 
   const motion = useRef({
     parallax: { x: 0, y: 0 } as Vec2,
@@ -176,6 +178,22 @@ export default function HeroScene({
     baseSpin: 0,
     shell: 1,
   });
+
+  useEffect(() => {
+    const canvas = gl.domElement;
+    const update = () => {
+      const r = canvas.getBoundingClientRect();
+      rectRef.current = { left: r.left, top: r.top, width: r.width, height: r.height };
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(canvas);
+    window.addEventListener('scroll', update, { passive: true });
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', update);
+    };
+  }, [gl]);
 
   useFrame((state, delta) => {
     const m = motion.current;
@@ -258,8 +276,9 @@ export default function HeroScene({
       gl.domElement.dataset.ready = '1';
     }
 
-    // 物体屏幕投影：用固定世界坐标，避免与视差形成反馈循环
-    const rect = gl.domElement.getBoundingClientRect();
+    // 物体屏幕投影：用固定世界坐标，避免与视差形成反馈循环；
+    // 矩形用缓存，禁止每帧读布局
+    const rect = rectRef.current;
     const toScreen = (x: number, y: number, z: number): Vec2 => {
       projection.set(x, y, z).project(camera);
       return {
@@ -350,7 +369,7 @@ export default function HeroScene({
       </mesh>
       <Orbits />
       <Particles count={particles} offsetRef={particleOffset} shellRef={shellRef} />
-      <gridHelper args={[30, 30, '#2a2f55', '#161a38']} position={[0, -2.6, 0]} />
+      <gridHelper args={[30, 20, '#2a2f55', '#161a38']} position={[0, -2.6, 0]} />
     </>
   );
 }

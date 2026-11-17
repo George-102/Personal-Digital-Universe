@@ -183,16 +183,12 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
     // 帧计数走 window 探针：写 dataset 每帧都会让样式失效，是首屏 TBT 的纯成本
     window.__heroFrames = frameCountRef.current;
     put('parallaxX', f(report.parallax.x));
-    put('parallaxY', f(report.parallax.y));
     put('particleX', f(report.particleOffset.x));
-    put('particleY', f(report.particleOffset.y));
     put('hoverGlow', f(report.hoverGlow));
     put('hoverScale', f(report.hoverScale));
     put('spinSpeed', f(report.spinSpeed));
     put('dragX', f(report.dragRotation.x));
-    put('dragY', f(report.dragRotation.y));
     put('ndcX', f(report.ndc.x));
-    put('ndcY', f(report.ndc.y));
     put('transition', f(report.transitionProgress));
     put('cameraZ', f(report.cameraZ));
     put('coreOffsetY', f(report.coreOffsetY));
@@ -245,7 +241,7 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
             dpr={tier.pixelRatio}
             frameloop={inView || settling ? 'always' : 'never'}
             camera={{ position: [0, 0.6, 7], fov: 50 }}
-            gl={{ antialias: true, powerPreference: 'high-performance' }}
+            gl={{ antialias: true, powerPreference: 'low-power' }}
             style={{ pointerEvents: 'auto' }}
             onCreated={({ gl }) => {
               const canvas = gl.domElement;

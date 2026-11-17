@@ -10,5 +10,5 @@ export function getQualityTier(width: number, devicePixelRatio: number): Quality
   if (width < 1024) {
     return { particles: 700, pixelRatio: Math.min(devicePixelRatio, 2) };
   }
-  return { particles: 1200, pixelRatio: Math.min(devicePixelRatio, 2) };
+  return { particles: 700, pixelRatio: Math.min(devicePixelRatio, 1.5) };
 }
