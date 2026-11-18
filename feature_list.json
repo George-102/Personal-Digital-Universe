@@ -2096,6 +2096,46 @@
         "2026-11-18 US-012a~j 已全部 passing 并提交 67c53cf；US-012k 被上游 npm audit 阻塞：picomatch GHSA-fc5q-39xc-vjpf / CVE-2026-112366（CVSS 8.7，range <=4.0.7，官方 Patched versions: None，最新即 4.0.7）。CI 的 npm audit --audit-level=high 会同步失败。用户 2026-11-18 决策：放弃 overrides 方案（唯一针对性修复为未合并 PR #238 的第三方 fork，会引入不可控供应链依赖），等官方发布 4.0.8 后升级依赖并重跑。全程未删断言、未降阈值、未加白名单。"
       ],
       "notes": "提交只含预期文件：显式排除 AGENTS.md / docs/PRD.md（并行会话未提交改动）、.workbuddy/、test-out.txt。"
+    },
+    {
+      "id": "T-008a",
+      "priority": 106,
+      "area": "工作流 / 验证",
+      "title": "pre-push 门禁脚本与 init 接线",
+      "user_visible_behavior": "开发者 git push 时自动先跑本地门禁（npm run verify:local 等价链），本地验证失败则 push 被拒绝、错误信息明确提示修复与豁免方式；本地全绿才推送到云端触发 CI/CD。",
+      "status": "passing",
+      "verification": [
+        "scripts/pre-push-gate.sh 入库：执行 npm run verify:local，任一步失败 exit 1 拒绝 push，成功 exit 0 放行；npm 或 node_modules 缺失时给出明确报错并拒绝。hook 激活（githooks/pre-push 一行 shim + git config core.hooksPath）由用户在终端手动执行——宿主安全策略禁止 agent 写入事件触发执行配置。",
+        "init.ps1 与 init.sh 打印 pre-push 门禁激活状态与一次性安装指引（不代替用户激活、不自动改 git config）。",
+        "scripts/pre-push-gate.test.mjs TDD 先行（RED 4/4 失败→GREEN 4/4 通过），覆盖：门禁通过放行、门禁失败拒绝并提示 --no-verify、node_modules 缺失拒绝、npm 缺失拒绝。",
+        "verify / verify:local / verify:quick / .github/workflows/verify.yml / lighthouserc.js / playwright.config.ts 逐字节未改（git diff 为空）。"
+      ],
+      "evidence": [
+        "2026-11-18 TDD：pre-push-gate.test.mjs 首跑 RED 4/4（脚本不存在），实现 scripts/pre-push-gate.sh 后 GREEN 4/4——通过放行（且断言桩 npm 收到 run verify:local）、失败 exit 1 并提示 --no-verify、node_modules 缺失拒绝、npm 缺失拒绝；npm test 全量 146/146、npx eslint 本任务文件 0 问题、tsc --noEmit 干净（Node 26.10.0）。",
+        "init 接线实测：init.ps1 新增「pre-push 门禁状态」片段在 PowerShell 5.1 实跑输出正确；init.sh bash -n 语法通过、状态片段实跑输出正确（当前输出未激活 + 两条安装命令）。两入口只打印状态与指引，不代替用户激活、不写 git config。init 完整跑（npm ci）因并行会话正在改 package.json/package-lock.json 本轮暂缓，冒烟等价检查通过（smoke-config OK、playwright --list 812 tests in 19 files）。",
+        "真实拦截实测：sh scripts/pre-push-gate.sh EXIT=1（失败步为 lint：并行会话 vendor/picomatch WIP 报 12 errors），输出「本地验证未通过，已阻止 push」+ --no-verify 豁免指引——门禁集成拦截生效。",
+        "git diff -- .github/workflows/verify.yml lighthouserc.js playwright.config.ts 为空；package.json 脚本区未改（verify / verify:local / verify:quick 原样）。"
+      ],
+      "notes": "用户三项决策（2026-11-18）：①拦截方式 git pre-push hook；②门禁范围 verify:local 等价（lint/typecheck/build/单测/质量指标，~35s；Playwright+Lighthouse 仍留云端，T-007 分工不变）；③门禁同样卡 audit——picomatch CVE 无修复版期间 push 会被拦，紧急推送用 git push --no-verify 显式豁免。宿主安全策略拒绝 agent 写入 hook 文件（事件触发执行配置），改为用户手动激活：printf '%s\\n' 'exec sh scripts/pre-push-gate.sh' > githooks/pre-push && git config core.hooksPath githooks。2026-11-18 后续：并行会话以 vendor/picomatch 落地修复，audit 高危当日清零（仅剩 6 moderate，--audit-level=high 通过）；门禁真实拦截证据落在 lint 步（vendor WIP 期间）。"
+    },
+    {
+      "id": "T-008b",
+      "priority": 107,
+      "area": "工作流 / 验证",
+      "title": "pre-push 门禁文档同步、实测证据与提交",
+      "user_visible_behavior": "README 与 init 完成提示如实描述「push 前本地门禁 + --no-verify 豁免」，开发者不会被误导；任务状态与证据可追溯。",
+      "status": "passing",
+      "verification": [
+        "README 验收命令表与 CI 说明、init.ps1 / init.sh 完成提示同步 pre-push 门禁与 --no-verify 豁免措辞，无过时表述残留。",
+        "真实实测留证：pre-push 门禁真实拦截 push（T-008a evidence：EXIT=1 + 已阻止 push 提示）；verify:local 各步绿灯与并行会话 WIP 干扰逐条记录。",
+        "claude-progress.md 更新本轮记录；feature_list.json 证据回写；提交只含预期文件（显式排除 AGENTS.md / docs/PRD.md / package.json 并行未提交改动与 .workbuddy/ 等）。"
+      ],
+      "evidence": [
+        "2026-11-18 文档同步：README「验收命令」新增 push 前本地门禁段（激活命令 + --no-verify 豁免 + init 状态提示）；init.ps1 / init.sh 新增门禁状态输出；`npm run verify` 本地全链 E2E 措辞未引入、T-007 分工表述保留。",
+        "2026-11-18 实测记录：npm test 146/146；tsc --noEmit 干净；npm audit --audit-level=high EXIT=0（并行会话 vendor/picomatch 修复后高危清零，仅剩 6 moderate）；门禁真实拦截见 T-008a evidence 第 3 条。lint 当前 12 errors 全部位于并行会话 vendor/picomatch WIP（非本任务文件，npx eslint 本任务文件 0 问题）。",
+        "2026-11-18 提交：scripts/pre-push-gate.sh、scripts/pre-push-gate.test.mjs、init.ps1、init.sh、README.md、feature_list.json、claude-progress.md；显式排除 AGENTS.md / docs/PRD.md / package.json / package-lock.json（并行会话未提交改动）、vendor/、.tmp-*、.workbuddy/。"
+      ],
+      "notes": "本任务不改站点产物行为，云端 CI run URL 不作为通过条件；push 前需用户先激活 hook（或在 lint vendor WIP 期间用 --no-verify）。"
     }
   ],
   "roadmap": [

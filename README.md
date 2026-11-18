@@ -82,6 +82,15 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 
 本地默认零浏览器：无需 `npx playwright install`、不跑 `lhci`（本地跑 Lighthouse 会生成公开报告链接，见 `lighthouserc.js`）。仅按需做浏览器抽查时才安装浏览器：`npx playwright install`。门禁断言与阈值不得为通过验收而改弱（AGENTS.md）。
 
+**push 前本地门禁（T-008）**：`scripts/pre-push-gate.sh` 在 `git push` 前自动执行 `npm run verify:local`，本地失败即拒绝 push，避免推上去等云端 CI 才拿到失败反馈。一次性激活（Git Bash，仓库根目录）：
+
+```bash
+printf '%s\n' 'exec sh scripts/pre-push-gate.sh' > githooks/pre-push
+git config core.hooksPath githooks
+```
+
+紧急推送可用 `git push --no-verify` 显式豁免本门禁，请在提交说明中记录原因。`init.ps1` / `init.sh` 会打印门禁激活状态与安装指引。
+
 CI 中 `.github/workflows/verify.yml` 依次执行：`npm ci` → `lint` / `typecheck` → `build` → `npm test` → `verify:metrics` → Playwright 四项目 → Lighthouse CI；`build` 必须早于 `npm test`（产物级单测读 `out/*.html`）。重验证固定在云端，push main / PR 自动触发，CI run URL 是完成定义的证据；全绿且为 `push main` 时才执行 `deploy`。未实现的用户故事对应断言用 `test.fixme()` 显式标注并绑定 roadmap，不删除、不用 grep 过滤。
 
 ## 降级说明

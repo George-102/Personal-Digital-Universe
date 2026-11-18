@@ -209,3 +209,13 @@
 - **i/j 回归与性能**：lib/nav.ts 注册 projects（order 37）；navigation.spec +3；content-validate/content-public 单测 fixture 补新必填字段（增强断言）。本地 Lighthouse 四轮波动大（中文 99-268、英文 181-441），第四轮 EXIT=0（最优中文 186ms / 英文 181ms、CLS 0），长任务归因既有 chunk 157/255，非 US-012 引入。size 455.43kB ≤1MB、i18n 97 键 100%。
 - **产物级安全**：`out/` grep 无 GITHUB_TOKEN / Bearer / ghp_ / github_pat_；DoD 的 GitHub Token 条目已勾选。
 - **未决风险 / blocker**：①`npm audit --audit-level=high` 因今日（2026-11-18）新披露 picomatch GHSA-fc5q-39xc-vjpf / CVE-2026-112366（CVSS 8.7，ReDoS，range ≤4.0.7，最新版即 4.0.7、官方 Patched versions: None）失败，云端 verify 会同步挂，US-012k 已标 `blocked`。**用户决策（2026-11-18）：放弃 overrides 方案**——唯一针对性修复是未合并 PR #238 的第三方 fork 分支（会引入不可控供应链依赖），等官方发布 4.0.8 后升级依赖并重跑。未删断言、未降阈值、未加白名单。②中英项目文案与清单为起草稿待用户确认；③私有仓库 stars 无法经公开 API 抓取（手写 fallback）。④云端 CI run URL 待回写后 US-012k 与 PRD US-012 才能转 passing。
+
+## T-008 pre-push 本地门禁（2026-11-18，T-008a/b 全部 passing）
+
+**用户需求：本地构建成功后才 push 到云端，避免云端 CI 失败后才拿到反馈浪费时间。** 用户三项决策：①拦截方式 git pre-push hook；②门禁范围 `verify:local` 等价（lint/typecheck/build/单测/质量指标，~35s；Playwright 四项目 + Lighthouse 仍留云端，T-007 分工不变）；③门禁同样卡 audit。
+
+- **实现**：`scripts/pre-push-gate.sh`（门禁逻辑：`npm run verify:local`，失败 exit 1 拒绝 push 并提示 `--no-verify` 豁免；npm / node_modules 缺失明确报错）+ `scripts/pre-push-gate.test.mjs`（TDD RED 4/4 → GREEN 4/4）。`init.ps1` / `init.sh` 新增「pre-push 门禁状态」输出（激活状态 + 一次性安装指引，不代替用户激活）。README「验收命令」新增门禁段。verify 全链 / workflow / lighthouserc / playwright.config 逐字节未改。
+- **安全策略适配**：宿主安全防护拒绝 agent 写入 `githooks/pre-push`（事件触发执行配置需用户亲手落地）。改为「逻辑脚本我写、hook 用户装」：用户在 Git Bash 执行两条命令激活——`printf '%s\n' 'exec sh scripts/pre-push-gate.sh' > githooks/pre-push` 与 `git config core.hooksPath githooks`。
+- **验证**：npm test 146/146（含 4 项门禁单测）；tsc 干净；本任务文件 eslint 0 问题；init 两片段实跑输出正确（PowerShell 5.1 / bash）；**真实拦截实测** `sh scripts/pre-push-gate.sh` EXIT=1（lint 步失败：并行会话 `vendor/picomatch` WIP 报 12 errors）输出「已阻止 push」。init 完整跑（npm ci）因并行会话正改 package.json/package-lock.json 暂缓，冒烟等价检查通过（812 tests listed）。
+- **同日过程事实**：picomatch 高危由并行会话以 `vendor/picomatch` vendoring 落地修复，`npm audit --audit-level=high` 转 EXIT=0（仅剩 6 moderate，历史遗留 @typescript-eslint 链）；US-012k 的 audit blocker 有望随之解除，状态由负责会话回写。
+- **未决 / 风险**：①hook 尚未激活（等用户执行两条安装命令）；②`vendor/` 未入 eslint ignore 时 `verify:local` 的 lint 步会红（并行会话收尾范围）；③AGENTS.md / docs/PRD.md / package.json / package-lock.json 并行未提交改动本轮显式排除，未触碰。

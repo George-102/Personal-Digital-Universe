@@ -31,5 +31,14 @@ echo "== 配置冒烟验证 =="
 node scripts/smoke-config.mjs
 npx playwright test --list
 
+echo "== pre-push 门禁状态 =="
+if [ "$(git config core.hooksPath || true)" = "githooks" ] && [ -f githooks/pre-push ]; then
+  echo "pre-push 门禁已激活：git push 前自动执行 npm run verify:local。"
+else
+  echo "pre-push 门禁未激活。一次性安装（Git Bash，仓库根目录）："
+  echo "  printf '%s\\n' 'exec sh scripts/pre-push-gate.sh' > githooks/pre-push"
+  echo "  git config core.hooksPath githooks"
+fi
+
 echo "== 完成 =="
 echo "本地轻验证请运行 npm run verify:local（不启动浏览器）；浏览器端到端与 Lighthouse 重验证由云端 CI 执行，勿在本地运行 npm run verify。"
