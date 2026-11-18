@@ -1,6 +1,6 @@
 {
   "project": "Personal Digital Universe",
-  "last_updated": "2026-11-16",
+  "last_updated": "2026-11-18",
   "source": "docs/PRD.md 第三章用户故事（US-001~US-023）；状态与证据对照 feature_list.json（2026-11-11）",
   "rules": {
     "single_active_feature": true,
@@ -167,12 +167,14 @@
       "details": "设置 Research 区域，体现专业、理性和未来科技感。重点展示 Dynamic Airspace Configuration（DAC）相关研究与 LLM + MARL 结合的科研探索。主要研究领域包括 Dynamic Airspace Configuration、Dynamic Airspace Sectorization、Large Language Models、Multi-Agent Reinforcement Learning、Agentic AI、AI for Air Traffic Management。介绍动态空域配置面临的问题：动态交通需求、空域结构重构、空域容量与安全性、管制员工作负载均衡、动态决策和协同优化。展示研究使用的算法、仿真平台、数据和关键技术。可以通过 3D 空域模型、空间网格、动态扇区、飞行轨迹等视觉元素展示研究背景，但没有真实数据支撑的 3D 可视化应明确标注为概念性示意图，不得声称代表真实仿真结果。每个研究方向可以进入独立详情页面。",
       "Acceptance Criteria": "- 正常场景：访客能够清晰了解研究方向和核心问题。- 正常场景：访客可以查看研究项目详情。- 正常场景：3D 空域示意图能够正常加载和交互。- 异常场景：3D 可视化加载失败时，文字介绍仍然可见。- 异常场景：研究项目尚未完成时，应正确标记为 In Progress。",
       "DoD": "五条验收逐条通过并留证；3D 可视化明确标注概念示意；/research 路由实质验收（移除对应 fixme）；npm run verify:local 通过 + 云端 verify job 全绿并回写 CI run URL。",
-      "status": "in_progress",
+      "status": "passing",
       "evidence": [
         "2026-11-16：US-010a~i 共 9 个任务 passing（本地证据齐全），US-010j 保持 in_progress——五条验收逐条核对、全套 E2E 分批 0 失败、verify:local 与 CI=1 Lighthouse 均 exit 0，但云端 verify run URL 需 push 后回写；按 AGENTS.md 未把云端重验证提前标记 passing。",
         "五条验收逐条核对（本地）：①研究方向与核心问题清晰可读（首页 #research 与 /research 列表静态 HTML，research.spec 无 JS 用例）；②可查看研究项目详情（/research/[slug] 与 /en/research/[slug] 独立路由，列表→详情→返回链路 + 无 JS 全文可读）；③3D 空域示意图正常加载并交互（mode=3d + 帧计数增长 + 悬停探针翻转，概念标注「概念性示意图，非真实仿真数据」/ “Conceptual illustration, not simulation data” 在 DOM）；④3D 失败文字仍可见（no-webgl / chunk abort / context 三路径）；⑤未完成项目正确标记 In Progress（data-research-status=in-progress，内容 status 全为 In Progress）。",
         "npm run verify:local exit 0（单测 123/123、lint/typecheck/build、i18n 70 键 100%、size 451.61kB ≤1MB、audit 0 high）；CI=1 npm run verify:lighthouse exit 0（最新 run 中文 TBT 119/192/194ms 最优 119、英文 111/125/200ms 最优 111，均 ≤200；LCP 221-260、CLS 0、perf 0.94-0.99）。",
-        "E2E 分批四项目 0 失败：research 55 passed / 9 skipped、seo 48 passed / 8 skipped（恢复 /research 与 /en/research 断言）、navigation+a11y+about 115 passed / 5 skipped（含 US-010h 导航×3）、overflow 200 passed（10 路由×5 视口）、基础批次 59 passed / 13 skipped、重型批次 162 passed / 54 skipped；未新增 fixme、未删断言、未降阈值。"
+        "E2E 分批四项目 0 失败：research 55 passed / 9 skipped、seo 48 passed / 8 skipped（恢复 /research 与 /en/research 断言）、navigation+a11y+about 115 passed / 5 skipped（含 US-010h 导航×3）、overflow 200 passed（10 路由×5 视口）、基础批次 59 passed / 13 skipped、重型批次 162 passed / 54 skipped；未新增 fixme、未删断言、未降阈值。",
+        "2026-11-17 云端 verify 全绿收尾：run [44058821336](https://github.com/George-102/Personal-Digital-Universe/actions/runs/44058821336)（commit 0795bc0）verify + deploy success，acceptance 622 passed / 1 flaky / 89 skipped / 0 failed，Lighthouse TBT 中文最优 144ms / 英文 121ms（≤200）。US-010a~k 全部 passing。DoD 达成：五条验收逐条通过留证、概念示意标注、/research 路由实质验收、verify:local + 云端 verify 全绿并回写 CI run URL。",
+        "范围说明（US-010k）：首页 #research 为纯文字概览（方向+概述+核心问题+详情入口），3D 空域概念示意与方法/关键词在 /research、/en/research 列表页与详情页渲染；AC3 的「3D 空域示意图能正常加载和交互」在列表页验证通过。"
       ],
       "notes": "/research 路由当前为 404 占位（overflow/SEO spec 测试空过）；未来路由 SEO fixme ×5 绑定本故事，实现时移除。"
     },

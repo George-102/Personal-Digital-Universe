@@ -55,7 +55,7 @@
 12. ~~**US-018 联系方式**~~（2026-11-15 **passing**：US-018a~l 共 12 任务全 passing，云端 run [43727267960](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43727267960) verify + deploy 全绿，acceptance 488 passed / 88 skipped / 0 failed，Lighthouse 门禁通过）。实现：首页 #contact + /contact / /en/contact 独立路由（首个内容型独立路由，移除 /contact SEO fixme 恢复四项断言）、真实 Email + Copy Email 三级降级、外链配置位与 public 过滤、3D 空间场景（aria-hidden、五重挂载门槛、离屏暂停）、玻璃质感面板与五项合作方向、导航 Contact 与 Footer 邮箱入口。本地修复两处既有测试过时定位与计数（i18n.spec / about.spec），断言强度未降。**未决风险**：真实社交链接待用户提供（links 仍为空）；中英文案为起草稿待确认；content/journey.ts 仍为模板清单；T-003 与其余 roadmap 故事顺延。
 13. ~~之后按 roadmap：US-010~~（2026-11-16 实施中，见下方 US-010 章节）。之后：US-012 → US-013 → US-014 → US-021 → US-023 → P1 故事；**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
 
-## US-010 迭代（2026-11-16，US-010a~j+?；US-010k 修复云端 TBT 回归，待回写 CI）
+## US-010 迭代（2026-11-16~17，US-010a~k 全部 passing，云端 verify 已回写）
 
 **科研方向 Research 落地：DOM 是信息主体，3D 空域只是概念示意视觉层。** 用户三项决策：①详情形态选独立详情路由 `/research/[slug]` 与 `/en/research/[slug]`（静态生成）；②3D 选**动态扇区动画 + 轨迹流动**（用户明确选择，未采纳 agent 推荐的轻量线框）；③文案由 agent 按 PRD 起草标【待用户确认】。形态沿用 US-018 双轨：首页 `#research` section + `/research` 列表路由 + 详情路由。拆为 US-010a~j 共 10 任务（priority 84-93）。
 
@@ -63,15 +63,15 @@
 - **路由（c/d/e）**：ResearchSection（服务端，卡片静态 HTML）+ /research、/en/research 列表 + [slug] 详情（generateStaticParams ×3 slug 双语，未知 slug 404）；sitemap 收录列表+6 详情；seo.spec 移除 `/research`、`/en/research` 两条 PENDING 映射恢复断言（/projects、/writing 保留）；about.spec 全局 h2 断言 3→4 并新增 #research 计数（增强未降强度）。修复一处真实缺陷：详情返回链接触摸高度不足 → CSS min-height 44px（断言 ≥20 增强为 ≥44）。
 - **3D（f/g）**：`ResearchAirspaceScene`（gridHelper 网格 + 4 动态扇区闭环线形变 + 2 条 CatmullRom 轨迹 + 3 流动标记 + 悬停命中垫高亮）+ `ResearchCanvas`（五重挂载门槛：≥1024px / 无 reduced-motion / WebGL / 进入视口 / 首页需已离开首屏；standalone 页免 hero 门槛传 requireLeftHero=false）。概念标注 DOM 常驻（中文「概念性示意图，非真实仿真数据」、英文 “Conceptual illustration, not simulation data”）。探针 `window.__researchFrames` / `__researchHoverSector`；useFrame 零布局读写零 setState；ErrorBoundary + no-webgl + chunk abort + 离屏暂停 + DisposeOnUnmount。
 - **导航与回归（h/i）**：nav 注册 research（order 35）；navigation.spec +3（点击到达/英文/激活态）；overflow 扩 10 路由（含 2 详情）200/200；verify:local exit 0（123/123 单测、i18n 70 键、size 451.61kB）；CI=1 Lighthouse exit 0——**中文 TBT 最优 119ms / 英文 111ms（阈值 200）**，较 US-008k 的 14ms 余量扩到 81ms；全套 E2E 分 6 批四项目 0 失败。
-- **未决风险**：中英 Research 文案为起草稿待用户确认；content/journey.ts 模板清单未替换；T-003 仍 not_started；US-010j 待 push 后回写 CI run URL（此前不得标 passing）。
+- **未决风险**：中英 Research 文案为起草稿待用户确认；content/journey.ts 模板清单未替换；T-003 仍 not_started。
 
 ### 2026-11-16 云端 verify 失败与 US-010k 修复
 
 - **失败**：push 后 run [`43792969057`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43792969057)（commit `b8d3695`）acceptance 622 passed / 1 flaky / 89 skipped 全绿，但 `Run Lighthouse CI` 挂门禁：中文 TBT `474 / 275.5 / 221.5`、英文 `222.5 / 244 / 233.5`（最优 221.5 / 222.5 > 200），deploy/preview skip。对比此前通过的 US-008 run `43717927691`，长任务从 ~236ms 涨到 ~280ms，并多出 ~60ms 第二长任务；未删断言、未降阈值。
 - **修复（US-010k）**：①首页 `#research` 转纯文字概览（方向 + 概述 + 核心问题 + 详情入口），方法与关键词完整保留在 `/research` 列表与详情页；②新建 `ResearchVisual.tsx`，3D 只由列表页通过 `visual` prop 注入，首页模块图彻底不引用 ResearchCanvas；③`ResearchCanvas` 改轻量门控 + `next/dynamic` 载入 `ResearchStage`（R3F Canvas/场景延后），保留五重门槛、错误边界与全部探针；④精简中英 overview/intro（详情段落不变）。3D 仍满足 AC3/4，只是位置从首页移到列表页。
 - **验证**：RED 先行（旧产物上首页「无 methods/keywords/3D」断言失败）→ GREEN；research.spec 四项目 55 passed / 9 skipped；受影响批次 410 passed / 22 skipped / 0 failed；verify:local exit 0（size 450.94kB、单测全通过、i18n 70 键 100%）；本地 CI=1 Lighthouse 中文最优 87ms / 英文 134ms。待同 commit push 后回写云端 verify，k 与 j 才可转 passing。
-- **当前阻塞**：修复已本地提交 `3d8f436`，但 `git push origin main` 被本机安全策略拒绝（读取 `~/.ssh/id_ed25519` 私钥的请求遭自动审批否决），未触发云端 verify。需用户手动 push 或放行 SSH key 读取后回写新 run URL；在云端全绿前不得把 US-010k / US-010j / PRD US-010 标 passing。
-- **2026-11-17 第二轮**：用户 push 后 run `43869269844` 仍失败（中文 TBT 最优 231ms）。继续定位到 HeroScene `useFrame` 每帧 `getBoundingClientRect` 强制同步布局（违反性能红线）+ hero 每帧写 18 个 dataset。修复：矩形缓存（ResizeObserver + passive scroll）、删除无消费 dataset 写入、桌面粒子 1200→900 / dpr 上限 2→1.5 / torus 64 段 / grid 20 / powerPreference=low。verify:local exit 0；受影响 E2E 203 passed / 57 skipped / 0 failed；本地 Lighthouse 全绿（中文 104/111/112、英文 114/123/151）。待用户 push 后回写云端 run。
+- **2026-11-17 第二轮**：用户 push 后 run `43869269844` 仍失败（中文 TBT 最优 231ms）。继续定位到 HeroScene `useFrame` 每帧 `getBoundingClientRect` 强制同步布局（违反性能红线）+ hero 每帧写 18 个 dataset。修复：矩形缓存（ResizeObserver + passive scroll）、删除无消费 dataset 写入、桌面粒子 1200→900 / dpr 上限 2→1.5 / torus 64 段 / grid 20 / powerPreference=low。
+- **2026-11-18 收尾（US-010k/j + PRD US-010 → passing）**：用户 push 后 run [`44058821336`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/44058821336)（commit `0795bc0`）**verify + deploy 全绿**。acceptance 622 passed / 1 flaky / 89 skipped / 0 failed；Lighthouse TBT 中文 144/180/332（最优 144）、英文 121/156/186（最优 121），LCP 207-286ms、CLS 0、perf 86-98。TBT 余量 56ms（中文）/ 79ms（英文）。断言与阈值全程未改。之后按 roadmap：US-012 → US-013 → US-014 → US-021 → US-023 → P1 故事；T-003 仍排 P0 内容故事之后。
 
 ## 风险与注意事项
 
