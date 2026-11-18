@@ -2085,14 +2085,16 @@
       "area": "项目",
       "title": "US-012 整体验收、文档回写与云端 CI",
       "user_visible_behavior": "US-012 六条 AC 全部通过并留证；DoD 四项完成；云端 verify 全绿。",
-      "status": "not_started",
+      "status": "blocked",
       "verification": [
         "PRD 六条 AC 逐条留证：AC1 浏览精选开源项目、AC2 3D hover 效果合理、AC3 点击 GitHub 按钮打开对应仓库、AC4 GitHub API 可用时展示公开仓库数据（cache 字段出现在页面）、AC5 API 失败时使用本地数据（fallback 路径实测）、AC6 快速划过无动画冲突。",
         "T-002c public 过滤在列表渲染页产物级复验（grep out/ 无隐藏条目文案）。",
         "PRD DoD 四项：github-cache.json 构建期抓取落地（Token 只进 Actions secrets、不进 bundle）；/projects fixme 移除；npm run verify:local 通过；push 后云端 verify job 全绿并回写 CI run URL 到 evidence 与 PRD_UserStory.json（CI run URL 未回写前不得标 passing）。",
         "文档同步：docs/Development.md / docs/Tech.md / README.md / docs/DoD.md 相关项勾选与描述更新；PRD_UserStory.json US-012 转 passing。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-18 US-012a~j 已全部 passing 并提交 67c53cf；US-012k 被上游 npm audit 阻塞：picomatch GHSA-fc5q-39xc-vjpf / CVE-2026-112366（CVSS 8.7，range <=4.0.7，官方 Patched versions: None，最新即 4.0.7）。CI 的 npm audit --audit-level=high 会同步失败。用户 2026-11-18 决策：放弃 overrides 方案（唯一针对性修复为未合并 PR #238 的第三方 fork，会引入不可控供应链依赖），等官方发布 4.0.8 后升级依赖并重跑。全程未删断言、未降阈值、未加白名单。"
+      ],
       "notes": "提交只含预期文件：显式排除 AGENTS.md / docs/PRD.md（并行会话未提交改动）、.workbuddy/、test-out.txt。"
     }
   ],
