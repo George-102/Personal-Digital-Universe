@@ -228,3 +228,14 @@
 - **验证**：npm test 146/146（含 4 项门禁单测）；tsc 干净；本任务文件 eslint 0 问题；init 两片段实跑输出正确（PowerShell 5.1 / bash）；**真实拦截实测** `sh scripts/pre-push-gate.sh` EXIT=1（lint 步失败：并行会话 `vendor/picomatch` WIP 报 12 errors）输出「已阻止 push」。init 完整跑（npm ci）因并行会话正改 package.json/package-lock.json 暂缓，冒烟等价检查通过（812 tests listed）。
 - **同日过程事实**：picomatch 高危由并行会话以 `vendor/picomatch` vendoring 落地修复，`npm audit --audit-level=high` 转 EXIT=0（仅剩 6 moderate，历史遗留 @typescript-eslint 链）；US-012k 的 audit blocker 有望随之解除，状态由负责会话回写。
 - **未决 / 风险**：①hook 尚未激活（等用户执行两条安装命令）；②`vendor/` 未入 eslint ignore 时 `verify:local` 的 lint 步会红（并行会话收尾范围）；③AGENTS.md / docs/PRD.md / package.json / package-lock.json 并行未提交改动本轮显式排除，未触碰。
+
+## 云端 Lighthouse TBT 回归修复（2026-11-18 第二轮，US-012k 途中）
+
+run 44267866845：audit 门禁已过（picomatch 修复生效）、E2E 718 passed / 94 skipped / 0 failed，仅 **Lighthouse TBT 挂**（中文最优 222 > 200，三次 424/298/222 全超）。归因：与上一轮绿灯（US-010k，run 44058821336）对比，双语 TBT 系统性 +76~78ms（en 121→197、zh 144→222，styleLayout/scriptEvaluation 同步涨）——真实回归，源头为首页新增 #projects 成本（卡片 DOM + 全局 CSS + client chunk 增重），重模块（25KB client 组件合集 chunk，1.5s bootup）本身是既有成本非新增。
+
+修复（对齐 US-010k「首页只留概览」先例，零降阈值）：
+1. **首页 compact 卡再瘦身**：li > h3 + p 仅 name+简介（cover 占位/状态/精选/star/分类 chip 全部移除，探针 data-* 属性保留），全量卡信息在 /projects 列表页；
+2. **CSS 路由级拆分**：全量卡/详情面板/3D 视觉层样式移到 `components/projects-page.css`（仅 /projects 与 /en/projects 加载），全局表只留首页所需基础卡样式；
+3. ProjectsInteractions 改 `next/dynamic` 导入（webpack 分组未拆出独立 chunk，保留以待后续）。
+
+验证：E2E 断言同步（★ 1 证据移至列表页全量卡、首页改精简形态断言）；projects.spec chromium 22 用例 20 passed/1 skipped/首页用例修复后全过；本地 Lighthouse EXIT=0，最优 zh 85ms / en 122ms（修复前本地最优 225/264），CLS 0。云端结果待回写。

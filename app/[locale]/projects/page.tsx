@@ -5,6 +5,8 @@ import ProjectsVisual from '@/components/ProjectsVisual';
 import SiteFooter from '@/components/SiteFooter';
 import SiteNav from '@/components/SiteNav';
 import { SITE_URL } from '@/lib/site';
+// 全量卡与 3D 视觉层样式按路由加载（不进首页全局表，TBT 红线）
+import '@/components/projects-page.css';
 
 /** US-012e：英文 Projects 列表路由（[locale]/layout.tsx 已预生成 en）。 */
 export async function generateMetadata({

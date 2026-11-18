@@ -46,7 +46,11 @@ test.describe('US-012 GitHub 开源项目', () => {
     await expect(page.locator('#projects [data-project-description]').first()).toContainText(
       '开源学习路线',
     );
-    await expect(page.locator('#projects [data-project-stars]').first()).toContainText('★ 1');
+    // 精简卡形态：cover 占位/状态/精选/star 元素不在首页渲染（TBT 瘦身），全量卡在 /projects
+    // （data-project-* 探针属性保留在卡上；这里断言的是可见元素）
+    await expect(page.locator('#projects [data-project-stars]')).toHaveCount(0);
+    await expect(page.locator('#projects span[data-project-status]')).toHaveCount(0);
+    await expect(page.locator('#projects [data-project-image]')).toHaveCount(0);
     await expect(page.locator('#projects [data-projects-all]')).toHaveAttribute(
       'href',
       '/projects/',
@@ -103,6 +107,8 @@ test.describe('US-012 GitHub 开源项目', () => {
     await expect(page.locator('[data-projects-group]')).toHaveCount(5);
     await expect(page.locator('[data-project-item]')).toHaveCount(9);
     await expect(page.locator('[data-project-status="active"]').first()).toBeVisible();
+    // AC4：github-cache 合并的 star 数据在列表页全量卡可见（aics 缓存 stars=1）
+    await expect(page.locator('[data-project-stars]').first()).toContainText('★ 1');
   });
 
   test('/en/projects 显示英文分类与独立 canonical', async ({ page }) => {

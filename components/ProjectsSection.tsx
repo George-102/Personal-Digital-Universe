@@ -1,9 +1,12 @@
 import type { ReactNode } from 'react';
+import dynamic from 'next/dynamic';
 import { getTranslations } from 'next-intl/server';
-import ProjectsInteractions from '@/components/ProjectsInteractions';
 import { projects } from '@/content/index';
 import { PROJECT_CATEGORIES, projectHref } from '@/lib/projects';
 import type { ProjectCategory, ProjectStatus } from '@/content/types';
+
+// 交互层仅 /projects 列表页使用：动态导入让它单独成 chunk，不进首页加载图（TBT 红线）
+const ProjectsInteractions = dynamic(() => import('@/components/ProjectsInteractions'));
 
 type Props = {
   lang: 'zh' | 'en';
@@ -45,6 +48,30 @@ export default async function ProjectsSection({
   })).filter((group) => group.items.length > 0);
 
   const renderCard = (item: (typeof projects)[number]) => {
+    // 首页 compact 卡：仅 name + 简介两行（US-012j TBT 回归教训——cover 占位/状态/精选/star/
+    // 分类 chip 与渐变 paint 都进首屏 styleLayout，全量信息留在 /projects 列表页）。
+    if (compact) {
+      return (
+        <li
+          key={item.slug}
+          className="project-card"
+          data-project-item
+          data-project-slug={item.slug}
+          data-project-category={item.category}
+          data-project-status={item.status}
+          data-project-private={item.repoPrivate ? 'true' : 'false'}
+          data-project-featured={item.featured ? 'true' : 'false'}
+        >
+          <h3 className="project-name" data-project-name>
+            {item.name}
+          </h3>
+          <p className="project-description" data-project-description>
+            {item.description[lang]}
+          </p>
+        </li>
+      );
+    }
+
     const cover = item.image ?? `https://opengraph.githubassets.com/1/${item.repo}`;
     return (
       <li
