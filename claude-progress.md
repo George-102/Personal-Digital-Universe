@@ -54,7 +54,7 @@
 11. 之后按 roadmap：US-010 → US-012 → US-013 → US-014 → US-021 → US-023 → P1 故事（US-002 / US-003 / US-004 / US-006 / US-008 已完成；US-018 已由用户指定提前，见第 12 条）。**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
 12. ~~**US-018 联系方式**~~（2026-11-15 **passing**：US-018a~l 共 12 任务全 passing，云端 run [43727267960](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43727267960) verify + deploy 全绿，acceptance 488 passed / 88 skipped / 0 failed，Lighthouse 门禁通过）。实现：首页 #contact + /contact / /en/contact 独立路由（首个内容型独立路由，移除 /contact SEO fixme 恢复四项断言）、真实 Email + Copy Email 三级降级、外链配置位与 public 过滤、3D 空间场景（aria-hidden、五重挂载门槛、离屏暂停）、玻璃质感面板与五项合作方向、导航 Contact 与 Footer 邮箱入口。本地修复两处既有测试过时定位与计数（i18n.spec / about.spec），断言强度未降。**未决风险**：真实社交链接待用户提供（links 仍为空）；中英文案为起草稿待确认；content/journey.ts 仍为模板清单；T-003 与其余 roadmap 故事顺延。
 13. ~~之后按 roadmap：US-010~~（2026-11-16 实施中，见下方 US-010 章节）。
-14. **US-012 GitHub 开源项目**（2026-11-18：US-012a~j 共 10 任务 passing，US-012k 待云端 CI；见文末「US-012 迭代」章节）。**待用户决策 blocker**：`npm audit --audit-level=high` 因上游新披露 picomatch GHSA-fc5q-39xc-vjpf（range ≤4.0.7，最新版即 4.0.7、无修复版）失败，云端 verify 会同步挂；未删断言、未降阈值。之后：US-013 → US-014 → US-021 → US-023 → P1 故事；T-003（Vitest 迁移）仍为技术债。
+14. **US-012 GitHub 开源项目**（2026-11-18：US-012a~j 共 10 任务 passing；**audit blocker 当日已解除**（vendor/picomatch 补丁包，见文末章节），US-012k 等本次 push 的云端 verify 全绿回写 CI run URL 后转 passing；见文末「US-012 迭代」章节）。之后：US-013 → US-014 → US-021 → US-023 → P1 故事；T-003（Vitest 迁移）仍为技术债。
 
 ## US-010 迭代（2026-11-16~17，US-010a~k 全部 passing，云端 verify 已回写）
 
@@ -208,7 +208,16 @@
 - **g/h 3D 视觉层**：`ProjectsCardsScene`（9 张 3D 卡 + 边缘高亮 + 指针光照反馈）、`ProjectsStage`（Canvas 独立 chunk、离屏 never）、`ProjectsCanvas`（五重门槛 + ErrorBoundary）、`ProjectsVisual`（aria-hidden 概念标注）。只由列表页引入，首页不加载 3D。DOM hover/focus 写 `window.__projectsActive` / `__projectsPointer` / `__projectsHover` 探针；useFrame 只读、零布局读写、零 dataset、零 setState。修复真实缺陷：hover 探针原在 useFrame 写、离屏暂停后无法复位，改为事件驱动。E2E 四项目 79 passed / 9 skipped / 0 failed。
 - **i/j 回归与性能**：lib/nav.ts 注册 projects（order 37）；navigation.spec +3；content-validate/content-public 单测 fixture 补新必填字段（增强断言）。本地 Lighthouse 四轮波动大（中文 99-268、英文 181-441），第四轮 EXIT=0（最优中文 186ms / 英文 181ms、CLS 0），长任务归因既有 chunk 157/255，非 US-012 引入。size 455.43kB ≤1MB、i18n 97 键 100%。
 - **产物级安全**：`out/` grep 无 GITHUB_TOKEN / Bearer / ghp_ / github_pat_；DoD 的 GitHub Token 条目已勾选。
-- **未决风险 / blocker**：①`npm audit --audit-level=high` 因今日（2026-11-18）新披露 picomatch GHSA-fc5q-39xc-vjpf / CVE-2026-112366（CVSS 8.7，ReDoS，range ≤4.0.7，最新版即 4.0.7、官方 Patched versions: None）失败，云端 verify 会同步挂，US-012k 已标 `blocked`。**用户决策（2026-11-18）：放弃 overrides 方案**——唯一针对性修复是未合并 PR #238 的第三方 fork 分支（会引入不可控供应链依赖），等官方发布 4.0.8 后升级依赖并重跑。未删断言、未降阈值、未加白名单。②中英项目文案与清单为起草稿待用户确认；③私有仓库 stars 无法经公开 API 抓取（手写 fallback）。④云端 CI run URL 待回写后 US-012k 与 PRD US-012 才能转 passing。
+- **未决风险 / blocker**：①~~npm audit 因 picomatch CVE-2026-112366 失败~~ **（2026-11-18 当日已解除，见下节）**。②中英项目文案与清单为起草稿待用户确认；③私有仓库 stars 无法经公开 API 抓取（手写 fallback）。④云端 CI run URL 待回写后 US-012k 与 PRD US-012 才能转 passing。
+
+## picomatch CVE-2026-112366 修复（2026-11-18，audit blocker 解除）
+
+用户 git push 后云端 run 44259323219 在 `verify:metrics` 的 audit 步挂（picomatch high）。先前「等官方 4.0.8」不可行（CI 持续红），遂落地 **vendor 安全补丁包**方案（真正修复漏洞，非降门禁）：
+
+- **方案**：`vendor/picomatch/` = npm 官方 picomatch@4.0.7 tarball + PR #238 修复（`lib/parse.js` 加 `hasUnsafeLeadingQuantifier`，risky extglob 字面量兜底；与 diff 逐行一致）。`package.json` 版本声明 **4.0.8**（advisory 匹配 `<=4.0.7`，需 >4.0.7 逃逸；且 prerelease 不满足 fdir 的 `peerOptional ^3||^4` 会触发 npm 11 Arborist `Link.matches` 崩溃，故不能用 4.0.8-security.x 形式）。`devDependencies.picomatch: file:./vendor/picomatch` + 嵌套 overrides（micromatch / fdir / tinyglobby / @parcel/watcher 四链）；**全局 `overrides.picomatch` file: 形式会触发上述 npm 崩溃，必须用嵌套形式**。移除条件（vendor/picomatch/SECURITY-PATCH.md）：官方 ≥4.0.8 发布或 PR #238 合并发布后删 vendor 与 overrides。
+- **验证**：ReDoS PoC `+(*a)` 对 60 位输入 0-3ms（修复前指数级）、`makeRe('+(*a)').source` 字面量兜底与 PR 测试预期一致、基础 glob 语义 9/9；`npm run audit` EXIT=0（picomatch 全链 12 high 消失，仅剩 6 moderate @typescript-eslint 链）；`verify:local` 全链绿（lint/typecheck/build/test 142+/audit/i18n 97 键/size 455.39kB）。lockfile diff 仅 picomatch 条目（10+/23-）。
+- **坑记录**：①npm install 对 overrides 的全树重解析会把 basic-ftp/compression/postcss 从安全版（6.2.6/1.8.2/8.5.32）降级回漏洞版（5.3.1/1.8.1/8.4.31），必须保留/复核 `overrides` 里的 `^6.2.6 / ^1.8.2 / ^8.5.32` 钉版（2026-11-11 已有），装完必跑 audit 并查 lockfile diff；②vendor 包的 package.json 必须删掉 scripts/devDependencies（否则 npm 会把其 devDeps（mocha 等）装进树，污染 lockfile 并引入未 override 的 picomatch@2.3.2）；③eslint.config.mjs ignores 需加 `vendor/**`（CommonJS 源码不参与项目 lint）；④npmmirror 无 audit 端点，audit 须走 `--registry=https://registry.npmjs.org`（脚本已固定）。
+- **未决**：云端 verify 待本次 push 后回写 CI run URL（US-012k 转 passing 的最后一步）。
 
 ## T-008 pre-push 本地门禁（2026-11-18，T-008a/b 全部 passing）
 

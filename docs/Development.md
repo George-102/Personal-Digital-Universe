@@ -154,7 +154,7 @@
 | 质量指标门禁 | npm audit / check-i18n.mjs / size-limit | 0 高危漏洞；zh/en 键覆盖率 100%；JS 总量 ≤1MB gzip | 本地 `verify:local` + 云端 CI | ✅ T-006 已建（size 实测待 T-001） |
 | 人工验收 | docs/DoD.md 末尾清单 | 视觉质量、内容真实性、笔名一致性、版权 | 人工（每次发布前） | 每次发布前逐项打勾 |
 
-注：audit 脚本指定官方 registry（npmmirror 无 audit 端点）；basic-ftp / compression / postcss 经 package.json overrides 固定至修复版（^6.2.6 / ^1.8.2 / ^8.5.32），均为工具链间接依赖，不进前端 bundle。postcss override 于 2026-11-11 加入（three 依赖链引入 high 漏洞 GHSA-qx2v-qp2m-jg93 等）。@typescript-eslint 的 6 个 moderate 暂无修复版，仅 dev 依赖，门禁卡 high 不受影响。
+注：audit 脚本指定官方 registry（npmmirror 无 audit 端点）；basic-ftp / compression / postcss 经 package.json overrides 固定至修复版（^6.2.6 / ^1.8.2 / ^8.5.32），均为工具链间接依赖，不进前端 bundle。postcss override 于 2026-11-11 加入（three 依赖链引入 high 漏洞 GHSA-qx2v-qp2m-jg93 等）。@typescript-eslint 的 6 个 moderate 暂无修复版，仅 dev 依赖，门禁卡 high 不受影响。picomatch 经 overrides + `vendor/picomatch/`（4.0.7 + CVE-2026-112366 补丁，版本声明 4.0.8，详见该目录 SECURITY-PATCH.md）整体替换——官方 advisory ≤4.0.7 全受影响且无修复版（2026-11-18），官方 ≥4.0.8 发布后移除 vendor 与对应 overrides。注意：新增/修改 overrides 后 `npm install` 会全树重解析，可能把 basic-ftp 等钉版包降级回漏洞版，装完务必复跑 `npm run audit` 并检查 lockfile diff 只含预期条目。
 
 **TDD 原则（AGENTS.md）：每个功能先写失败测试，再实现。** 单元测试随 T-003 基础设施落地后成为默认流程；E2E 验收标准已先行存在，功能实现以通过对应 spec 为准。
 
