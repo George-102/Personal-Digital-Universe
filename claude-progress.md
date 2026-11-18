@@ -53,7 +53,8 @@
     - 开工下一轮前先确认：`git status` 应只有 `AGENTS.md` / `docs/PRD.md`（他人未提交）；`test-out.txt` 已加入 `.gitignore`。
 11. 之后按 roadmap：US-010 → US-012 → US-013 → US-014 → US-021 → US-023 → P1 故事（US-002 / US-003 / US-004 / US-006 / US-008 已完成；US-018 已由用户指定提前，见第 12 条）。**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
 12. ~~**US-018 联系方式**~~（2026-11-15 **passing**：US-018a~l 共 12 任务全 passing，云端 run [43727267960](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43727267960) verify + deploy 全绿，acceptance 488 passed / 88 skipped / 0 failed，Lighthouse 门禁通过）。实现：首页 #contact + /contact / /en/contact 独立路由（首个内容型独立路由，移除 /contact SEO fixme 恢复四项断言）、真实 Email + Copy Email 三级降级、外链配置位与 public 过滤、3D 空间场景（aria-hidden、五重挂载门槛、离屏暂停）、玻璃质感面板与五项合作方向、导航 Contact 与 Footer 邮箱入口。本地修复两处既有测试过时定位与计数（i18n.spec / about.spec），断言强度未降。**未决风险**：真实社交链接待用户提供（links 仍为空）；中英文案为起草稿待确认；content/journey.ts 仍为模板清单；T-003 与其余 roadmap 故事顺延。
-13. ~~之后按 roadmap：US-010~~（2026-11-16 实施中，见下方 US-010 章节）。之后：US-012 → US-013 → US-014 → US-021 → US-023 → P1 故事；**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
+13. ~~之后按 roadmap：US-010~~（2026-11-16 实施中，见下方 US-010 章节）。
+14. **US-012 GitHub 开源项目**（2026-11-18 已完成规划拆分，未写实现代码：US-012a~k 共 11 任务 priority 95-105，见文末「US-012 规划」章节与 feature_list.json；**下一步执行 US-012a 项目内容模型扩展与构建期校验**）。之后：US-013 → US-014 → US-021 → US-023 → P1 故事；**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
 
 ## US-010 迭代（2026-11-16~17，US-010a~k 全部 passing，云端 verify 已回写）
 
@@ -187,3 +188,13 @@
 - **最终本地验证**：`tsc` / `lint` / `build` 均 0；`journey.spec` 四项目 47 passed / 13 skipped；全套四项目 **376 passed / 92 skipped / 0 failed**；`verify:local` exit 0（i18n 36 键、size 438.57kB、audit 0 high）；`CI=1 lhci` **exit 0**，中文最优 TBT 128ms、英文 134ms，LCP 222-255ms、CLS 0、perf 96-98。
 - **已收尾**：修复提交 `2d4a449` push 后，云端 run [`43717927691`](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43717927691) verify + deploy 全绿（acceptance 376 passed / 92 skipped / 0 failed），Lighthouse 中文三次 746（冷启动离群）/ 225 / 186ms、英文 162 / 146 / 156ms，最优聚合 186 / 146ms 均 ≤200；LCP 207-231ms、CLS 0、perf 92-97、a11y/seo 100、bp 96。稳定 run 的长任务数由 2-3 降为 1。US-008k 与 PRD US-008 已转 passing。
 - **遗留风险**：中文页最优 TBT 186ms 仅剩 14ms 余量；时间线仍是模板清单（7 条「示例 ·」），中英文案为起草稿。真实经历替换后需重跑 `npm run build` 并复查 Lighthouse。
+
+## US-012 规划（2026-11-18，仅规划与拆分，未写实现代码）
+
+**US-012（访客探索 GitHub 开源项目）拆为 US-012a~k 共 11 任务（priority 95-105），roadmap 中 US-012 已移除。** 用户三项决策：①详情形态选**内联展开面板**（非独立详情路由，GitHub 仓库页承担深度阅读）；②卡片 3D 悬浮/悬停效果选 **R3F WebGL 场景**（用户明确选择，未采纳 agent 推荐的 CSS 3D 轻量方案），DOM 卡片仍是信息主体与交互入口；③`content/projects.ts` 精选清单**含私有科研项目**（LLM-MARL 系列，`repoPrivate` 标记、不渲染 GitHub 按钮）。
+
+- **任务链**：a 内容模型扩展+构建期校验（Project 增 slug/category 五分类/status/detail?/repoPrivate? + lib/projects.ts）→ b 精选清单与双语文案（公开代表性仓库 + 私有科研卡，标【待用户确认】）→ c github-cache.json 构建期抓取（Token 只进 secrets、失败用上次缓存/手写 fallback、构建不中断）→ d 首页 #projects 精选概览（服务端静态 HTML）→ e /projects 列表路由+SEO 实质验收（移除 seo.spec fixme 映射）→ f 内联展开面板详情交互（GitHub 按钮外链、私有标注）→ g R3F 3D 悬浮卡片效果（倾斜/抬升/边缘高亮/光照跟随，矩形缓存 + useFrame 零布局红线，五重挂载门槛）→ h 动画冲突专项（AC2/AC6）→ i 导航注册+全站回归（nav order 37）→ j 性能门禁（TBT 红线，中文余量 56ms）→ k 整体验收+云端 CI 回写（六条 AC + DoD 四项 + CI run URL 未回写不得标 passing）。
+- **PRD DoD 四项硬要求**已逐条落进任务：github-cache.json 抓取（c/k）、T-002c public 过滤产物复验（d 初验 + k 复验）、/projects fixme 移除（e）、verify:local + 云端全绿回写（j/k）。
+- **关键既有事实**：`content/types.ts` 已有 Project 基础类型（缺分类/状态/详情/slug）；`content/projects.ts` 为空清单；Tech.md「GitHub 数据的策略」已定稿；seo.spec `PENDING_ROUTE_STORY['/projects']` 为 US-012 待移除映射（PRD 注记 ×5 为旧状态，当前实际 1 条）；overflow.spec 已含 /projects（当前空过，e 任务转实质验收）；GitHub 账号 George-102 公开仓库 12 个，私有含 LLM-MARL 系列科研代码与 Red-Smart-Screening 等。
+- **本轮文件改动**：`feature_list.json`（拆分 11 任务 + scope_note + roadmap 移除 US-012，smoke-config 校验 OK）、`claude-progress.md`（本段与下一步第 14 条）。未提交：工作区仍只有 `AGENTS.md` / `docs/PRD.md` 并行未提交改动，提交时显式排除。
+- **未决风险**：3D 挂载位置（首页 or 仅 /projects 列表页）待实现时按 TBT 实测与用户对齐（US-010k 先例可收敛到列表页）；仓库清单与文案为起草稿待用户确认；私有仓库 stars 无法经公开 API 抓取（手写 fallback）。
