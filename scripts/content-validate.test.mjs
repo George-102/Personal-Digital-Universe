@@ -3,10 +3,14 @@ import assert from 'node:assert/strict';
 import { validateEntry, filterPublic } from '../content/validate.ts';
 
 const validProject = {
+  // US-012a：Project 新增 slug / category / status 必填字段
+  slug: 'example-project',
   repo: 'example/repo',
   name: 'Example',
   description: { zh: '示例项目', en: 'Example project' },
   stack: ['TypeScript'],
+  category: 'web',
+  status: 'active',
   featured: false,
   public: true,
 };

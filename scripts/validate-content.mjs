@@ -14,6 +14,7 @@ import { navItems, validateNavItems } from '../lib/nav.ts';
 import { validateJourneyEntries } from '../lib/journey.ts';
 import { validateContact } from '../lib/contact.ts';
 import { validateResearchList } from '../lib/research.ts';
+import { validateProjectList } from '../lib/projects.ts';
 
 const journeyErrors = validateJourneyEntries(journey);
 if (journeyErrors.length > 0) {
@@ -51,6 +52,13 @@ if (contactErrors.length > 0) {
 const researchErrors = validateResearchList(research);
 if (researchErrors.length > 0) {
   console.error(`research 配置校验失败：\n${researchErrors.join('\n')}`);
+  process.exit(1);
+}
+
+// US-012a：开源项目整表校验（slug/repo 唯一、至少一条 public、featured 必须 public）
+const projectErrors = validateProjectList(projects);
+if (projectErrors.length > 0) {
+  console.error(`projects 配置校验失败：\n${projectErrors.join('\n')}`);
   process.exit(1);
 }
 

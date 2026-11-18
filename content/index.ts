@@ -9,6 +9,7 @@ import { products as rawProducts } from './products.ts';
 import { writing as rawWriting } from './writing.ts';
 import { reading as rawReading } from './reading.ts';
 import { interests as rawInterests } from './interests.ts';
+import { githubCache, mergeGithubCache } from '../lib/github-cache.ts';
 
 export function publicOnly<T extends { public: boolean }>(_category: string, items: T[]): T[] {
   return filterPublic(items);
@@ -23,7 +24,8 @@ export const contact = rawProfile.contact ?? null;
 export const journey = sortJourney(filterPublic(rawJourney));
 export const research = filterPublic(rawResearch);
 export const publications = filterPublic(rawPublications);
-export const projects = filterPublic(rawProjects);
+/** US-012c：公开项目走统一出口；动态字段（stars/language/archived）由构建期 github-cache.json 覆盖 */
+export const projects = mergeGithubCache(filterPublic(rawProjects), githubCache);
 export const products = filterPublic(rawProducts);
 export const writing = filterPublic(rawWriting);
 export const reading = filterPublic(rawReading);

@@ -14,11 +14,11 @@ import {
 const messagesDir = path.join(process.cwd(), 'messages');
 const loadMessages = (locale) => JSON.parse(readFileSync(path.join(messagesDir, `${locale}.json`), 'utf8'));
 
-test('默认注册表通过校验且只收录真实存在的模块（Home + About + Journey + Research + Contact）', () => {
+test('默认注册表通过校验且只收录真实存在的模块（Home + About + Journey + Research + Projects + Contact）', () => {
   assert.deepEqual(validateNavItems(navItems), []);
   assert.deepEqual(
     navItems.map((item) => item.id),
-    ['home', 'about', 'journey', 'research', 'contact'],
+    ['home', 'about', 'journey', 'research', 'projects', 'contact'],
   );
   for (const item of navItems) {
     assert.match(item.href, /^#[A-Za-z][A-Za-z0-9_-]*$/);
@@ -30,7 +30,7 @@ test('按 order 升序排序且不修改原数组', () => {
   const shuffled = [...navItems].reverse();
   assert.deepEqual(
     sortNavItems(shuffled).map((item) => item.id),
-    ['home', 'about', 'journey', 'research', 'contact'],
+    ['home', 'about', 'journey', 'research', 'projects', 'contact'],
   );
   assert.deepEqual(navItems, original);
 });

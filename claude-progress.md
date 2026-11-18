@@ -54,7 +54,7 @@
 11. 之后按 roadmap：US-010 → US-012 → US-013 → US-014 → US-021 → US-023 → P1 故事（US-002 / US-003 / US-004 / US-006 / US-008 已完成；US-018 已由用户指定提前，见第 12 条）。**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
 12. ~~**US-018 联系方式**~~（2026-11-15 **passing**：US-018a~l 共 12 任务全 passing，云端 run [43727267960](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43727267960) verify + deploy 全绿，acceptance 488 passed / 88 skipped / 0 failed，Lighthouse 门禁通过）。实现：首页 #contact + /contact / /en/contact 独立路由（首个内容型独立路由，移除 /contact SEO fixme 恢复四项断言）、真实 Email + Copy Email 三级降级、外链配置位与 public 过滤、3D 空间场景（aria-hidden、五重挂载门槛、离屏暂停）、玻璃质感面板与五项合作方向、导航 Contact 与 Footer 邮箱入口。本地修复两处既有测试过时定位与计数（i18n.spec / about.spec），断言强度未降。**未决风险**：真实社交链接待用户提供（links 仍为空）；中英文案为起草稿待确认；content/journey.ts 仍为模板清单；T-003 与其余 roadmap 故事顺延。
 13. ~~之后按 roadmap：US-010~~（2026-11-16 实施中，见下方 US-010 章节）。
-14. **US-012 GitHub 开源项目**（2026-11-18 已完成规划拆分，未写实现代码：US-012a~k 共 11 任务 priority 95-105，见文末「US-012 规划」章节与 feature_list.json；**下一步执行 US-012a 项目内容模型扩展与构建期校验**）。之后：US-013 → US-014 → US-021 → US-023 → P1 故事；**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
+14. **US-012 GitHub 开源项目**（2026-11-18：US-012a~j 共 10 任务 passing，US-012k 待云端 CI；见文末「US-012 迭代」章节）。**待用户决策 blocker**：`npm audit --audit-level=high` 因上游新披露 picomatch GHSA-fc5q-39xc-vjpf（range ≤4.0.7，最新版即 4.0.7、无修复版）失败，云端 verify 会同步挂；未删断言、未降阈值。之后：US-013 → US-014 → US-021 → US-023 → P1 故事；T-003（Vitest 迁移）仍为技术债。
 
 ## US-010 迭代（2026-11-16~17，US-010a~k 全部 passing，云端 verify 已回写）
 
@@ -198,3 +198,14 @@
 - **关键既有事实**：`content/types.ts` 已有 Project 基础类型（缺分类/状态/详情/slug）；`content/projects.ts` 为空清单；Tech.md「GitHub 数据的策略」已定稿；seo.spec `PENDING_ROUTE_STORY['/projects']` 为 US-012 待移除映射（PRD 注记 ×5 为旧状态，当前实际 1 条）；overflow.spec 已含 /projects（当前空过，e 任务转实质验收）；GitHub 账号 George-102 公开仓库 12 个，私有含 LLM-MARL 系列科研代码与 Red-Smart-Screening 等。
 - **本轮文件改动**：`feature_list.json`（拆分 11 任务 + scope_note + roadmap 移除 US-012，smoke-config 校验 OK）、`claude-progress.md`（本段与下一步第 14 条）。未提交：工作区仍只有 `AGENTS.md` / `docs/PRD.md` 并行未提交改动，提交时显式排除。
 - **未决风险**：3D 挂载位置（首页 or 仅 /projects 列表页）待实现时按 TBT 实测与用户对齐（US-010k 先例可收敛到列表页）；仓库清单与文案为起草稿待用户确认；私有仓库 stars 无法经公开 API 抓取（手写 fallback）。
+
+## US-012 迭代（2026-11-18，US-012a~j passing，US-012k 待云端 CI）
+
+**GitHub 开源项目落地：DOM 是信息主体，R3F 卡片只是列表页视觉层。** 用户三项决策：①详情为内联展开面板（非详情路由）；②卡片 3D 用 R3F WebGL 场景（用户二选真 3D）；③清单含私有科研项目（LLM-MARL 系列，`repoPrivate` 标记不渲染 GitHub 按钮）。
+
+- **a/b/c 数据与抓取**：`content/types.ts` 的 Project 扩展 slug/category 五分类/status 四态/detail?/repoPrivate?；`lib/projects.ts`（validateProject/validateProjectList、repo 全名 `owner/name`、slug/repo 唯一、featured 必 public、静态字段与动态缓存合并）；`content/projects.ts` 9 条真实仓库（AICS Learning Guide / 本站 / Harness / What_To_Do / toyOS / 博客 / 游戏开发 / LLM-MARL-DAC / LLM-MARL-ATM），全部标【待用户确认】；`scripts/fetch-github.mjs` + `lib/github-fetch.mjs` 构建期抓公开仓库 star/language/archived，Token 只进 CI 环境变量与请求头，白名单字段落 `content/github-cache.json`，失败沿用旧缓存/手写 fallback；`content/index.ts` 用 `mergeGithubCache` 统一出口。verify.yml 在 build 前加 Fetch GitHub repository cache 步骤（GITHUB_TOKEN 用 secrets）。
+- **d/e/f 路由与交互**：`ProjectsSection`（服务端静态 HTML）；首页 compact 只 2 张精选卡（US-010k TBT 红线，不发外链 OG 封面请求），`/projects` 与 `/en/projects` 列表页五分类全量 9 条 + 真实 OG 封面；独立 SEO 元信息与 sitemap 双语收录；seo.spec 移除 `/projects` fixme 映射恢复断言；原生 `<details>` 内联详情 + `ProjectsInteractions` 单一事件委托（互斥展开、Esc 回焦、GitHub 外链 rel/target、私有标注）。
+- **g/h 3D 视觉层**：`ProjectsCardsScene`（9 张 3D 卡 + 边缘高亮 + 指针光照反馈）、`ProjectsStage`（Canvas 独立 chunk、离屏 never）、`ProjectsCanvas`（五重门槛 + ErrorBoundary）、`ProjectsVisual`（aria-hidden 概念标注）。只由列表页引入，首页不加载 3D。DOM hover/focus 写 `window.__projectsActive` / `__projectsPointer` / `__projectsHover` 探针；useFrame 只读、零布局读写、零 dataset、零 setState。修复真实缺陷：hover 探针原在 useFrame 写、离屏暂停后无法复位，改为事件驱动。E2E 四项目 79 passed / 9 skipped / 0 failed。
+- **i/j 回归与性能**：lib/nav.ts 注册 projects（order 37）；navigation.spec +3；content-validate/content-public 单测 fixture 补新必填字段（增强断言）。本地 Lighthouse 四轮波动大（中文 99-268、英文 181-441），第四轮 EXIT=0（最优中文 186ms / 英文 181ms、CLS 0），长任务归因既有 chunk 157/255，非 US-012 引入。size 455.43kB ≤1MB、i18n 97 键 100%。
+- **产物级安全**：`out/` grep 无 GITHUB_TOKEN / Bearer / ghp_ / github_pat_；DoD 的 GitHub Token 条目已勾选。
+- **未决风险 / blocker**：①`npm audit --audit-level=high` 因今日（2026-11-18）新披露 picomatch GHSA-fc5q-39xc-vjpf（ReDoS，range ≤4.0.7，最新版即 4.0.7、上游无修复版，仅能降级 eslint-config-next@14 破坏性修复）失败，云端 verify 会同步挂。未删断言、未降阈值、未加白名单，等用户决策。②中英项目文案与清单为起草稿待用户确认；③私有仓库 stars 无法经公开 API 抓取（手写 fallback）。④云端 CI run URL 待回写后 US-012k 与 PRD US-012 才能转 passing。

@@ -1,0 +1,47 @@
+{
+  "fetchedAt": "2026-11-18T04:30:31.302Z",
+  "repos": {
+    "George-102/AICS_Learning_Guide": {
+      "stars": 1,
+      "language": "HTML",
+      "archived": false,
+      "updatedAt": "2026-11-07T11:01:07Z"
+    },
+    "George-102/Personal-Digital-Universe": {
+      "stars": 0,
+      "language": "TypeScript",
+      "archived": false,
+      "updatedAt": "2026-11-12T13:25:06Z"
+    },
+    "George-102/My-Harness-File": {
+      "stars": 0,
+      "language": "PowerShell",
+      "archived": false,
+      "updatedAt": "2026-11-11T12:56:20Z"
+    },
+    "George-102/What_To_Do": {
+      "stars": 0,
+      "language": "Dart",
+      "archived": false,
+      "updatedAt": "2026-10-13T04:55:54Z"
+    },
+    "George-102/toyOS": {
+      "stars": 0,
+      "language": "C",
+      "archived": false,
+      "updatedAt": "2026-06-09T02:44:44Z"
+    },
+    "George-102/George-102.github.io": {
+      "stars": 0,
+      "language": "HTML",
+      "archived": false,
+      "updatedAt": "2026-05-12T06:13:41Z"
+    },
+    "George-102/Learning-Game-Development": {
+      "stars": 0,
+      "language": "GDScript",
+      "archived": false,
+      "updatedAt": "2026-06-03T11:53:09Z"
+    }
+  }
+}

@@ -6,6 +6,7 @@ import ScrollDriver from '@/components/ScrollDriver';
 import AboutSection from '@/components/AboutSection';
 import JourneySection from '@/components/JourneySection';
 import ResearchSection from '@/components/ResearchSection';
+import ProjectsSection from '@/components/ProjectsSection';
 import ContactSection from '@/components/ContactSection';
 
 export default async function HomeSections({ lang }: { lang: 'zh' | 'en' }) {
@@ -60,6 +61,7 @@ export default async function HomeSections({ lang }: { lang: 'zh' | 'en' }) {
       <AboutSection lang={lang} />
       <JourneySection lang={lang} />
       <ResearchSection lang={lang} compact />
+      <ProjectsSection lang={lang} compact />
       <ContactSection lang={lang} />
     </>
   );

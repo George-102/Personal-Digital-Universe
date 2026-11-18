@@ -50,8 +50,12 @@ const RULES: Record<ContentCategory, Rule> = {
     enums: { status: ['Published', 'Preprint', 'In Progress'] },
   },
   projects: {
-    required: ['repo', 'name', 'description', 'stack', 'featured', 'public'],
+    required: ['slug', 'repo', 'name', 'description', 'stack', 'category', 'status', 'featured', 'public'],
     localeText: ['description'],
+    enums: {
+      category: ['ai-ml', 'web', 'dev-tools', 'research', 'other'],
+      status: ['active', 'maintained', 'archived', 'completed'],
+    },
   },
   products: {
     required: ['name', 'description', 'status', 'public'],

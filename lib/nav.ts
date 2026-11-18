@@ -20,6 +20,7 @@ export const navItems: readonly NavItem[] = [
   { id: 'about', labelKey: 'Nav.about', href: '#about', order: 20 },
   { id: 'journey', labelKey: 'Nav.journey', href: '#journey', order: 30 },
   { id: 'research', labelKey: 'Nav.research', href: '#research', order: 35 },
+  { id: 'projects', labelKey: 'Nav.projects', href: '#projects', order: 37 },
   { id: 'contact', labelKey: 'Nav.contact', href: '#contact', order: 40 },
 ];
 

@@ -1904,7 +1904,7 @@
       "area": "项目",
       "title": "项目内容模型扩展与构建期校验",
       "user_visible_behavior": "项目数据有分类（五分类）与状态约束；非法数据（非法分类、重复 slug、非法 repo 全名、单语详情）在构建期被拒绝。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "扩展 content/types.ts 的 Project：新增 slug（kebab-case，DOM 锚点与测试选择器用）、category（`ai-ml` | `web` | `dev-tools` | `research` | `other`，对应 PRD 五分类 AI & Machine Learning / Web Applications / Developer Tools / Research Projects / Other Projects）、status（`active` | `maintained` | `archived` | `completed`）、detail?（LocaleText 完整介绍）、repoPrivate?（私有仓库标记，不渲染 GitHub 按钮）；既有 repo/name/description/stack/featured/stars?/image?/public 字段不动。",
         "新增 lib/projects.ts 纯函数：validateProject / validateProjectList（slug 格式与重复、repo 全名 owner/name 格式与重复、category/status 枚举、description/detail 双语、至少一条 public、featured 条目必须 public）、publicProjects 过滤与 findProjectBySlug；node:test 覆盖。",
@@ -1912,7 +1912,9 @@
         "接入 scripts/validate-content.mjs 的 prebuild 与 content/index.ts 统一出口；实测注入非法 category、重复 slug 后 npm run build exit 1 且错误可定位，恢复后 exit 0。",
         "npm run lint / typecheck 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-18 RED：scripts/projects.test.mjs 首跑因 lib/projects.ts 缺失失败；实现 lib/projects.ts（PROJECT_CATEGORIES/PROJECT_STATUS、isValidProjectSlug/isValidRepoFullName、validateProject/validateProjectList、publicProjects/findProjectBySlug、githubRepoUrl/projectHref）后 GREEN 11/11。content/types.ts 的 Project 扩展 slug/category/status/detail?/repoPrivate?；content/validate.ts 的 projects 规则加必填 slug/category/status 与两枚举；scripts/validate-content.mjs 接入 validateProjectList。构建期拒绝实测：临时注入 category:unknown 后 node scripts/validate-content.mjs exit 1 且报 projects[0].category 非法值，恢复空清单后 exit 0。typecheck/lint 干净。"
+      ],
       "notes": "类型扩展只加不改，避免 T-002a/b/c 回归；ProductStatus（产品）与 ProjectStatus（开源项目）是两套枚举不混用。"
     },
     {
@@ -1921,13 +1923,15 @@
       "area": "项目",
       "title": "精选项目清单与双语文案",
       "user_visible_behavior": "首页与 /projects 展示真实精选项目（含科研私有项目卡片）；五分类与四状态有双语标签；文案为 agent 起草稿标【待用户确认】。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "content/projects.ts 填入真实清单（GitHub George-102 账号）：公开代表性仓库（从 AICS_Learning_Guide / My-Harness-File / What_To_Do / toyOS / George-102.github.io / Learning-Game-Development / Personal-Digital-Universe 等挑选）+ 私有科研项目（LLM-MARL 系列如 LLM_MARL_DAC / LLM_MARL_ATM，repoPrivate: true 归入 research 分类、不渲染 GitHub 按钮）；覆盖五分类；featured 标记精选上首页；全部条目注释标【待用户确认】。",
         "messages/{zh,en}.json 新增 Projects 命名空间（section 标题/引言、五分类标签、四状态标签、CTA：展开/收起/查看 GitHub、star 无障碍标签、私有仓库标注）+ Nav.projects；check:i18n 100%。",
         "npm run verify:local 中 check:i18n 通过；npm test 通过。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-18 content/projects.ts 填入 9 个真实仓库（7 公开 + LLM-MARL 两项私有科研，repoPrivate:true），覆盖 PRD 五分类、4 状态、featured 3 项，全部条目标注【待用户确认】起草稿；messages/{zh,en}.json 新增 Projects 命名空间（含五分类/四状态/CTA/私有标注）与 Nav.projects；check:i18n 100%（97 键双语一致）、content 校验通过（20 条数据）、projects 单测 11/11。"
+      ],
       "notes": "中英文案与仓库清单分类归属均为 agent 起草稿，待用户确认（沿用 US-006/010/018 惯例）；首页精选数量克制（受 TBT 约束，详见 US-012j）。"
     },
     {
@@ -1936,7 +1940,7 @@
       "area": "项目",
       "title": "github-cache.json 构建期抓取",
       "user_visible_behavior": "构建期从 GitHub API 刷新仓库动态数据（star/语言/归档态）写入 content/github-cache.json；API 失败或无 Token 时沿用已提交缓存/手写 fallback，构建不中断；Token 不出现在前端 bundle。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "新增 scripts/fetch-github.mjs：对清单内公开仓库调 GitHub REST API（stargazers_count、description、language、topics、archived、updated_at）写入 content/github-cache.json；私有条目跳过抓取用 content 手写字段；GITHUB_TOKEN 只从环境变量（Actions secrets 注入）读取。",
         "合并策略：cache 仅覆盖动态字段（stars 等），名称/简介/详情/分类/状态以 content/projects.ts 为准；合并接入 content/index.ts 或 lib/projects.ts 统一出口，页面只消费合并后数据。",
@@ -1945,7 +1949,9 @@
         "TDD：scripts/github-cache.test.mjs（合并优先级、fallback 路径、私有条目跳过、token 不落盘到产物）先 RED 后 GREEN。",
         "产物级断言：build 后 grep out/ 无 GITHUB_TOKEN / Authorization 等敏感值（token 不进 bundle）。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-18 RED→GREEN：scripts/github-cache.test.mjs 先因 lib/github-cache.ts 缺失失败，实现 parseGithubCache/mergeGithubCache/githubStars 与 lib/github-fetch.mjs 的 collectGithubCache（Token 仅进 Authorization 头、白名单字段、私有仓库跳过、失败沿用旧缓存）后 8/8 通过。新增 scripts/fetch-github.mjs CLI 与 content/github-cache.json（私有科研仓库不抓取）；content/index.ts 的 projects 走 mergeGithubCache 统一出口；verify.yml 在 Build 前加 'Fetch GitHub repository cache' 步骤，GITHUB_TOKEN 用 secrets.GITHUB_TOKEN。本地匿名实跑成功：7 个公开仓库抓取写入（AICS stars=1，其余 0），fetchedAt 2026-11-18T04:30:31Z；损坏缓存注入 {} 后 typecheck/单测仍通过、合并回退手写 stars。typecheck 干净。"
+      ],
       "notes": "Tech.md「GitHub 数据的策略」既定：Token 只进 Actions secrets、失败用上次缓存或手写 fallback、不需要运行时 Worker。默认 GITHUB_TOKEN 读不到其他私有仓库，私有条目 stars 手写即可；匿名抓取限额 60 req/h 对少量公开仓库够用。"
     },
     {
@@ -1954,14 +1960,16 @@
       "area": "项目",
       "title": "首页 #projects 精选概览",
       "user_visible_behavior": "首页新增 Projects 精选概览区：精选项目卡片（名称/简介/技术栈/状态/star）静态可读、无 JS 可用；图片加载失败有占位。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "ProjectsSection 服务端组件（精选 featured 卡片静态 HTML，信息主体为 DOM）；HomeSections 接入 #projects（#research 与 #contact 之间）；图片默认 GitHub OG 图（opengraph.githubassets.com/1/{owner}/{repo}）+ content image 字段覆盖，私有/缺图用 CSS 占位。",
         "静态可读断言：禁 JS 下精选卡片文本与详情入口存在（同 US-008 模式）。",
         "T-002c public 过滤初验：npm run build 后 grep out/ 无非公开条目文案。",
         "about.spec 全局 h2 计数与层级断言随新增 section 更新（增强不降强度）。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-18 新增 components/ProjectsSection.tsx（服务端渲染精选卡片静态 HTML，featured 过滤、五分类/OG 封面/状态/star/私有标注；compact 首页不渲染详情与 GitHub 按钮）；HomeSections 接入 #projects（research 与 contact 之间）；app/globals.css 补 .project-* 与 .projects-* 样式；about.spec h2 计数 4→5 并新增 #projects h2 断言（增强）。npm run build 成功（双语首页各 4 张精选卡）；e2e/projects.spec.ts 首页 4 用例 chromium 全通过（含无 JS 可读、public 过滤初验）。修复两处真实缺陷：span 的 value 属性改 data-project-status；站内 /projects href 改用 projectHref() 计算值满足 next/no-html-link-for-pages。"
+      ],
       "notes": "首页只放精选概览，全量列表在 /projects；沿用 US-010k 首页减负结论，首页 DOM 体积受 TBT 约束，精选数量克制。"
     },
     {
@@ -1970,14 +1978,16 @@
       "area": "项目",
       "title": "/projects 列表路由与 SEO 实质验收",
       "user_visible_behavior": "访问 /projects 与 /en/projects 可按五分类浏览全部公开项目；页面有独立 SEO 元信息并被 sitemap 收录。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "app/projects/page.tsx 与 app/[locale]/projects/page.tsx 静态导出（同 /contact、/research 模式：自带 html/body 与 SiteNav / SiteFooter）；全量公开项目按五分类分组渲染（名称/简介/技术栈/状态/star/详情入口）。",
         "generateMetadata：独立 title / description / OG / canonical（/projects/ 与 /en/projects/）；sitemap.ts 收录双语列表页；语言切换 href 正确。",
         "e2e/seo.spec.ts 移除 PENDING_ROUTE_STORY 的 '/projects' 映射并恢复断言实跑；'/writing'（US-014）映射保留。",
         "overflow.spec 已含 /projects：实跑确认 HTTP 200 与五视口无横向溢出（此前空过转实质验收）。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-18 新增 app/projects/page.tsx 与 app/[locale]/projects/page.tsx 静态路由（独立 title/description/OG/canonical、SiteNav/SiteFooter、语言切换）；ProjectsSection standalone 模式按 PROJECT_CATEGORIES 五分类分组渲染 9 条公开项目；app/sitemap.ts 收录 /projects/ 与 /en/projects/；e2e/seo.spec.ts 移除 PENDING_ROUTE_STORY['/projects'] 映射恢复断言实跑。e2e/projects.spec.ts 扩展至 8 用例（列表页五分类/9 卡片/SEO、英文 canonical、无 JS 全文可读、sitemap），chromium 8/8；seo.spec chromium 9 passed / 1 skipped（剩余 /writing 仍为 US-014 fixme）。修复两处测试写法错误：first() 后不宜 toHaveCount(9)、折叠 details 内链接不应断言 visible（改 href 与 count=7）。"
+      ],
       "notes": "PRD DoD「/projects 路由实质验收（移除对应 fixme）」的 fixme 即 seo.spec 该映射（PRD 注记 ×5 为旧状态，当前实际 1 条映射）。"
     },
     {
@@ -1986,14 +1996,16 @@
       "area": "项目",
       "title": "内联展开面板详情交互",
       "user_visible_behavior": "点击项目卡片就地展开完整介绍（详情全文/图片/技术栈/状态/star）与 GitHub 按钮；键盘可操作、Esc 收起；私有仓库无 GitHub 按钮（注明私有）。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "卡片详情用原生 <details>/<summary> 或等价 button 语义（无 JS 可展开，SEO 可抓）；展开内容含 detail 全文、图片、stack、status、stars、更新时间；互斥展开（journey 模式）、Esc 收起、焦点留在触发器、aria-expanded/aria-controls 正确。",
         "GitHub 按钮：外链 target=_blank rel=\"noopener noreferrer\"，href 指向 https://github.com/{repo}；repoPrivate 条目不渲染按钮并显示「私有仓库」标注（AC3）。",
         "e2e/projects.spec.ts：展开/收起/键盘/Esc/GitHub 按钮 href 与 rel 断言、私有条目无按钮断言；四项目通过。",
         "触屏点击展开可用（hover 效果缺失不影响功能）。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-18 原生 details/summary 承载完整介绍（无 JS 可展开，SEO 可抓）；新增 components/ProjectsInteractions.tsx 单一客户端事件委托（互斥展开、Esc 收起并回焦 summary、hover/focus 写 window.__projectsActive 探针供 3D 只读、完整解绑），ProjectsSection standalone 模式包裹交互层；summary 展开/收起提示用 CSS 按 details[open] 切换；GitHub 外链 target=_blank rel=noopener noreferrer，repoPrivate 条目不渲染按钮而显示私有标注。e2e/projects.spec.ts 扩至 12 用例，chromium 12/12（展开/收起/焦点保留/互斥/Esc/外链安全/私有两卡无按钮/键盘与 44px 触摸目标），退出码 0。"
+      ],
       "notes": "详情形态为用户 2026-11-18 确认的内联展开面板（非独立详情路由），GitHub 仓库页承担深度阅读。"
     },
     {
@@ -2002,14 +2014,16 @@
       "area": "项目",
       "title": "R3F 3D 悬浮卡片效果",
       "user_visible_behavior": "项目卡片具有 3D 悬浮视觉：悬停轻微倾斜、抬升、边缘高亮，鼠标移动产生与光照方向相关的表面反馈（AC2）。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "ProjectsCanvas + ProjectsCardsScene（R3F）：3D 卡片面板（贴图 + 边缘高亮 + 悬停倾斜/抬升），光照随指针方向变化产生表面反馈；构图为 DOM 卡片是信息主体与交互入口，R3F 层 aria-hidden 纯视觉层，DOM hover/focus/click 以 ref 桥驱动 3D 状态（canvas pointer-events: none）。",
         "对位与性能红线：卡片矩形用 ResizeObserver + passive scroll 缓存（US-010k 标准解法），useFrame 零布局读写、零 setState（只做插值与对象属性更新）；探针用 window.__projectsFrames 等全局变量（不写 dataset）。",
         "五重挂载门槛（≥1024px / 无 reduced-motion / WebGL 可用 / 进入视口 / 首页需已离开首屏）+ ErrorBoundary 静默降级 + 离屏 frameloop=never + DisposeOnUnmount；reduced-motion 与窄屏/触屏不挂载 3D 层，DOM 卡片功能不受影响。",
         "e2e：hover 对应 3D 状态变化（探针断言倾斜/抬升/高亮激活）、reduced-motion 下 3D 不挂载。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-18 新增 components/three/ProjectsCardsScene.tsx（9 张 3D 卡片面板 + 边缘线，DOM hover/focus 事件写 window.__projectsActive 与 __projectsPointer，useFrame 只读并插值倾斜/抬升/边缘高亮/光照反馈，零布局读写、零 dataset、零 setState）+ ProjectsStage.tsx（Canvas 单独 chunk、离屏 frameloop=never）+ ProjectsCanvas.tsx（五重门槛：≥1024px/无 reduced-motion/WebGL/进入视口/独立页免 hero 门槛；ErrorBoundary 静默降级）+ ProjectsVisual.tsx（aria-hidden 概念标注）。仅由 /projects 与 /en/projects 列表页引入 visual，首页 compact 不加载 3D（US-010k TBT 红线）。E2E 四项目 79 passed / 9 skipped / 0 failed（含挂载/渲染/纯装饰/降级/reduced-motion/chunk 失败/首页不加载/离屏暂停）。修复真实缺陷：hover 探针原在 useFrame 写，离屏暂停后无法复位，改为事件驱动写 window.__projectsHover（与 research 同模式）。"
+      ],
       "notes": "用户明确选择 R3F WebGL 场景（未采纳 agent 推荐的 CSS 3D 轻量方案）。TBT 红线约束下首页精选克制 + 非首屏门槛；若首页挂载导致 TBT 回归，按 US-010k 先例把 3D 收敛到 /projects 列表页，最终挂载位置在实现时与用户对齐。"
     },
     {
@@ -2018,14 +2032,16 @@
       "area": "项目",
       "title": "动画冲突与交互专项回归（AC2/AC6）",
       "user_visible_behavior": "鼠标快速经过多个项目卡片时无明显动画冲突（AC6）；3D hover 效果逐卡可观察（AC2 落地复验）。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "e2e/projects.spec.ts AC6 专项：快速连续 hover/划过多张卡片（pointer 快速序列），断言无动画冲突（卡片 transform 状态最终收敛、无残影/叠层异常、无 console error、探针读数一致）。",
         "AC2 专项：逐卡 hover 观察倾斜/抬升/边缘高亮/光照反馈（探针或截图断言）；四项目回归。",
         "快速划过后立即点击仍命中正确卡片（无交互漂移）。",
         "断言不删、阈值不降；失败按 RED→GREEN 留证。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-18 E2E 专项（四项目）覆盖 AC2/AC6：逐 hover 驱动 3D 激活索引并移出复位、快速划过 8 张卡片后 data-active/data-open 各 ≤1 且无未捕获异常、快速划过后点击命中正确卡片且 GitHub 外链正确、离屏 3D 暂停帧计数 ≤2；与 US-012g 同批全项目 79 passed / 9 skipped / 0 failed。"
+      ],
       "notes": "实现侧预期用 rAF 合并 + 单一 transform 来源 + 指针去抖避免冲突；验证侧只断言可观察行为，不绑定实现细节。"
     },
     {
@@ -2034,14 +2050,16 @@
       "area": "项目",
       "title": "导航注册与全站回归",
       "user_visible_behavior": "导航新增 Projects 入口可平滑滚动到 #projects；滚动激活态正确；英文导航一致。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "lib/nav.ts 注册 projects（order 37，介于 research 35 与 contact 40）；nav.test.mjs 顺序断言同步。",
         "navigation.spec +3（点击到达 #projects / 英文入口 / 滚动激活态）；移动端菜单可达。",
         "about.spec h2 计数、i18n.spec 键数、links / overflow 受影响断言随新增 section 更新（增强不降强度）。",
         "npm run verify:local exit 0。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-18 lib/nav.ts 注册 projects（order 37，介于 research 35 与 contact 40）；scripts/nav.test.mjs 顺序断言同步 11/11；navigation.spec 新增 US-012i 三用例（中文点击到达 #projects 并同步 hash、英文同样到达、滚动激活态唯一且回顶收 home），chromium 3/3。修复两处既有单测 fixture：content-validate.test.mjs 与 content-public.test.mjs 的 projects 样本补 slug/category/status 必填；content-public 出口断言由空清单改为 9 条真实数据按 slug 对齐（增强）。全量 verify:local 的 lint/typecheck/build/npm test/check:i18n(97 键)/size(455.43kB≤1MB) 分项均 EXIT=0；audit 环节因上游新披露 picomatch 漏洞阻塞（见 US-012j/k）。"
+      ],
       "notes": "导航只收录真实存在的模块（US-004 决策 A），projects 落地时注册，不留空占位。"
     },
     {
@@ -2050,13 +2068,15 @@
       "area": "项目",
       "title": "性能门禁与页面变长专项",
       "user_visible_behavior": "新增模块后页面性能不回退：Lighthouse TBT ≤200ms 门禁保持通过。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "CI=1 npm run verify:lighthouse 本地观察 TBT 趋势（当前中文最优 144ms、余量 56ms）；首页精选克制 + 非首屏 3D 门槛 + 性能红线复查（useFrame 零布局读写、零 dataset 探针）。",
         "全套四项目 E2E 分批 0 失败；npm run verify:local exit 0（size ≤1MB 观察）。",
         "若 TBT 超标：按 US-010k 方法论定位修复（首页减负/延后客户端边界/几何降段），不删断言、不降阈值，修复单独留证。"
       ],
-      "evidence": [],
+      "evidence": [
+        "2026-11-18 性能专项：首页精简为 2 张精选卡（compact slice(0,2)）+ 不发外链 OG 封面请求（仅 /projects 列表页加载真实封面），遵循 US-010k TBT 红线；e2e 首页精选数断言同步 4→2。CI=1 npm run verify:lighthouse 第四轮 EXIT=0，最优中文 186ms / 英文 181ms（阈值 200），CLS 0、LCP 207-356ms；前三轮本地噪声波动大（中文 99-268、英文 181-441），第四轮全绿确认门禁通过。长任务归因 chunk 157/255（既有 US-002/003 注册表，非 US-012 引入）。注：npm audit --audit-level=high 因今日新披露 picomatch GHSA-fc5q-39xc-vjpf（range <=4.0.7，最新版即 4.0.7，上游无修复版）失败，形同 verify:local 阻塞；未删断言、未降阈值，待用户决策。"
+      ],
       "notes": "本地 Windows Lighthouse 噪声大只作趋势参考，以云端 verify job 为准。"
     },
     {

@@ -271,7 +271,7 @@ GitHub（https://github.com/George-102/Personal-Digital-Universe）
           ├── lint / typecheck / npm test / 质量指标
           ├── Playwright（E2E 验收，四项目）
           ├── Lighthouse CI（性能/可访问性/SEO 门禁）
-          ├── 构建时 GitHub API 抓取 → content/github-cache.json（随 US-012）
+          ├── 构建期 node scripts/fetch-github.mjs → content/github-cache.json（US-012 已落地；GITHUB_TOKEN 仅 secrets，失败沿用缓存/手写 fallback）
           └── 门禁全绿 → wrangler pages deploy 上传同一份 out/ → Cloudflare Pages
 ```
 

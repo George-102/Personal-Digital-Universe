@@ -19,7 +19,8 @@
     "contact": "联系",
     "menu": "菜单",
     "menuClose": "关闭菜单",
-    "research": "研究"
+    "research": "研究",
+    "projects": "项目"
   },
   "About": {
     "eyebrow": "01 / ABOUT ME",
@@ -84,5 +85,35 @@
     "viewAll": "查看全部研究方向",
     "backToList": "返回研究列表",
     "conceptNote": "概念性示意图，非真实仿真数据"
+  },
+  "Projects": {
+    "eyebrow": "OPEN SOURCE / PROJECTS",
+    "title": "开源项目",
+    "intro": "从工具与学习资源到科研原型，挑选能代表工程实践与开源参与的项目。",
+    "listLabel": "开源项目列表",
+    "listIntro": "按方向分类浏览全部公开项目；点击卡片展开完整介绍。",
+    "routeTitle": "开源项目 — 苏子豪",
+    "routeDescription": "苏子豪的 GitHub 开源项目：AI 与机器学习、Web 应用、开发者工具、科研原型与其他实验项目。",
+    "categories": {
+      "ai-ml": "AI 与机器学习",
+      "web": "Web 应用",
+      "dev-tools": "开发者工具",
+      "research": "科研项目",
+      "other": "其他项目"
+    },
+    "statusActive": "活跃维护",
+    "statusMaintained": "持续维护",
+    "statusArchived": "已归档",
+    "statusCompleted": "已完成",
+    "stackLabel": "技术栈",
+    "starsLabel": "Star 数",
+    "githubLabel": "查看 GitHub 仓库",
+    "privateLabel": "私有仓库（不提供公开代码入口）",
+    "featuredLabel": "精选",
+    "viewAll": "查看全部开源项目",
+    "expand": "展开项目详情",
+    "collapse": "收起项目详情",
+    "detailLabel": "完整介绍",
+    "conceptNote": "卡片 3D 悬浮效果为概念性视觉呈现，不影响项目信息阅读"
   }
 }

@@ -19,7 +19,8 @@
     "contact": "Contact",
     "menu": "Menu",
     "menuClose": "Close menu",
-    "research": "Research"
+    "research": "Research",
+    "projects": "Projects"
   },
   "About": {
     "eyebrow": "01 / ABOUT ME",
@@ -84,5 +85,35 @@
     "viewAll": "View all research",
     "backToList": "Back to research list",
     "conceptNote": "Conceptual illustration, not simulation data"
+  },
+  "Projects": {
+    "eyebrow": "OPEN SOURCE / PROJECTS",
+    "title": "Open Source Projects",
+    "intro": "From tools and learning resources to research prototypes — a selection representing my engineering practice and open-source work.",
+    "listLabel": "Open source projects list",
+    "listIntro": "Browse all public projects by category; click a card to expand its full introduction.",
+    "routeTitle": "Open Source Projects — Christopher Chang",
+    "routeDescription": "Open source GitHub projects by Christopher Chang: AI & machine learning, web applications, developer tools, research prototypes and other experiments.",
+    "categories": {
+      "ai-ml": "AI & Machine Learning",
+      "web": "Web Applications",
+      "dev-tools": "Developer Tools",
+      "research": "Research Projects",
+      "other": "Other Projects"
+    },
+    "statusActive": "Active",
+    "statusMaintained": "Maintained",
+    "statusArchived": "Archived",
+    "statusCompleted": "Completed",
+    "stackLabel": "Tech stack",
+    "starsLabel": "Stars",
+    "githubLabel": "View GitHub repository",
+    "privateLabel": "Private repository (no public code link)",
+    "featuredLabel": "Featured",
+    "viewAll": "View all open source projects",
+    "expand": "Show project details",
+    "collapse": "Hide project details",
+    "detailLabel": "Full introduction",
+    "conceptNote": "The 3D floating card effect is a conceptual visual layer and does not affect access to project information"
   }
 }

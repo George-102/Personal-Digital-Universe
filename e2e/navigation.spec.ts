@@ -433,3 +433,34 @@ test.describe('空间化导航', () => {
     await expect.poll(() => activeIds(page)).toEqual(['home']);
   });
 });
+
+// ---------- US-012i：Projects 导航 ----------
+
+test('US-012i 点击 Projects 准确到达 #projects 并同步 URL hash', async ({ page }) => {
+  await page.goto('/');
+  await settle(page);
+  await clickNav(page, 'projects');
+  await expect(page.locator('#projects')).toBeInViewport({ timeout: 10_000 });
+  await expect.poll(() => new URL(page.url()).hash).toBe('#projects');
+  await expect.poll(() => activeIds(page)).toEqual(['projects']);
+});
+
+test('US-012i 英文页 Projects 导航同样到达并激活', async ({ page }) => {
+  await page.goto('/en');
+  await settle(page);
+  await clickNav(page, 'projects');
+  await expect(page.locator('#projects')).toBeInViewport({ timeout: 10_000 });
+  await expect.poll(() => new URL(page.url()).hash).toBe('#projects');
+  await expect.poll(() => activeIds(page)).toEqual(['projects']);
+});
+
+test('US-012i 滚动到 Projects 时激活态唯一，回到顶部收回到 home', async ({ page }) => {
+  await page.goto('/');
+  await settle(page);
+  await page.evaluate(() =>
+    document.getElementById('projects')?.scrollIntoView({ behavior: 'instant', block: 'start' }),
+  );
+  await expect.poll(() => activeIds(page)).toEqual(['projects']);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await expect.poll(() => activeIds(page)).toEqual(['home']);
+});

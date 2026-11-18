@@ -88,7 +88,7 @@
 | journey.ts | 经历时间线 | date, endDate?, title{zh,en}, summary{zh,en}, category, detail?{zh,en}[], link?, public |
 | research.ts | 研究方向 | slug, title{zh,en}, overview{zh,en}, problems[]{zh,en}, methods[], detail[]{zh,en}?, keywords[], link?, status, public |
 | publications.ts | 论文 | title（原文）, authors, year, status（三值）, links?, public |
-| projects.ts | 开源项目 | repo, description{zh,en}, stack[], featured, fallback 数据, public |
+| projects.ts | 开源项目（US-012，9 条真实仓库含 2 条私有科研） | slug, repo, name, description{zh,en}, detail?, stack[], category（五分类）, status（四态）, featured, stars?, image?, repoPrivate?, public；动态字段由构建期 `content/github-cache.json` 覆盖 |
 | products.ts | 软件产品 | name, logo?, cover?, status（四值）, url?, public |
 | writing.ts | 文学作品与文章 | title{zh,en}, type, status, cover?, externalUrl?, public |
 | reading.ts | 书单 | title, author, rating?, note{zh,en}?, public |

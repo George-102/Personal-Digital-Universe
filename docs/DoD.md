@@ -47,7 +47,7 @@
 
 - [x] 项目/论文/产品/作品/文章/经历使用 `content/` 下的结构化数据维护；新增一条数据后页面自动展示。
 - [x] 字段缺失不导致页面崩溃；缺失字段有默认值或条件渲染。
-- [ ] GitHub Token 不出现在前端 bundle；GitHub API 失败时使用本地 `github-cache.json` 或手写 fallback。
+- [x] GitHub Token 不出现在前端 bundle（产物 `out/` grep 无 Token / Bearer / ghp_ 模式）；GitHub API 失败时使用本地 `github-cache.json` 或手写 fallback（US-012c：损坏缓存与 API 异常两条降级路径均实测构建继续）。
 - [x] 3D 组件离开视口时暂停或降低更新频率；卸载时释放 geometry / material / texture。
 - [ ] `prefers-reduced-motion: reduce` 时，持续粒子运动、滚动驱动相机、复杂转场被关闭或简化；导航和按钮反馈仍可用。
 - [ ] 主题切换在刷新后保持；localStorage 不可用时回退系统主题。

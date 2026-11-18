@@ -79,10 +79,11 @@ test.describe('US-006 个人介绍', () => {
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('#about h2')).toHaveCount(1);
     await expect(page.locator('#about h3')).toHaveCount(1);
-    // US-010 之后每个内容 section 各一个 h2（About + Journey + Research + Contact）
-    await expect(page.locator('h2')).toHaveCount(4);
+    // US-012 之后每个内容 section 各一个 h2（About + Journey + Research + Projects + Contact）
+    await expect(page.locator('h2')).toHaveCount(5);
     await expect(page.locator('#journey h2')).toHaveCount(1);
     await expect(page.locator('#research h2')).toHaveCount(1);
+    await expect(page.locator('#projects h2')).toHaveCount(1);
     await expect(page.locator('#contact h2')).toHaveCount(1);
     // 层级不跳级：按文档顺序，每个标题最多比前一个深一级
     const levels = await page.evaluate(() =>

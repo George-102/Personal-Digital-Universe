@@ -10,6 +10,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/en/`, lastModified: new Date() },
     { url: `${SITE_URL}/research/`, lastModified: new Date() },
     { url: `${SITE_URL}/en/research/`, lastModified: new Date() },
+    // US-012e：开源项目列表页双语收录
+    { url: `${SITE_URL}/projects/`, lastModified: new Date() },
+    { url: `${SITE_URL}/en/projects/`, lastModified: new Date() },
     // US-010e：研究详情页双语收录
     ...research.map((item) => ({
       url: `${SITE_URL}/research/${item.slug}/`,

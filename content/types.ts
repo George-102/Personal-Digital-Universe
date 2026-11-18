@@ -104,14 +104,27 @@ export interface Publication {
   public: boolean;
 }
 
+/** US-012：PRD 五分类（AI & ML / Web Applications / Developer Tools / Research Projects / Other） */
+export type ProjectCategory = 'ai-ml' | 'web' | 'dev-tools' | 'research' | 'other';
+/** US-012：开源项目状态（区别于 ProductStatus，两套枚举不混用） */
+export type ProjectStatus = 'active' | 'maintained' | 'archived' | 'completed';
+
 export interface Project {
+  /** US-012a：DOM 锚点与测试选择器用的小写 kebab-case 标识 */
+  slug: string;
   repo: string;
   name: string;
   description: LocaleText;
+  /** US-012f：内联展开面板的完整介绍（缺省时不渲染空面板） */
+  detail?: LocaleText;
   stack: string[];
+  category: ProjectCategory;
+  status: ProjectStatus;
   featured: boolean;
   stars?: number;
   image?: string;
+  /** US-012b：私有科研仓库；不渲染 GitHub 按钮（访客点击会 404） */
+  repoPrivate?: boolean;
   public: boolean;
 }
 

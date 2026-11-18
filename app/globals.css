@@ -777,3 +777,253 @@ html {
     display: none;
   }
 }
+/* US-012d：GitHub 开源项目卡片（DOM 信息主体） */
+.project-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+}
+
+.project-group {
+  margin-top: 2.25rem;
+}
+
+.project-group-title {
+  margin-bottom: 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--accent, #a78bfa);
+}
+
+.project-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid rgba(232, 234, 246, 0.12);
+  border-radius: 0.9rem;
+  background: rgba(12, 14, 32, 0.72);
+  overflow: hidden;
+  transition: border-color 180ms ease, transform 180ms ease;
+}
+
+.project-card:hover,
+.project-card:focus-within {
+  border-color: rgba(124, 108, 255, 0.65);
+}
+
+.project-cover {
+  width: 100%;
+  aspect-ratio: 1200 / 630;
+  border-radius: 0.55rem;
+  background-color: #191633;
+  background-image: linear-gradient(135deg, rgba(124, 108, 255, 0.35), rgba(34, 211, 238, 0.18));
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.project-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.project-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.project-status {
+  flex: none;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  color: #67e8f9;
+}
+
+.project-status[data-project-status='archived'],
+.project-status[data-project-status='completed'] {
+  border-color: rgba(232, 234, 246, 0.25);
+  color: rgba(232, 234, 246, 0.7);
+}
+
+.project-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  opacity: 0.8;
+}
+
+.project-category,
+.project-featured,
+.project-stars {
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.35rem;
+  background: rgba(124, 108, 255, 0.12);
+}
+
+.project-stars {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.project-description {
+  font-size: 0.86rem;
+  line-height: 1.55;
+  opacity: 0.82;
+}
+
+.project-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.project-chip {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid rgba(232, 234, 246, 0.16);
+  border-radius: 0.35rem;
+}
+
+.project-details {
+  margin-top: auto;
+  border-top: 1px solid rgba(232, 234, 246, 0.1);
+  padding-top: 0.65rem;
+}
+
+.project-summary {
+  cursor: pointer;
+  list-style: none;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #a78bfa;
+}
+
+.project-summary::-webkit-details-marker {
+  display: none;
+}
+
+.project-summary:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 3px;
+  border-radius: 0.3rem;
+}
+
+.project-details[open] .project-summary::after {
+  content: ' −';
+}
+
+.project-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  padding: 0.4rem 0 0.2rem;
+}
+
+.project-panel-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  opacity: 0.55;
+}
+
+.project-github {
+  align-self: flex-start;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid rgba(124, 108, 255, 0.6);
+  border-radius: 0.5rem;
+  color: #c4b5fd;
+  text-decoration: none;
+}
+
+.project-github:hover {
+  background: rgba(124, 108, 255, 0.12);
+}
+
+.project-github:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 3px;
+}
+
+.project-private {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.projects-all-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #a78bfa;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* US-012g：3D 悬浮卡片概念视觉层（aria-hidden，DOM 信息主体不受影响） */
+.projects-visual-row {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.projects-visual {
+  position: relative;
+  min-height: 18rem;
+  border: 1px solid rgba(232, 234, 246, 0.1);
+  border-radius: 0.9rem;
+  overflow: hidden;
+  background: rgba(9, 11, 26, 0.55);
+}
+
+.projects-3d {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.projects-concept-note {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  opacity: 0.55;
+}
+
+@media (max-width: 1023px) {
+  .projects-visual {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-card {
+    transition: none;
+  }
+}
+
+/* US-012f：展开/收起提示按 details 状态切换（无 JS 也能显示展开提示） */
+.project-hint-collapse,
+.project-details[open] .project-hint-expand {
+  display: none;
+}
+
+.project-details[open] .project-hint-collapse {
+  display: inline;
+}
