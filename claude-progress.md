@@ -54,7 +54,7 @@
 11. 之后按 roadmap：US-010 → US-012 → US-013 → US-014 → US-021 → US-023 → P1 故事（US-002 / US-003 / US-004 / US-006 / US-008 已完成；US-018 已由用户指定提前，见第 12 条）。**T-003（Vitest 迁移）仍为唯一技术债，优先于 P1 内容故事**。
 12. ~~**US-018 联系方式**~~（2026-11-15 **passing**：US-018a~l 共 12 任务全 passing，云端 run [43727267960](https://github.com/George-102/Personal-Digital-Universe/actions/runs/43727267960) verify + deploy 全绿，acceptance 488 passed / 88 skipped / 0 failed，Lighthouse 门禁通过）。实现：首页 #contact + /contact / /en/contact 独立路由（首个内容型独立路由，移除 /contact SEO fixme 恢复四项断言）、真实 Email + Copy Email 三级降级、外链配置位与 public 过滤、3D 空间场景（aria-hidden、五重挂载门槛、离屏暂停）、玻璃质感面板与五项合作方向、导航 Contact 与 Footer 邮箱入口。本地修复两处既有测试过时定位与计数（i18n.spec / about.spec），断言强度未降。**未决风险**：真实社交链接待用户提供（links 仍为空）；中英文案为起草稿待确认；content/journey.ts 仍为模板清单；T-003 与其余 roadmap 故事顺延。
 13. ~~之后按 roadmap：US-010~~（2026-11-16 实施中，见下方 US-010 章节）。
-14. **US-012 GitHub 开源项目**（2026-11-18：US-012a~j 共 10 任务 passing；**audit blocker 当日已解除**（vendor/picomatch 补丁包，见文末章节），US-012k 等本次 push 的云端 verify 全绿回写 CI run URL 后转 passing；见文末「US-012 迭代」章节）。之后：US-013 → US-014 → US-021 → US-023 → P1 故事；T-003（Vitest 迁移）仍为技术债。
+14. ~~**US-012 GitHub 开源项目**~~（2026-11-20 **passing**：US-012a~k 共 11 任务全 passing，云端 run [44693684714](https://github.com/George-102/Personal-Digital-Universe/actions/runs/44693684714) verify + deploy 全绿，E2E 718 passed / 94 skipped / 0 failed，Lighthouse TBT 最优 zh 124ms / en 115ms；见文末「US-012 迭代」章节）。审计 blocker（picomatch CVE）与两轮 TBT 回归均已修复，零降阈值。之后：US-013 → US-014 → US-021 → US-023 → P1 故事；T-003（Vitest 迁移）仍为技术债。
 
 ## US-010 迭代（2026-11-16~17，US-010a~k 全部 passing，云端 verify 已回写）
 
@@ -247,3 +247,14 @@ run 44277517360 仍挂 Lighthouse：中文 TBT 最优 232（三次 407/296/232�
 修复：把 `ProjectsInteractions` 从 `ProjectsSection` 模块图彻底移除，改由 `/projects` 与 `/en/projects` 页面直接包裹 `<ProjectsSection standalone>`（交互探针 `projects-layout` 无样式定义，包裹层级变化不影响）；首页不再引入该 client 模块。删除 `next/dynamic`。
 
 验证：首页 client chunk 从 26,144B 回到 **24,269B**（≈绿灯 24KB）；`verify:local` EXIT=0（size 455.21kB）；projects.spec chromium **21 passed / 1 skipped**（交互专项全过，含 hover 探针、快速划过、Esc、3D 联动）。云端结果待回写。
+
+
+## US-012 完成验收（2026-11-20）
+
+**云端 run [44693684714](https://github.com/George-102/Personal-Digital-Universe/actions/runs/44693684714) verify + deploy 全绿，US-012a~k 全部 passing，PRD US-012 转 passing。**
+
+- **E2E**：718 passed / 94 skipped / 0 failed（四项目：桌面 / 无 WebGL / 移动 Chrome / 移动 Safari）。
+- **Lighthouse**：TBT 最优 zh 124ms / en 115ms（阈值 200），首屏瘦身（2 张精简卡）与 client chunk 24KB 回到 US-010k 绿灯基线。
+- **安全**：picomatch CVE-2026-112366 经 vendor/picomatch/ 补丁包（4.0.7+PR #238 补丁，版本声明 4.0.8）解除，audit 0 high；产物无 Token 泄漏。
+- **修复链**：①vendor 补丁 + 嵌套 overrides（解除 audit 阻塞）→ run 44267866845 audit/E2E 过但 TBT 222；②首页卡瘦身 + CSS 路由拆分 → run 44277517360 TBT 232（next/dynamic 未拆开，反升）；③交互层从 ProjectsSection 模块图硬拆到 /projects 页面 → TBT 124/115 全绿。全程未删断言、未降阈值。
+- **遗留风险**：中英项目文案与清单为起草稿待确认；私有仓库 stars 手写 fallback；官方 picomatch ≥4.0.8 发布后移除 vendor 与 overrides（条件见 vendor/picomatch/SECURITY-PATCH.md）。

@@ -200,9 +200,10 @@
       "details": "设置 Open Source Projects 区域，展示具有代表性的 GitHub 项目。项目内容包括项目名称、简介、图片、技术栈、GitHub 地址、Star 数量、项目状态，按 AI & Machine Learning、Web Applications、Developer Tools、Research Projects、Other Projects 分类。项目卡片可以采用 3D 悬浮布局，鼠标悬停时产生轻微倾斜、抬升、边缘高亮等效果，鼠标移动时产生与光照方向相关的表面反馈。点击项目卡片展示更完整的项目介绍，支持跳转至 GitHub 仓库。可以通过 GitHub API 获取公开仓库的数据。首页优先展示精选项目。",
       "Acceptance Criteria": "- 正常场景：访客可以浏览精选开源项目。- 正常场景：项目卡片具有合理的 3D Hover 效果。- 正常场景：点击 GitHub 按钮可以打开对应仓库。- 正常场景：GitHub API 可用时，可以展示公开仓库数据。- 异常场景：GitHub API 请求失败时，使用本地数据展示项目。- 异常场景：鼠标快速经过多个项目卡片时，不应出现明显的动画冲突。",
       "DoD": "六条验收逐条通过并留证；github-cache.json 构建期抓取落地（Token 只进 Actions secrets）；T-002c 的产物级 public 过滤在列表渲染页复验；/projects 路由实质验收（移除对应 fixme）；npm run verify:local 通过 + 云端 verify job 全绿并回写 CI run URL。",
-      "status": "in_progress",
+      "status": "passing",
       "evidence": [
-        "2026-11-18 US-012a~j 共 10 任务 passing（内容模型/校验、真实清单、github-cache 抓取、首页与列表路由、内联详情、R3F 3D、交互专项、导航、性能门禁）；US-012k 待云端 verify 全绿回写。阻塞：npm audit --audit-level=high 因今日新披露 picomatch GHSA-fc5q-39xc-vjpf（range <=4.0.7，无可用修复版）失败，未删断言未降阈值，待用户决策。本地 lint/typecheck/build/npm test/check:i18n(97键)/size(455.43kB)/Lighthouse(最优中文186ms/英文181ms) 全绿；projects.spec 四项目 79 passed / 9 skipped。"
+        "2026-11-18 US-012a~j 共 10 任务 passing（内容模型/校验、真实清单、github-cache 抓取、首页与列表路由、内联详情、R3F 3D、交互专项、导航、性能门禁）；US-012k 待云端 verify 全绿回写。阻塞：npm audit --audit-level=high 因今日新披露 picomatch GHSA-fc5q-39xc-vjpf（range <=4.0.7，无可用修复版）失败，未删断言未降阈值，待用户决策。本地 lint/typecheck/build/npm test/check:i18n(97键)/size(455.43kB)/Lighthouse(最优中文186ms/英文181ms) 全绿；projects.spec 四项目 79 passed / 9 skipped。",
+        "2026-11-20 云端 verify 全绿（run https://github.com/George-102/Personal-Digital-Universe/actions/runs/44693684714）：verify + deploy 成功，E2E 718 passed / 94 skipped / 0 failed；Lighthouse TBT 最优 zh 124ms / en 115ms（阈值 200），LCP/CLS/SEO/a11y/best-practices 全达标。US-012a~k 11 任务全部 passing：内容模型/校验、真实清单、github-cache 抓取、首页精选与 /projects 路由、内联详情、R3F 3D（仅列表页）、交互专项、导航、性能门禁、整体验收。审计 blocker（picomatch CVE-2026-112366）经 vendor/picomatch 安全补丁解除；两轮 TBT 回归经首页卡瘦身+CSS 路由拆分+交互层硬拆修复，零降断言/阈值。"
       ],
       "notes": "/projects 路由当前为 404 占位；未来路由 SEO fixme ×5 绑定本故事。"
     },
