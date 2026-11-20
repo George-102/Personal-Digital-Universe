@@ -1,12 +1,8 @@
 import type { ReactNode } from 'react';
-import dynamic from 'next/dynamic';
 import { getTranslations } from 'next-intl/server';
 import { projects } from '@/content/index';
 import { PROJECT_CATEGORIES, projectHref } from '@/lib/projects';
 import type { ProjectCategory, ProjectStatus } from '@/content/types';
-
-// 交互层仅 /projects 列表页使用：动态导入让它单独成 chunk，不进首页加载图（TBT 红线）
-const ProjectsInteractions = dynamic(() => import('@/components/ProjectsInteractions'));
 
 type Props = {
   lang: 'zh' | 'en';
@@ -182,16 +178,14 @@ export default async function ProjectsSection({
           {items.map(renderCard)}
         </ul>
       ) : (
-        <ProjectsInteractions count={items.length}>
-          {groups.map(({ category, items: groupItems }) => (
-            <section key={category} className="project-group" data-projects-group data-category={category}>
-              <h2 className="project-group-title">{t(`categories.${category}` as `categories.${ProjectCategory}`)}</h2>
-              <ul className="project-list" data-projects-list aria-label={t('listLabel')}>
-                {groupItems.map(renderCard)}
-              </ul>
-            </section>
-          ))}
-        </ProjectsInteractions>
+        groups.map(({ category, items: groupItems }) => (
+          <section key={category} className="project-group" data-projects-group data-category={category}>
+            <h2 className="project-group-title">{t(`categories.${category}` as `categories.${ProjectCategory}`)}</h2>
+            <ul className="project-list" data-projects-list aria-label={t('listLabel')}>
+              {groupItems.map(renderCard)}
+            </ul>
+          </section>
+        ))
       )}
 
       {!standalone && (

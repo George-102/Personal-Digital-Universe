@@ -239,3 +239,11 @@ run 44267866845：audit 门禁已过（picomatch 修复生效）、E2E 718 passe
 3. ProjectsInteractions 改 `next/dynamic` 导入（webpack 分组未拆出独立 chunk，保留以待后续）。
 
 验证：E2E 断言同步（★ 1 证据移至列表页全量卡、首页改精简形态断言）；projects.spec chromium 22 用例 20 passed/1 skipped/首页用例修复后全过；本地 Lighthouse EXIT=0，最优 zh 85ms / en 122ms（修复前本地最优 225/264），CLS 0。云端结果待回写。
+
+## 云端 TBT 第二轮修复（2026-11-20，交互层硬拆）
+
+run 44277517360 仍挂 Lighthouse：中文 TBT 最优 232（三次 407/296/232）。报告归因：单个 26KB client chunk 执行 1617ms（绿灯 US-010k 时同模块 24KB/1488ms），+2KB ≈ `ProjectsInteractions` 模块。前次 `next/dynamic` 未真正拆出（webpack 分组合并回首页 chunk），反使 TBT 222→232。
+
+修复：把 `ProjectsInteractions` 从 `ProjectsSection` 模块图彻底移除，改由 `/projects` 与 `/en/projects` 页面直接包裹 `<ProjectsSection standalone>`（交互探针 `projects-layout` 无样式定义，包裹层级变化不影响）；首页不再引入该 client 模块。删除 `next/dynamic`。
+
+验证：首页 client chunk 从 26,144B 回到 **24,269B**（≈绿灯 24KB）；`verify:local` EXIT=0（size 455.21kB）；projects.spec chromium **21 passed / 1 skipped**（交互专项全过，含 hover 探针、快速划过、Esc、3D 联动）。云端结果待回写。

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import ProjectsSection from '@/components/ProjectsSection';
+import ProjectsInteractions from '@/components/ProjectsInteractions';
+import { projects } from '@/content/index';
 import ProjectsVisual from '@/components/ProjectsVisual';
 import SiteFooter from '@/components/SiteFooter';
 import SiteNav from '@/components/SiteNav';
@@ -42,7 +44,9 @@ export default async function LocaleProjectsPage({
     <>
       <SiteNav lang={lang} />
       <main>
-        <ProjectsSection lang={lang} standalone visual={<ProjectsVisual lang={lang} />} />
+        <ProjectsInteractions count={projects.length}>
+          <ProjectsSection lang={lang} standalone visual={<ProjectsVisual lang={lang} />} />
+        </ProjectsInteractions>
       </main>
       <SiteFooter
         lang={lang}
