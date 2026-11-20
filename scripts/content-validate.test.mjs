@@ -48,8 +48,11 @@ test('论文状态只允许 Published / Preprint / In Progress', () => {
 
 test('产品状态只允许四值枚举', () => {
   const base = {
+    slug: 'a-product',
     name: 'A Product',
     description: { zh: '产品', en: 'Product' },
+    features: [{ zh: '功能', en: 'Feature' }],
+    featured: false,
     public: true,
   };
   for (const status of ['Released', 'Beta', 'In Development', 'Discontinued']) {

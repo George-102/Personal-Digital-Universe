@@ -464,3 +464,34 @@ test('US-012i 滚动到 Projects 时激活态唯一，回到顶部收回到 home
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
   await expect.poll(() => activeIds(page)).toEqual(['home']);
 });
+
+// ---------- US-013h：Products 导航 ----------
+
+test('US-013h 点击 Products 准确到达 #products 并同步 URL hash', async ({ page }) => {
+  await page.goto('/');
+  await settle(page);
+  await clickNav(page, 'products');
+  await expect(page.locator('#products')).toBeInViewport({ timeout: 10_000 });
+  await expect.poll(() => new URL(page.url()).hash).toBe('#products');
+  await expect.poll(() => activeIds(page)).toEqual(['products']);
+});
+
+test('US-013h 英文页 Products 导航同样到达并激活', async ({ page }) => {
+  await page.goto('/en');
+  await settle(page);
+  await clickNav(page, 'products');
+  await expect(page.locator('#products')).toBeInViewport({ timeout: 10_000 });
+  await expect.poll(() => new URL(page.url()).hash).toBe('#products');
+  await expect.poll(() => activeIds(page)).toEqual(['products']);
+});
+
+test('US-013h 滚动到 Products 时激活态唯一，回到顶部收回到 home', async ({ page }) => {
+  await page.goto('/');
+  await settle(page);
+  await page.evaluate(() =>
+    document.getElementById('products')?.scrollIntoView({ behavior: 'instant', block: 'start' }),
+  );
+  await expect.poll(() => activeIds(page)).toEqual(['products']);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await expect.poll(() => activeIds(page)).toEqual(['home']);
+});

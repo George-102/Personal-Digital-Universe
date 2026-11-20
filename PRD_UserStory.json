@@ -217,7 +217,11 @@
       "Acceptance Criteria": "- 正常场景：访客可以浏览产品列表。- 正常场景：点击产品能够查看产品详细信息。- 正常场景：点击体验入口可以访问对应产品。- 异常场景：产品链接不可用时，不应导致整个网站报错。- 异常场景：未配置产品图片时，使用统一的默认视觉占位。",
       "DoD": "五条验收逐条通过并留证；产品状态严格四值枚举（content/ 类型校验已就绪）；npm run verify:local 通过 + 云端 verify job 全绿并回写 CI run URL。",
       "status": "not_started",
-      "evidence": [],
+      "evidence": [
+        "2026-11-20 US-013a~i 共 9 任务本地全 passing：内容模型+四态构建期校验（注入非法 status exit 1）、4 款起草清单（标【待用户确认】）、首页 #products 精选 + /products /en/products 双轨路由、内联展开面板、R3F 3D 展台（仅列表页）、导航注册、性能门禁。五条 AC 逐条留证：AC1 列表可浏览（products.spec 4 卡）、AC2 hover 透视/倾斜/光效（3D 探针断言）、AC3 访问入口打开产品（外链 target/rel/href 断言）、AC4 链接不可用不报错（未配置 url/repo 不渲染按钮）、AC5 缺图统一 CSS 占位（4 卡全占位断言）。",
+        "2026-11-20 本地验证：products.spec 四项目 75 passed / 9 skipped / 0 failed；npm test 159/159；verify:local EXIT=0（i18n 119 键 100%、size 459.5kB ≤1MB、audit 0 high 仅 6 moderate）；CI=1 Lighthouse EXIT=0（TBT 最优 zh 81ms / en 86ms、LCP 216-267ms、CLS 0、perf 0.99-1.0）。T-002c public 过滤产物级复验（首页/列表页仅公开条目）。",
+        "待云端 verify：push main 后需回写 CI run URL，US-013j 与 PRD US-013 方可转 passing（按 AGENTS.md 未回写前不得标 passing）。"
+      ],
       "notes": "products 数据类型与构建期校验已由 T-002a 落地。"
     },
     {

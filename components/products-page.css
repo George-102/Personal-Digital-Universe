@@ -1,0 +1,174 @@
+/* US-013：/products 列表页全量卡、详情面板与 3D 视觉层样式（仅该路由加载，避免进首页全局样式表——TBT 红线） */
+.product-cover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.55rem;
+  background-color: #191633;
+  background-image: linear-gradient(135deg, rgba(124, 108, 255, 0.35), rgba(34, 211, 238, 0.18));
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* AC5：未配置图片时用统一默认占位（CSS 渐变 + 图标感纹理，不发外部请求） */
+.product-cover--placeholder {
+  background-image:
+    radial-gradient(circle at 30% 30%, rgba(167, 139, 250, 0.4), transparent 55%),
+    radial-gradient(circle at 70% 70%, rgba(34, 211, 238, 0.28), transparent 55%),
+    linear-gradient(135deg, rgba(124, 108, 255, 0.22), rgba(34, 211, 238, 0.12));
+}
+
+.product-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.product-status {
+  flex: none;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  color: #67e8f9;
+}
+
+.product-status[data-product-status-label='discontinued'] {
+  border-color: rgba(232, 234, 246, 0.25);
+  color: rgba(232, 234, 246, 0.7);
+}
+
+.product-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.product-feature-chip {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid rgba(232, 234, 246, 0.16);
+  border-radius: 0.35rem;
+}
+
+.product-details {
+  margin-top: auto;
+  border-top: 1px solid rgba(232, 234, 246, 0.1);
+  padding-top: 0.65rem;
+}
+
+.product-summary {
+  cursor: pointer;
+  list-style: none;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #a78bfa;
+}
+
+.product-summary::-webkit-details-marker {
+  display: none;
+}
+
+.product-summary:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 3px;
+  border-radius: 0.3rem;
+}
+
+.product-details[open] .product-summary::after {
+  content: ' −';
+}
+
+.product-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  padding: 0.4rem 0 0.2rem;
+}
+
+.product-panel-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  opacity: 0.55;
+}
+
+.product-panel-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.product-visit,
+.product-repo {
+  align-self: flex-start;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid rgba(124, 108, 255, 0.6);
+  border-radius: 0.5rem;
+  color: #c4b5fd;
+  text-decoration: none;
+}
+
+.product-repo {
+  border-color: rgba(34, 211, 238, 0.5);
+  color: #67e8f9;
+}
+
+.product-visit:hover,
+.product-repo:hover {
+  background: rgba(124, 108, 255, 0.12);
+}
+
+.product-visit:focus-visible,
+.product-repo:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 3px;
+}
+
+/* US-013f：3D 产品展台视觉层容器（纯装饰，pointer-events 由 canvas 层关闭） */
+.products-visual {
+  position: relative;
+  min-height: 18rem;
+  border: 1px solid rgba(232, 234, 246, 0.1);
+  border-radius: 0.9rem;
+  overflow: hidden;
+  background: rgba(9, 11, 26, 0.55);
+}
+
+.products-3d {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.products-concept-note {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  opacity: 0.55;
+}
+
+@media (max-width: 1023px) {
+  .products-visual {
+    display: none;
+  }
+}
+
+/* US-013e：展开/收起提示按 details 状态切换（无 JS 也能显示展开提示） */
+.product-hint-collapse,
+.product-details[open] .product-hint-expand {
+  display: none;
+}
+
+.product-details[open] .product-hint-collapse {
+  display: inline;
+}

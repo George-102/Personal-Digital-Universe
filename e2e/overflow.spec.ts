@@ -17,6 +17,7 @@ const ROUTES = [
   '/research/llm-marl',
   '/en/research/llm-marl',
   '/projects',
+  '/products',
   '/writing',
   '/contact',
   '/en/contact',

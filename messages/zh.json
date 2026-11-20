@@ -20,7 +20,8 @@
     "menu": "菜单",
     "menuClose": "关闭菜单",
     "research": "研究",
-    "projects": "项目"
+    "projects": "项目",
+    "products": "产品"
   },
   "About": {
     "eyebrow": "01 / ABOUT ME",
@@ -115,5 +116,28 @@
     "collapse": "收起项目详情",
     "detailLabel": "完整介绍",
     "conceptNote": "卡片 3D 悬浮效果为概念性视觉呈现，不影响项目信息阅读"
+  },
+  "Products": {
+    "eyebrow": "INDEPENDENT / PRODUCTS",
+    "title": "独立软件产品",
+    "intro": "从实验台到效率工具，挑选代表独立开发实践的软件产品。",
+    "listLabel": "软件产品列表",
+    "listIntro": "点击卡片展开完整介绍，通过体验入口访问对应产品。",
+    "routeTitle": "软件产品 — 苏子豪",
+    "routeDescription": "苏子豪独立开发的软件产品：可视化实验台、专注工具、知识管理与早期实践记录。",
+    "statusReleased": "已发布",
+    "statusBeta": "Beta 测试",
+    "statusInDevelopment": "开发中",
+    "statusDiscontinued": "已停止",
+    "featuresLabel": "核心功能",
+    "visitLabel": "访问产品",
+    "repoLabel": "查看仓库",
+    "featuredLabel": "精选",
+    "viewAll": "查看全部软件产品",
+    "expand": "展开产品详情",
+    "collapse": "收起产品详情",
+    "detailLabel": "完整介绍",
+    "defaultCoverNote": "未配置封面，使用统一占位图",
+    "conceptNote": "产品展台 3D 效果为概念性视觉呈现，不影响产品信息阅读"
   }
 }

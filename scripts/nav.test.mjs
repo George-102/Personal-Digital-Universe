@@ -14,11 +14,11 @@ import {
 const messagesDir = path.join(process.cwd(), 'messages');
 const loadMessages = (locale) => JSON.parse(readFileSync(path.join(messagesDir, `${locale}.json`), 'utf8'));
 
-test('默认注册表通过校验且只收录真实存在的模块（Home + About + Journey + Research + Projects + Contact）', () => {
+test('默认注册表通过校验且只收录真实存在的模块（Home + About + Journey + Research + Projects + Products + Contact）', () => {
   assert.deepEqual(validateNavItems(navItems), []);
   assert.deepEqual(
     navItems.map((item) => item.id),
-    ['home', 'about', 'journey', 'research', 'projects', 'contact'],
+    ['home', 'about', 'journey', 'research', 'projects', 'products', 'contact'],
   );
   for (const item of navItems) {
     assert.match(item.href, /^#[A-Za-z][A-Za-z0-9_-]*$/);
@@ -30,14 +30,15 @@ test('按 order 升序排序且不修改原数组', () => {
   const shuffled = [...navItems].reverse();
   assert.deepEqual(
     sortNavItems(shuffled).map((item) => item.id),
-    ['home', 'about', 'journey', 'research', 'projects', 'contact'],
+    ['home', 'about', 'journey', 'research', 'projects', 'products', 'contact'],
   );
   assert.deepEqual(navItems, original);
 });
 
-test('未知 id 返回 undefined，null 安全；Contact 已注册', () => {
+test('未知 id 返回 undefined，null 安全；Products 与 Contact 已注册', () => {
   assert.equal(findNavItem(navItems, 'ghost-story'), undefined);
   assert.equal(findNavItem(navItems, null), undefined);
+  assert.equal(findNavItem(navItems, 'products')?.href, '#products');
   assert.equal(findNavItem(navItems, 'contact')?.href, '#contact');
 });
 

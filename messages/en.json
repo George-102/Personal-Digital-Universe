@@ -20,7 +20,8 @@
     "menu": "Menu",
     "menuClose": "Close menu",
     "research": "Research",
-    "projects": "Projects"
+    "projects": "Projects",
+    "products": "Products"
   },
   "About": {
     "eyebrow": "01 / ABOUT ME",
@@ -115,5 +116,28 @@
     "collapse": "Hide project details",
     "detailLabel": "Full introduction",
     "conceptNote": "The 3D floating card effect is a conceptual visual layer and does not affect access to project information"
+  },
+  "Products": {
+    "eyebrow": "INDEPENDENT / PRODUCTS",
+    "title": "Independent Software Products",
+    "intro": "From research workbenches to productivity tools, a selection of products from independent development practice.",
+    "listLabel": "Software products list",
+    "listIntro": "Open a card for the full introduction and use the visit link to reach the product.",
+    "routeTitle": "Software Products — Christopher Chang",
+    "routeDescription": "Software products independently developed by Christopher Chang: visualization workbenches, focus tools, knowledge management and early experiments.",
+    "statusReleased": "Released",
+    "statusBeta": "Beta",
+    "statusInDevelopment": "In Development",
+    "statusDiscontinued": "Discontinued",
+    "featuresLabel": "Key features",
+    "visitLabel": "Visit product",
+    "repoLabel": "View repository",
+    "featuredLabel": "Featured",
+    "viewAll": "View all software products",
+    "expand": "Expand product details",
+    "collapse": "Collapse product details",
+    "detailLabel": "Full introduction",
+    "defaultCoverNote": "No cover configured, showing a placeholder",
+    "conceptNote": "The 3D product showcase is a conceptual visual layer and does not affect product information."
   }
 }

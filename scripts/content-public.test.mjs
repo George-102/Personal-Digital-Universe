@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { validateEntry } from '../content/validate.ts';
 import { projects as rawProjects } from '../content/projects.ts';
+import { products as rawProducts } from '../content/products.ts';
 import * as content from '../content/index.ts';
 
 test('content 统一出口只暴露 public:true 的条目', () => {
@@ -42,11 +43,14 @@ test('缺少可选字段的项目条目仍通过校验', () => {
   assert.doesNotThrow(() => validateEntry('projects', minimal));
 });
 
-test('缺少可选字段的产品与作品条目仍通过校验', () => {
+test('缺少可选图片/链接字段的产品与作品条目仍通过校验', () => {
   const product = {
+    slug: 'p',
     name: 'P',
     description: { zh: '产品', en: 'Product' },
+    features: [{ zh: '功能', en: 'Feature' }],
     status: 'Beta',
+    featured: false,
     public: true,
   };
   const work = {
@@ -68,6 +72,13 @@ test('统一出口的集合与原始数据一致（US-012 项目为 9 条真实�
   assert.deepEqual(
     content.projects.map((item) => item.slug),
     rawProjects.filter((item) => item.public).map((item) => item.slug),
+  );
+  // US-013：products 4 条真实数据（起草稿）经 public 过滤后与原始公开数据一致
+  assert.equal(content.products.length, 4);
+  assert.ok(content.products.every((item) => item.public));
+  assert.deepEqual(
+    content.products.map((item) => item.slug),
+    rawProducts.filter((item) => item.public).map((item) => item.slug),
   );
   assert.deepEqual(content.publications, []);
   assert.equal(content.profile.public, true);

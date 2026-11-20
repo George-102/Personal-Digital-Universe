@@ -89,7 +89,7 @@
 | research.ts | 研究方向 | slug, title{zh,en}, overview{zh,en}, problems[]{zh,en}, methods[], detail[]{zh,en}?, keywords[], link?, status, public |
 | publications.ts | 论文 | title（原文）, authors, year, status（三值）, links?, public |
 | projects.ts | 开源项目（US-012，9 条真实仓库含 2 条私有科研） | slug, repo, name, description{zh,en}, detail?, stack[], category（五分类）, status（四态）, featured, stars?, image?, repoPrivate?, public；动态字段由构建期 `content/github-cache.json` 覆盖 |
-| products.ts | 软件产品 | name, logo?, cover?, status（四值）, url?, public |
+| products.ts | 独立软件产品（US-013，4 款起草稿待用户确认） | slug, name, description{zh,en}, features[]{zh,en}, detail?{zh,en}, status（四值 Released/Beta/In Development/Discontinued）, featured, logo?, cover?, url?, repo?（owner/name）, public；首页 #products 精选 + /products 与 /en/products 列表页，3D 展台仅列表页挂载 |
 | writing.ts | 文学作品与文章 | title{zh,en}, type, status, cover?, externalUrl?, public |
 | reading.ts | 书单 | title, author, rating?, note{zh,en}?, public |
 | interests.ts | 跨领域兴趣 | field, description{zh,en}?, related[]?, public |

@@ -129,9 +129,16 @@ export interface Project {
 }
 
 export interface Product {
+  /** US-013a：DOM 锚点与测试选择器用的小写 kebab-case 标识 */
+  slug: string;
   name: string;
   description: LocaleText;
+  /** US-013a：核心功能列表（双语），不虚构客观熟练度 */
+  features: LocaleText[];
+  /** US-013a：内联展开面板的完整介绍（缺省时用 description） */
+  detail?: LocaleText;
   status: ProductStatus;
+  featured: boolean;
   logo?: string;
   cover?: string;
   url?: string;

@@ -58,9 +58,15 @@ const RULES: Record<ContentCategory, Rule> = {
     },
   },
   products: {
-    required: ['name', 'description', 'status', 'public'],
+    // US-013a：slug/featured 必填；features（必填双语数组）、detail（可选双语）与
+    // 链接白名单由 lib/products.ts 的 validateProduct 在 prebuild 强校验。
+    required: ['slug', 'name', 'description', 'status', 'featured', 'public'],
     localeText: ['description'],
     enums: { status: ['Released', 'Beta', 'In Development', 'Discontinued'] },
+    // features 必填由 lib/products.ts 强校验；此处双重校验其双语结构。
+    // repo 是 owner/name 格式（非 URL），只由 lib/products.ts 校验，不放 optionalLinks。
+    optionalLocaleLists: ['features'],
+    optionalLinks: ['url', 'logo', 'cover'],
   },
   writing: {
     required: ['slug', 'title', 'type', 'status', 'description', 'public'],
