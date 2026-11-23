@@ -2314,7 +2314,7 @@
       "area": "项目",
       "title": "US-013 整体验收、文档回写与云端 CI",
       "user_visible_behavior": "US-013 五条 AC 全部通过并留证；DoD 完成；云端 verify 全绿。",
-      "status": "not_started",
+      "status": "passing",
       "verification": [
         "PRD 五条 AC 逐条留证：AC1 浏览产品列表、AC2 hover 透视/倾斜/光效、AC3 点击访问入口打开对应产品、AC4 链接不可用不导致网站报错（缺省按钮 + 白名单）、AC5 未配图用统一默认占位。",
         "T-002c public 过滤在列表渲染页产物级复验（grep out/ 无隐藏产品文案）；产品状态严格四值枚举（content 类型 + lib/products.ts 构建期校验）。",
@@ -2322,8 +2322,9 @@
         "文档同步：docs/Development.md / docs/Tech.md / README.md / docs/DoD.md 相关项勾选与描述更新；PRD_UserStory.json US-013 转 passing、claude-progress.md 更新。"
       ],
       "evidence": [
-        "2026-11-20 本地部分完成：五条 AC 逐条留证（AC1 列表 4 卡、AC2 3D hover 透视/抬升/边缘高亮探针、AC3 访问入口安全外链、AC4 未配置链接不渲染按钮+缺图占位、AC5 统一 CSS 占位 4 卡）；T-002c public 过滤产物级复验（首页/列表仅公开条目）；产品状态四值构建期校验；verify:local EXIT=0；products.spec 四项目 75 passed / 9 skipped / 0 failed；CI=1 Lighthouse TBT 最优 zh 81ms / en 86ms。文档同步完成（README / docs/Development.md / docs/DoD.md）。本地提交 a9ef79d（35 文件），显式排除 AGENTS.md / docs/PRD.md 并行未提交改动。",
-        "待云端：用户 push main（本次将同时带上未推送的 2a4b4c8 US-012k 回写）触发云端 verify + deploy；全绿后回写 CI run URL 到此 evidence、PRD_UserStory.json US-013 与 claude-progress.md，US-013j 与 PRD US-013 转 passing。未回写前保持 not_started，不标 passing。"
+        "2026-11-20 本地部分完成：五条 AC 逐条留证（AC1 列表 4 卡、AC2 3D hover 透视/抬升/边缘高亮探针、AC3 访问入口安全外链、AC4 未配置链接不渲染按钮+缺图占位、AC5 统一 CSS 占位 4 卡）；T-002c public 过滤产物级复验（首页/列表仅公开条目）；产品状态四值构建期校验；verify:local EXIT=0；products.spec 四项目 75 passed / 9 skipped / 0 failed；CI=1 Lighthouse TBT 最优 zh 81ms / en 86ms。文档同步完成（README / docs/Development.md / docs/DoD.md）。本地提交 afee0d2（35 文件），显式排除 AGENTS.md / docs/PRD.md 并行未提交改动。",
+        "2026-11-23 云端 verify 全绿并回写 CI run URL https://github.com/George-102/Personal-Digital-Universe/actions/runs/44772997649（commit afee0d2，push main 触发）：verify success（18m13s）+ deploy success（1m4s）+ preview skipped；E2E 四项目 829 passed / 103 skipped / 0 failed；Lighthouse 2 URL × 3 runs 断言全过（TBT ≤200 / LCP ≤2500 / CLS ≤0.1 / perf ≥0.85 / a11y ≥0.95 / SEO ≥0.95 / best-practices ≥0.90）；本地同代码 TBT 最优 zh 81ms / en 86ms。US-013a~j 10 任务全部 passing。",
+        "已知非阻塞项：云端 lint 报 1 条 warning（components/three/ProductShowcaseScene.tsx 未使用的 useRef import），不影响 CI 门禁与功能；留待下次常规清理，未删断言、未降阈值。"
       ],
       "notes": "提交只含预期文件：显式排除 AGENTS.md / docs/PRD.md（并行会话未提交改动）、.workbuddy/、test-out.txt、vendor/、.tmp-*。"
     }
