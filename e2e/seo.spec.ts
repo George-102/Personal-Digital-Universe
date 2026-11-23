@@ -4,10 +4,8 @@ import { settle } from './helpers';
 const SEO_ROUTES = ['/', '/en', '/research', '/en/research', '/projects', '/products', '/writing', '/contact'];
 
 // 未实现路由 → roadmap 故事 ID。对应故事落地后删除映射项即可恢复原有断言。
-// US-010 已落地：/research 与 /en/research 的映射已移除，断言恢复实跑。
-const PENDING_ROUTE_STORY: Record<string, string> = {
-  '/writing': 'US-014',
-};
+// US-014 已落地：/writing 映射已移除，断言恢复实跑；当前无 pending 路由。
+const PENDING_ROUTE_STORY: Record<string, string> = {};
 
 test.describe('SEO', () => {
   for (const route of SEO_ROUTES) {

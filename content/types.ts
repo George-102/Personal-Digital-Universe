@@ -147,13 +147,26 @@ export interface Product {
 }
 
 export interface WritingWork {
+  /** US-014a：小写 kebab-case，DOM 锚点与详情路由 slug */
   slug: string;
   title: LocaleText;
   type: 'novel' | 'article';
   status: WritingStatus;
   description: LocaleText;
+  /** US-014a：精选上首页 compact 卡 */
+  featured: boolean;
+  /** US-014a：创作时间，模糊字符串（如「2023—至今」/「2024」） */
+  writtenAt?: string;
+  /** US-014a：详情内容——世界观 / 背景设定 / 人物介绍 / 创作理念 / 补充段落 */
+  worldview?: LocaleText;
+  background?: LocaleText[];
+  characters?: LocaleText[];
+  concept?: LocaleText;
+  detail?: LocaleText[];
   cover?: string;
   externalUrl?: string;
+  /** US-014a：阅读入口，站内路径或 https 外链 */
+  readingUrl?: string;
   public: boolean;
 }
 

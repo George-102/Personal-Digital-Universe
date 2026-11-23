@@ -22,6 +22,7 @@ export const navItems: readonly NavItem[] = [
   { id: 'research', labelKey: 'Nav.research', href: '#research', order: 35 },
   { id: 'projects', labelKey: 'Nav.projects', href: '#projects', order: 37 },
   { id: 'products', labelKey: 'Nav.products', href: '#products', order: 38 },
+  { id: 'writing', labelKey: 'Nav.writing', href: '#writing', order: 39 },
   { id: 'contact', labelKey: 'Nav.contact', href: '#contact', order: 40 },
 ];
 

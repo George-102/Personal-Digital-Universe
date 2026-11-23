@@ -23,11 +23,11 @@
 - [ ] 教育经历中，考研状态表述为 **Preparing for Graduate Entrance Examination**，不得显示为研究生在读或已获硕士学历。
 - [ ] 论文只展示 **名称 + 状态（Published / Preprint / In Progress）**，未发表论文不得标记为 Published。
 - [x] 产品状态严格四值枚举：Released / Beta / In Development / Discontinued，构建期校验拒绝其他值。（US-013a：`content/types.ts` 的 ProductStatus 四值 + `lib/products.ts` 的 validateProduct/validateProductList 强校验，注入 `status: Done` 实测 build exit 1；清单为 agent 起草稿标【待用户确认】，真实产品状态由用户提供后替换 content/products.ts）
-- [ ] 《法渊》等作品未完成时标记 **Writing / In Progress**。
+- [x] 《法渊》等作品未完成时标记 **Writing / In Progress**。（US-014a/e：`WritingStatus` 严格三值 Writing / In Progress / Completed，构建期校验拒绝其他值；《法渊》In Progress、《坠星书简》Writing，列表页与详情页三态徽标 + `data-writing-status` 实测）
 - [x] DAC 3D 空域可视化带有 **“Conceptual illustration, not simulation data”** 标注。（US-010f：`#research` 的 3D 空域概念示意旁固定渲染中英双语标注——中文「概念性示意图，非真实仿真数据」、英文 “Conceptual illustration, not simulation data”，E2E 断言文本存在且 3D 层 aria-hidden）
 - [x] 未配置的 CV、链接、图片不显示无效入口。（US-006f：默认无 `cvUrl` 时静态 HTML 无 download 链接，配置后临时构建实测入口与 `/cv.pdf` 200；US-018b/e：`contact.links` 为空时 0 外链、0 空 href、0 404，配置态临时构建实测入口可见可跳转后移除临时数据）
 - [ ] 成长时间线不含占位内容：`content/journey.ts` 中不得残留「示例 ·」前缀，条目时间与真实经历一致，无 detail 的条目不出现空展开面板。（US-008：模板清单已就位，`title` 统一带「示例 ·」前缀，替换真实数据后须复查此条）
-- [ ] 中英双语均可切换；关键页面（首页、About、Journey、Research、Projects、Products、Writing、Contact）中文和英文文案均存在。（US-018j：Contact 双语页面已落地；US-010d/e：Research 的 `/research`、`/en/research` 列表与 3 条详情页双语已落地并通过验收；US-013d：Products 的 `/products`、`/en/products` 列表页双语已落地；Writing 仍随 US-014 落地）
+- [ ] 中英双语均可切换；关键页面（首页、About、Journey、Research、Projects、Products、Writing、Contact）中文和英文文案均存在。（US-018j：Contact 双语页面已落地；US-010d/e：Research 的 `/research`、`/en/research` 列表与 3 条详情页双语已落地并通过验收；US-013d：Products 的 `/products`、`/en/products` 列表页双语已落地；US-014d/e：Writing 的 `/writing`、`/en/writing` 列表页与 3 部作品详情页双语已落地，check:i18n 100%）
 - [ ] 所有可点击外链可打开；失效外链不导致页面报错。
 
 ---

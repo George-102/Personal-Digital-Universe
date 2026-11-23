@@ -59,6 +59,7 @@ test('缺少可选图片/链接字段的产品与作品条目仍通过校验', (
     type: 'novel',
     status: 'Writing',
     description: { zh: '简介', en: 'Intro' },
+    featured: true,
     public: true,
   };
   assert.doesNotThrow(() => validateEntry('products', product));

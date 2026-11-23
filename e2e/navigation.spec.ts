@@ -495,3 +495,34 @@ test('US-013h 滚动到 Products 时激活态唯一，回到顶部收回到 home
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
   await expect.poll(() => activeIds(page)).toEqual(['home']);
 });
+
+// ---------- US-014h：Writing 导航 ----------
+
+test('US-014h 点击 Writing 准确到达 #writing 并同步 URL hash', async ({ page }) => {
+  await page.goto('/');
+  await settle(page);
+  await clickNav(page, 'writing');
+  await expect(page.locator('#writing')).toBeInViewport({ timeout: 10_000 });
+  await expect.poll(() => new URL(page.url()).hash).toBe('#writing');
+  await expect.poll(() => activeIds(page)).toEqual(['writing']);
+});
+
+test('US-014h 英文页 Writing 导航同样到达并激活', async ({ page }) => {
+  await page.goto('/en');
+  await settle(page);
+  await clickNav(page, 'writing');
+  await expect(page.locator('#writing')).toBeInViewport({ timeout: 10_000 });
+  await expect.poll(() => new URL(page.url()).hash).toBe('#writing');
+  await expect.poll(() => activeIds(page)).toEqual(['writing']);
+});
+
+test('US-014h 滚动到 Writing 时激活态唯一，回到顶部收回到 home', async ({ page }) => {
+  await page.goto('/');
+  await settle(page);
+  await page.evaluate(() =>
+    document.getElementById('writing')?.scrollIntoView({ behavior: 'instant', block: 'start' }),
+  );
+  await expect.poll(() => activeIds(page)).toEqual(['writing']);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await expect.poll(() => activeIds(page)).toEqual(['home']);
+});

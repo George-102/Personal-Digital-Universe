@@ -21,7 +21,8 @@
     "menuClose": "Close menu",
     "research": "Research",
     "projects": "Projects",
-    "products": "Products"
+    "products": "Products",
+    "writing": "Writing"
   },
   "About": {
     "eyebrow": "01 / ABOUT ME",
@@ -139,5 +140,31 @@
     "detailLabel": "Full introduction",
     "defaultCoverNote": "No cover configured, showing a placeholder",
     "conceptNote": "The 3D product showcase is a conceptual visual layer and does not affect product information."
+  },
+  "Writing": {
+    "eyebrow": "LITERATURE / WRITING",
+    "title": "Writing",
+    "intro": "Imagination beyond technology: fantasy and short prose on order, freedom, and the act of writing.",
+    "listLabel": "Writing works",
+    "listIntro": "Open a work to read its world, background, characters, and creative concept.",
+    "routeTitle": "Writing — Zihao Su",
+    "routeDescription": "Zihao Su's literary works: fantasy novels such as Fayuan and short essays, with worlds, backgrounds, characters, and creative concepts.",
+    "statusWriting": "Planned",
+    "statusInProgress": "In progress",
+    "statusCompleted": "Completed",
+    "typeNovel": "Novel",
+    "typeArticle": "Essay",
+    "worldviewLabel": "World",
+    "backgroundLabel": "Background",
+    "charactersLabel": "Characters",
+    "conceptLabel": "Creative concept",
+    "createdAtLabel": "Written",
+    "detailLabel": "More notes",
+    "readingLabel": "Read",
+    "detailPageLabel": "Work details",
+    "viewAll": "View all works",
+    "backToList": "Back to writing",
+    "defaultCoverNote": "No cover configured, showing a placeholder",
+    "conceptNote": "The floating bookshelf is a conceptual visual layer, not a realistic book model."
   }
 }

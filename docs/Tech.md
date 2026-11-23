@@ -115,7 +115,7 @@ content/
 ├── publications.ts     # 论文（仅名称 + 状态 + 可选链接）
 ├── projects.ts         # 开源项目（GitHub 仓库 + 本地 fallback 数据）
 ├── products.ts         # 软件产品（状态、链接、截图）
-├── writing.ts          # 《法渊》等作品 + 文章
+├── writing.ts          # 《法渊》等作品 + 文章（US-014：三态状态 + 世界观/人物/理念，独立详情路由）
 ├── reading.ts          # 阅读书单
 └── interests.ts        # 跨领域兴趣
 ```

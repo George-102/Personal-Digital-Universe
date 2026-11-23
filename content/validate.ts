@@ -69,9 +69,12 @@ const RULES: Record<ContentCategory, Rule> = {
     optionalLinks: ['url', 'logo', 'cover'],
   },
   writing: {
-    required: ['slug', 'title', 'type', 'status', 'description', 'public'],
+    // US-014a：featured 必填；可选双语字段/数组/链接白名单由 lib/writing.ts 强校验
+    required: ['slug', 'title', 'type', 'status', 'description', 'featured', 'public'],
     localeText: ['title', 'description'],
     enums: { type: ['novel', 'article'], status: ['Writing', 'In Progress', 'Completed'] },
+    optionalLocaleLists: ['background', 'characters', 'detail'],
+    optionalLinks: ['cover', 'externalUrl', 'readingUrl'],
   },
   reading: {
     required: ['title', 'author', 'public'],

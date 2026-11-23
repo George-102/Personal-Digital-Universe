@@ -32,7 +32,7 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 
 - 简介类字段双语 `{ zh, en }`；论文与项目名称保留原文。
 - 每条数据含 `public: boolean`，`false` 的条目构建时被过滤。
-- 论文状态严格 `Published | Preprint | In Progress`；产品状态严格 `Released | Beta | In Development | Discontinued`。
+- 论文状态严格 `Published | Preprint | In Progress`；产品状态严格 `Released | Beta | In Development | Discontinued`；作品状态严格 `Writing | In Progress | Completed`。
 - 新增一条数据后重新构建，页面自动展示；可选字段缺失有默认值或条件渲染，不崩。
 - 个人介绍正文在 `content/profile.ts` 的 `about` 字段：`bio` 为叙事段落数组、`highlights` 为要点数组（均双语）；`cvUrl` 省略时不渲染下载入口，`portrait` 省略时使用 3D 抽象头像。
 - 成长时间线在 `content/journey.ts`：`date` 用 `YYYY` 或 `YYYY-MM`，区间加 `endDate`；`detail` 为可选的双语段落数组（省略则该条只展示摘要，不出现空面板）；`link` 只允许站内路径或 `https://` 外链；`category` 限 `education / research / opensource / product / competition / work / writing`。**当前为模板清单，`title` 均带「示例 ·」前缀，替换真实经历后删除前缀即可。** 排序在 `content/index.ts` 统一完成（最新在前），组件不再各自排序。
@@ -40,6 +40,7 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 - 研究方向在 `content/research.ts`：`slug` 为小写 kebab-case（生成 `/research/[slug]` 详情页路径），`title` / `overview` / `problems` / `detail`（可选）为双语字段，`methods` 与 `keywords` 为字符串数组，`link` 只允许站内路径或 `https://` 外链，`status` 严格 `In Progress | Completed`（未完成不得写 Completed）。首页 `#research`、`/research` 与 `/en/research` 列表页、详情页共用同一份数据；新增条目后重新构建即出现在列表与 sitemap 中。首页为纯文字概览（方向 + 核心问题），3D 空域概念示意与方法/关键词只在列表页与详情页渲染（US-010k TBT 优化）。
 - 开源项目在 `content/projects.ts`（US-012）：`slug` 小写 kebab-case，`repo` 为 `owner/name`，`description` / `detail` 双语，`category` 限 `ai-ml / web / dev-tools / research / other`，`status` 限 `active / maintained / archived / completed`，`featured` 决定首页精选；私有科研仓库设 `repoPrivate: true` 不渲染 GitHub 按钮。首页 `#projects` 只展示 2 张精选卡（纯 CSS 占位），`/projects` 与 `/en/projects` 列表页展示全量 9 条、五分类分组与 3D 悬浮卡片概念视觉。GitHub 仓库的 star / 语言 / 归档态由 CI 构建期 `node scripts/fetch-github.mjs` 抓取写入 `content/github-cache.json`，Token 只存在于 Actions secrets（`GITHUB_TOKEN`）且不进前端 bundle；API 失败或限流时沿用上次缓存或 `content/projects.ts` 的手写 `stars`。当前清单与文案为 agent 起草稿（`content/projects.ts` 注释标【待用户确认】）。
 - 独立软件产品在 `content/products.ts`（US-013）：`slug` 小写 kebab-case，`name` / `description` / `features`（双语数组）/ `detail`（可选双语）为核心字段，`status` 严格 `Released | Beta | In Development | Discontinued` 四值，`featured` 决定首页精选；`url` 与 `repo`（`owner/name`）省略时不渲染对应按钮（不显示无效入口），`logo` / `cover` 省略时用统一 CSS 渐变占位。首页 `#products` 只展示 2 张精选卡（纯文字），`/products` 与 `/en/products` 列表页展示全量 4 条、内联展开详情与 3D 产品展台概念视觉（仅列表页挂载，首页不加载 3D）。当前 4 款清单与文案为 agent 起草稿（`content/products.ts` 注释标【待用户确认】），替换真实产品后重新构建即出现在列表与 sitemap 中。
+- 文学作品在 `content/writing.ts`（US-014）：`slug` 小写 kebab-case，`title` / `description` / `worldview` / `concept` 双语，`background` / `characters` / `detail` 双语数组，`status` 严格 `Writing | In Progress | Completed` 三值，`featured` 决定首页精选；`cover` / `readingUrl` / `externalUrl` 省略时不渲染无效入口，缺封面用统一 CSS 渐变占位。首页 `#writing` 只展示 2 张精选卡（名称 + 简介 + 状态），`/writing` 与 `/en/writing` 列表页展示全量与 3D 悬浮书架概念视觉（仅列表页挂载），作品详情为独立路由 `/writing/[slug]` 与 `/en/writing/[slug]`（世界观/背景/人物/创作理念静态可读）。当前 3 部清单与文案为 agent 起草稿（`content/writing.ts` 注释标【待用户确认】），替换真实作品后重新构建即出现在列表、详情与 sitemap 中。
 
 修改 `messages/*.json` 后运行 `npm run check:i18n` 确认键覆盖率 100%。
 

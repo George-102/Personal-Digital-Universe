@@ -21,7 +21,8 @@
     "menuClose": "关闭菜单",
     "research": "研究",
     "projects": "项目",
-    "products": "产品"
+    "products": "产品",
+    "writing": "写作"
   },
   "About": {
     "eyebrow": "01 / ABOUT ME",
@@ -139,5 +140,31 @@
     "detailLabel": "完整介绍",
     "defaultCoverNote": "未配置封面，使用统一占位图",
     "conceptNote": "产品展台 3D 效果为概念性视觉呈现，不影响产品信息阅读"
+  },
+  "Writing": {
+    "eyebrow": "LITERATURE / WRITING",
+    "title": "文学创作",
+    "intro": "技术之外的想象：以玄幻小说与短章记录对秩序、自由与书写的思考。",
+    "listLabel": "文学作品列表",
+    "listIntro": "点击作品进入详情页，阅读世界观、背景设定、人物与创作理念。",
+    "routeTitle": "文学创作 — 苏子豪",
+    "routeDescription": "苏子豪的文学作品：《法渊》等玄幻小说与短章，含世界观、背景设定、人物介绍与创作理念。",
+    "statusWriting": "构思中",
+    "statusInProgress": "创作中",
+    "statusCompleted": "已完成",
+    "typeNovel": "小说",
+    "typeArticle": "短章",
+    "worldviewLabel": "世界观",
+    "backgroundLabel": "背景设定",
+    "charactersLabel": "人物介绍",
+    "conceptLabel": "创作理念",
+    "createdAtLabel": "创作时间",
+    "detailLabel": "更多文字",
+    "readingLabel": "阅读入口",
+    "detailPageLabel": "作品详情",
+    "viewAll": "查看全部文学作品",
+    "backToList": "返回作品列表",
+    "defaultCoverNote": "未配置封面，使用统一占位图",
+    "conceptNote": "悬浮书架 3D 效果为概念性视觉呈现，不代表真实书籍模型"
   }
 }

@@ -8,6 +8,7 @@ import JourneySection from '@/components/JourneySection';
 import ResearchSection from '@/components/ResearchSection';
 import ProjectsSection from '@/components/ProjectsSection';
 import ProductsSection from '@/components/ProductsSection';
+import WritingSection from '@/components/WritingSection';
 import ContactSection from '@/components/ContactSection';
 
 export default async function HomeSections({ lang }: { lang: 'zh' | 'en' }) {
@@ -64,6 +65,7 @@ export default async function HomeSections({ lang }: { lang: 'zh' | 'en' }) {
       <ResearchSection lang={lang} compact />
       <ProjectsSection lang={lang} compact />
       <ProductsSection lang={lang} compact />
+      <WritingSection lang={lang} compact />
       <ContactSection lang={lang} />
     </>
   );

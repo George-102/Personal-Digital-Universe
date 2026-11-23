@@ -16,6 +16,7 @@ import { validateContact } from '../lib/contact.ts';
 import { validateResearchList } from '../lib/research.ts';
 import { validateProjectList } from '../lib/projects.ts';
 import { validateProductList } from '../lib/products.ts';
+import { validateWritingList } from '../lib/writing.ts';
 
 const journeyErrors = validateJourneyEntries(journey);
 if (journeyErrors.length > 0) {
@@ -67,6 +68,13 @@ if (projectErrors.length > 0) {
 const productErrors = validateProductList(products);
 if (productErrors.length > 0) {
   console.error(`products 配置校验失败：\n${productErrors.join('\n')}`);
+  process.exit(1);
+}
+
+// US-014a：文学作品整表校验（slug 唯一、三态枚举、至少一条 public、featured 必 public、链接白名单）
+const writingErrors = validateWritingList(writing);
+if (writingErrors.length > 0) {
+  console.error(`writing 配置校验失败：\n${writingErrors.join('\n')}`);
   process.exit(1);
 }
 

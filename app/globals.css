@@ -885,3 +885,56 @@ html {
     transition: none;
   }
 }
+
+/* US-014c：文学作品卡片——首页 compact 卡基础样式（全量卡/3D 视觉层见 components/writing-page.css，
+   仅 /writing 路由加载；TBT 红线，与 US-013c 同构） */
+.writing-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+}
+
+.writing-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid rgba(232, 234, 246, 0.12);
+  border-radius: 0.9rem;
+  background: rgba(12, 14, 32, 0.72);
+  overflow: hidden;
+}
+
+.writing-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.writing-description {
+  font-size: 0.86rem;
+  line-height: 1.55;
+  opacity: 0.82;
+}
+
+.writing-status {
+  flex: none;
+  align-self: flex-start;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(167, 139, 250, 0.45);
+  color: #c4b5fd;
+}
+
+.writing-all-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #a78bfa;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
