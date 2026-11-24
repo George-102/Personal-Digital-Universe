@@ -1,6 +1,6 @@
 {
   "project": "Personal Digital Universe",
-  "last_updated": "2026-11-23",
+  "last_updated": "2026-11-24",
   "rules": {
     "single_active_feature": true,
     "passing_requires_evidence": true,
@@ -2524,6 +2524,162 @@
       "priority": 128,
       "title": "US-014 整体验收与云端 CI 回写",
       "user_visible_behavior": "US-014 五条 AC 全部通过并留证，PRD_UserStory.json US-014 转 passing。"
+    },
+    {
+      "area": "多设备适配",
+      "status": "passing",
+      "verification": [
+        "TDD 先行：在 scripts/quality-tier.test.mjs 增加四档边界、平板粒子少于笔记本/桌面、低硬件信号降级断言，先观察 RED。",
+        "lib/quality.ts 改为四档模型：Desktop（≥1280）700 粒子 / Laptop（1024~1279）700 粒子 / Tablet（640~1023）500 粒子 / Mobile（<640）350 粒子；dpr 上限桌面/笔记本/平板 1.5、移动 1.5，均不超过设备 dpr。桌面 700/dpr1.5 与 US-010k 绿灯基线一致，不提高首屏成本。",
+        "getQualityTier 纳入硬件信号（hardwareConcurrency / deviceMemory）：低核数或低内存时降一档粒子与 dpr；信号缺失时按视口档位（浏览器未提供的默认行为）。纯函数、无 DOM 副作用，便于单测。",
+        "node --test scripts/quality-tier.test.mjs 全绿；npm run typecheck 通过。"
+      ],
+      "evidence": [
+        "2026-11-24 TDD RED→GREEN：先在 scripts/quality-tier.test.mjs 增加四档边界、平板 500 粒子、低并发/低内存降档、信号缺失默认行为共 10 项断言，RED 观察到 SyntaxError: getDeviceClass 未导出。实现 lib/quality.ts：getDeviceClass 四档边界（640/1024/1280），BASE_TIERS（mobile 350 / tablet 500 / laptop 700 / desktop 700，dpr 上限统一 1.5），硬件信号 hardwareConcurrency≤4 或 deviceMemory≤4 时粒子×0.7（下限 150）、dpr≤1、reduced=true；信号缺失按视口档位。GREEN 10/10、npm run typecheck exit 0。桌面/笔记本参数与 US-010k 绿灯基线一致，未提高首屏成本。"
+      ],
+      "notes": "用户决策：只降平板，桌面/笔记本保持 700/dpr1.5；低性能降级做成硬件信号 + 运行时自适应（后者在 US-021b）。",
+      "id": "US-021a",
+      "priority": 129,
+      "title": "四档设备画质模型与硬件信号降级",
+      "user_visible_behavior": "平板 3D 比桌面简化；低性能设备首次挂载即使用更低画质。"
+    },
+    {
+      "area": "多设备适配",
+      "status": "passing",
+      "verification": [
+        "TDD 先行：新增 scripts/adaptive-quality.test.mjs，对帧率采样、连续低帧率降级、恢复/不反复抖动、无 DOM 读写做断言，先观察 RED。",
+        "新增共享 hook（如 lib/adaptive-quality.ts + components 侧 hook）：Canvas 进入视口后才采样 rAF 帧间隔；连续低帧率触发一次降档，禁止每帧 setState、禁止每帧读布局属性或写 dataset（性能红线）。",
+        "接入全部现有 3D 容器（Hero / AboutPortrait / Journey / Research / Projects / Products / Writing / Contact），保持既有五重挂载门槛、ErrorBoundary、离屏 frameloop=never 与 GPU dispose 不变。",
+        "降级只降粒子/dpr，不改变 DOM 信息主体与交互入口；单元测试全绿、typecheck/lint 干净。"
+      ],
+      "evidence": [
+        "2026-11-24 TDD RED→GREEN：先写 scripts/adaptive-quality.test.mjs 8 项断言，RED 为 ERR_MODULE_NOT_FOUND（lib/adaptive-quality.ts 不存在）。实现纯函数状态机（30 帧窗口、平均帧时长 >24ms 记慢窗口、连续 2 窗降档、>250ms 异常帧忽略、降档后不翻转）+ degradeTier（粒子×0.7 下限 150、dpr≤1、保留设备分类），8/8 绿。新增 components/useAdaptiveTier.ts 共享 hook：只在 base 就绪且场景 active 时挂 rAF，回调只读时间戳，跨阈值 setState 一次后停止采样。接入 8 个 3D 容器（Hero / AboutPortrait / Journey / Research / Projects / Products / Writing / Contact），将原 tier state 改名 baseTier 用于探测标记，渲染用 hook 返回的 tier；既有五重挂载门槛、ErrorBoundary、离屏 never 与 GPU dispose 未变。修复 typecheck 暴露的 Hero 上下文丢失路径 3 处 setTier 漏改。验证：单测 18/18、verify:local exit 0（182 单测、i18n 144 键、size 467.35kB、audit 0 high）、typecheck/lint 0、chromium 3D 小批 13 passed / 2 skipped（no-webgl 条件跳过）。"
+      ],
+      "notes": "性能红线优先：采样只读时间戳；跨阈值才 setState 一次；不提高首屏 TBT。",
+      "id": "US-021b",
+      "priority": 130,
+      "title": "运行时帧率自适应降档并接入全部 3D 模块",
+      "user_visible_behavior": "低性能设备运行中出现持续掉帧时自动简化 3D，页面内容保持可读。"
+    },
+    {
+      "area": "多设备适配",
+      "status": "passing",
+      "verification": [
+        "3D 容器暴露只读设备档位探针（如 window.__deviceTier / __qualityTier），E2E 可在挂载后读取，不写 dataset。",
+        "新增 E2E：用 addInitScript 模拟低 hardwareConcurrency / deviceMemory，验证首屏与列表页 3D 以低档参数挂载；无硬件信号时按视口档位。",
+        "探针不泄漏到产物文案、不影响 SEO 与 a11y；E2E 四项目相关用例通过。"
+      ],
+      "evidence": [
+        "2026-11-24 TDD RED→GREEN：先写 scripts/device-signals.test.mjs 4 项断言，RED 为 ERR_MODULE_NOT_FOUND。.readDeviceSignals 并入 lib/quality.ts（白名单读取 navigator.hardwareConcurrency / deviceMemory，非数字与 NaN 忽略，显式 null 返回空对象；Node 26 自带 navigator.hardwareConcurrency，测试改为校验白名单字段），readViewportQuality 统一浏览器侧入口，8 个 3D 容器改用它；移除重复的 lib/device-signals.ts。4 项 device-signals + 10 项 quality-tier + 8 项 adaptive-quality 单测共 22/22 绿，typecheck/lint/build 通过。useAdaptiveTier 增加 window.__deviceTier / window.__qualityTier 探针（档位变化时写一次，非每帧、非 dataset）。新增 e2e/device-adaptation.spec.ts：chromium 4/4 通过——桌面 700 粒子未降档、平板 500 粒子、低并发+低内存首页 Hero 降档（reduced=true、粒子<700、dpr≤1）、/projects 列表页 3D 同样降档；另 3 项目按既有约定跳过硬件模拟用例。产物文案未含探针字段，SEO/a11y 用例未改。"
+      ],
+      "notes": "探针为验收服务，沿用 window.__* 惯例，禁止每帧 DOM 写入。",
+      "id": "US-021c",
+      "priority": 131,
+      "title": "设备档位探针与低性能模拟验收",
+      "user_visible_behavior": "可自动化验证设备收到的画质档位，低性能设备不再只能靠人工观察。"
+    },
+    {
+      "area": "多设备适配",
+      "status": "passing",
+      "verification": [
+        "overflow.spec.ts 视口矩阵扩为 Desktop 1920/1440、Laptop 1280/1024、Tablet 820/768、Mobile 390/375，覆盖四档。",
+        "路由矩阵补齐双语首页 / /en、全部已实现列表页与详情页（research、projects、products、writing、contact 的中英版本），不新增 Playwright 项目。",
+        "四项目全绿，断言强度不降（仅扩展视口与路由）；记录用例数与 skipped 原因。"
+      ],
+      "evidence": [
+        "2026-11-24 重写 e2e/overflow.spec.ts：8 视口覆盖 Desktop（1920/1440、700 粒子档）、Laptop（1280/1024）、Tablet（820/768、500 粒子档）、Mobile（390/375、350 粒子档）；代表视口（1920/1280/820/390）跑 16 条双语全路由（首页、research 列表与详情、projects、products、writing 列表与详情、contact），边界视口跑 6 条核心路由，共 88 用例/项目（分层矩阵控制增量，未新增 Playwright 项目）。新增断言 response.status()===200，防止 404 页面让溢出断言空过（强度增强）。本地 chromium 88 passed（1.5m）；四项目 352 passed / 0 failed（7.3m，workers=2）。既有断言与阈值未删未降。"
+      ],
+      "notes": "用户决策：扩展视口矩阵，不新增 Playwright 项目（CI 时长不变）。分层矩阵将增量控制在每项目 +68 用例。",
+      "id": "US-021d",
+      "priority": 132,
+      "title": "四档视口与双语全路由横向溢出矩阵",
+      "user_visible_behavior": "四类设备、双语、全部已实现页面均不横向溢出。"
+    },
+    {
+      "area": "多设备适配",
+      "status": "passing",
+      "verification": [
+        "新增 e2e/device-adaptation.spec.ts：移动端单列布局（关键区块宽度/位置）、触摸目标 ≥44px、折叠菜单触摸展开/关闭、触摸代替 hover 的核心交互。",
+        "验证移动端不是桌面缩放：导航形态、卡片布局、3D 降级形态在移动与桌面项目下有实质差异（断言具体 DOM/CSS 差异，不只看截图）。",
+        "mobile-chrome 与 mobile-safari 两项目通过；不引入 fixme、不删既有断言。"
+      ],
+      "evidence": [
+        "2026-11-24 在 e2e/device-adaptation.spec.ts 新增 4 项移动端专项：#projects 卡片单列（computed gridTemplateColumns 列数=1）、[data-nav-toggle] 与 #journey summary 触摸高度 ≥44px、折叠菜单 tap 展开→tap About 关闭且 hash 同步、tap 展开时间线 details、移动/桌面（1280px）导航形态与卡片列数实质差异。首跑暴露真实缺陷：菜单按钮 h-9 w-9 仅 36px，修复为 h-11 w-11 min-h-11 min-w-11（44px）；另修正测试用 getClientRects 判断祖先 md:hidden 的可见性（按钮自身 display 未变）。未删断言、未加 fixme。mobile-chrome + mobile-safari 8 passed / 8 skipped（硬件模拟用例仅 chromium）。"
+      ],
+      "notes": "覆盖 PRD §6.5 触摸与单列要求、DoD 人工验收『移动端不是简单缩放』的可自动化部分。",
+      "id": "US-021e",
+      "priority": 133,
+      "title": "移动端触摸交互与非缩放布局专项验收",
+      "user_visible_behavior": "触摸设备能完整使用导航与核心交互，布局为移动优先而非桌面缩放。"
+    },
+    {
+      "area": "多设备适配",
+      "status": "passing",
+      "verification": [
+        "扩展 degradation.spec.ts：逐个复核 Hero / AboutPortrait / Journey / Research / Projects / Products / Writing / Contact 八处 3D 在 chromium-no-webgl 下的静态/CSS 降级。",
+        "双语与列表/详情路由均验证核心信息不依赖 WebGL 可见；无控制台异常、无空白占位。",
+        "四项目相关用例全绿，保持既有断言与阈值。"
+      ],
+      "evidence": [
+        "2026-11-24 扩展 e2e/degradation.spec.ts：新增首页四处 3D（Hero / AboutPortrait / Journey / Contact）无 Canvas + 四个 section 标题与正文完整 + data-avatar-reason / data-journey-mode / data-contact-mode 均为 no-webgl + 静态降级字幕可见；research / projects / products / writing 四类中英列表页（8 路由）逐页验证无 Canvas、h1 与卡片可读、data-*-mode=no-webgl；/contact 与 /en/contact 独立路由邮箱可见。首跑 writing 两页 mode 仍为 off，根因是它保留『已离开首屏 scrollY>0』门槛而 scrollIntoViewIfNeeded 不产生页面滚动；测试补 window.scrollBy 后 13/13 通过（chromium-no-webgl，18.1s）。既有 2 用例与阈值未改。"
+      ],
+      "notes": "对应 AC5 与 PRD §6.6『3D 渲染失败时核心信息依旧可见』。",
+      "id": "US-021f",
+      "priority": 134,
+      "title": "全站 3D 降级视觉跨模块复核",
+      "user_visible_behavior": "不支持 WebGL 的设备仍能读到全部内容并看到合理的降级视觉。"
+    },
+    {
+      "area": "多设备适配",
+      "status": "passing",
+      "verification": [
+        "E2E 验证桌面完整 3D（鼠标悬停/视差/动态背景）、平板简化（粒子/dpr 探针低于桌面）、移动触摸交互（3D 不阻挡内容）三档行为差异。",
+        "复核既有挂载门槛：桌面外非首屏 3D 需已离开首屏、视口内、无 reduced-motion、WebGL 可用、≥1024px；低性能降档不改变门槛。",
+        "全套 Playwright 四项目分批回归 0 失败，记录 passed/skipped 与 flaky 复核。"
+      ],
+      "evidence": [
+        "2026-11-24 在 e2e/device-adaptation.spec.ts 新增两项：①桌面 1440/平板 820/移动 390 三档依次 700/500/350 粒子，逐档断言 h1 可见且 CTA 中心 elementFromPoint 未被 Canvas 遮挡，窄屏 #journey 无 Canvas 且 data-journey-mode=off；②低性能信号下 /research 列表 3D 仍挂载（data-research-mode=3d、reduced=true），emulateMedia reduced-motion 后 reload 则无 Canvas 且 mode=off——降档不改变门槛。chromium 6 passed / 4 skipped（移动端用例按项目跳过）。全套四项目分批回归（workers=2）：overflow 352 passed（7.3m）+ 批一 a11y/about/contact/context-loss/core/degradation 136 passed / 40 skipped + 批二 hero-entry/hero-scene/i18n/interaction/journey/links 97 passed / 55 skipped + 批三 navigation/products/projects 263 passed / 21 skipped + 批四 research/scroll-transition/seo/theme/writing/device-adaptation 215 passed / 45 skipped，合计 1063 passed / 161 skipped / 0 failed。既有断言与阈值未改。"
+      ],
+      "notes": "对应 PRD 详述 2/3/4 与 AC1/AC2；桌面用例不动既有断言。",
+      "id": "US-021g",
+      "priority": 135,
+      "title": "桌面/平板/移动 3D 行为差异与挂载门槛复核",
+      "user_visible_behavior": "不同设备的 3D 场景呈现与交互有实质差异，且都不遮挡内容。"
+    },
+    {
+      "area": "多设备适配",
+      "status": "passing",
+      "verification": [
+        "npm run verify:local exit 0（lint / typecheck / build / npm test / audit 0 high / i18n 100% / size ≤1MB）。",
+        "CI=1 npm run verify:lighthouse 两 URL × 3 runs 全过，TBT 最优值 ≤200 且与 US-014 基线（zh 106ms / en 125ms）无回退；不删断言、不降阈值。",
+        "全套四项目 E2E 分批 0 失败；检查首屏 chunk 无新增大模块，避免 TBT 回归。"
+      ],
+      "evidence": [
+        "2026-11-24 verify:local exit 0：lint/typecheck/build/npm test 186/186（新增 adaptive-quality 8 + device-signals 4 项）、audit 0 high（6 moderate 为既有 @typescript-eslint 链）、i18n 144 键 100%、size 467.35kB ≤1MB。CI=1 npm run verify:lighthouse exit 0（2 URL × 3 runs，All results processed，全部断言达标）：中文 TBT 193/150/83（最优 83ms）、英文 104/229.5/123（最优 104ms），均 ≤200 且优于 US-014 基线（zh 106ms / en 125ms）；LCP 217.8~327ms、CLS 0、perf 0.92~0.99。单次英文 229.5ms 为本机噪声离群，lhci 按最优 run 聚合通过，阈值未改。全套四项目 E2E 分批 0 失败（1063 passed / 161 skipped，见 US-021g evidence）。新增逻辑仅为纯函数与 rAF 时间戳采样，首屏 chunk 未引入新大模块。"
+      ],
+      "notes": "US-010k/012/013 的 TBT 教训：新增逻辑必须留在非首屏或纯函数，禁止每帧 DOM 读写。",
+      "id": "US-021h",
+      "priority": 136,
+      "title": "性能门禁与全站回归",
+      "user_visible_behavior": "多设备适配不带来性能与功能回归。"
+    },
+    {
+      "area": "多设备适配",
+      "status": "in_progress",
+      "verification": [
+        "PRD 五条 AC 逐条留证（桌面浏览器 / 移动浏览器 / 无横向溢出 / 低性能简化 / WebGL 降级），DoD 跨全部已实现模块复核。",
+        "文档同步 README / docs/Development.md / docs/Tech.md / docs/DoD.md，保持与四档画质和低性能降级一致。",
+        "npm run verify:local 通过；push 后云端 verify job 全绿并回写 CI run URL 到 evidence、PRD_UserStory.json 与 claude-progress.md（URL 未回写前不得标 passing）。"
+      ],
+      "evidence": [
+        "2026-11-24 五条 AC 本地逐条留证：AC1 主流桌面浏览器（chromium 全套 + 1440/1920/1280/1024 四视口，700 粒子完整 3D、鼠标视差/悬停用例全绿）；AC2 主流移动浏览器（mobile-chrome + mobile-safari 各跑全量，390/375 视口单列卡片、折叠菜单触摸导航、≥44px 目标、3D 不遮挡 CTA）；AC3 无横向溢出（overflow.spec 8 视口 × 16 双语路由分层矩阵，四项目 352 passed / 0 failed，并加 HTTP 200 断言防 404 空过）；AC4 低性能简化（硬件信号并发≤4 或内存≤4GB 自动降档，30 帧窗口 + 连续两慢窗口运行时自适应，探针实测首页与 /projects 均 reduced=true、粒子<700、dpr≤1）；AC5 WebGL 降级（chromium-no-webgl 13/13，八处 3D 全站中英页面静态降级且正文可读）。DoD：verify:local exit 0（186 单测 / i18n 144 键 / size 467.35kB / audit 0 high）；全套四项目 1063 passed / 161 skipped / 0 failed；Lighthouse 2 URL × 3 runs 全过（TBT 最优 zh 83ms / en 104ms）。文档同步 README / docs/Development.md / docs/Tech.md / docs/DoD.md 已写明四档画质、硬件信号与运行时降档。",
+        "待办：用户 push main 后回写云端 verify CI run URL（verify + deploy 全绿、E2E/Lighthouse 断言达标），再将该任务与 PRD US-021 转 passing；URL 未回写前本任务保持 in_progress。"
+      ],
+      "notes": "一次只做一个任务；最后一个任务在云端 CI run URL 回写后才可转 passing。",
+      "id": "US-021i",
+      "priority": 137,
+      "title": "US-021 整体验收与云端 CI 回写",
+      "user_visible_behavior": "US-021 五条 AC 全部通过并留证，PRD_UserStory.json US-021 转 passing。"
     }
   ],
   "roadmap": [
@@ -2531,12 +2687,6 @@
       "id": "T-003",
       "title": "Vitest 单元/集成测试基础设施（npm test 从 node:test 迁移，接入 verify 与 CI）",
       "group": "P0-技术",
-      "status": "not_started"
-    },
-    {
-      "id": "US-021",
-      "title": "多设备适配整体验收",
-      "group": "P0",
       "status": "not_started"
     },
     {

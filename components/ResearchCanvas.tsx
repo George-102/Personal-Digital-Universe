@@ -3,7 +3,8 @@
 import dynamic from 'next/dynamic';
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { isWebGLAvailable } from '@/lib/webgl';
-import { getQualityTier, type QualityTier } from '@/lib/quality';
+import { readViewportQuality, type QualityTier } from '@/lib/quality';
+import { useAdaptiveTier } from '@/components/useAdaptiveTier';
 
 /** US-010k：R3F Canvas 与场景只在全部挂载门槛满足后才进入首屏之后的 chunk。 */
 const ResearchStage = dynamic(() => import('@/components/ResearchStage'), { ssr: false });
@@ -55,8 +56,12 @@ export default function ResearchCanvas({ requireLeftHero = true }: Props) {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [inView, setInView] = useState(false);
   const [leftHero, setLeftHero] = useState(false);
-  const [tier, setTier] = useState<QualityTier | null>(null);
+  const [baseTier, setBaseTier] = useState<QualityTier | null>(null);
   const [mode, setMode] = useState<Mode>('off');
+  const tier = useAdaptiveTier(
+    baseTier,
+    Boolean(baseTier && leftHero && desktop && !reducedMotion && inView),
+  );
 
   useEffect(() => {
     const desktopQuery = window.matchMedia('(min-width: 1024px)');
@@ -109,7 +114,7 @@ export default function ResearchCanvas({ requireLeftHero = true }: Props) {
       setMode('no-webgl');
       return;
     }
-    setTier(getQualityTier(window.innerWidth, window.devicePixelRatio || 1));
+    setBaseTier(readViewportQuality());
     setMode('pending');
   }, [leftHero, desktop, reducedMotion, inView]);
 

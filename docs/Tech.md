@@ -70,6 +70,7 @@ Three.js **不会自动回收 GPU 资源**。移除对象时必须显式 `geomet
 - 重复几何体使用 **InstancedMesh** 减少 draw call。
 - 使用 **LOD**，远处物体降面数。
 - 移动端降低粒子数量、关闭实时阴影和高成本后处理（Bloom、SSAO 等）。
+- US-021 四档画质：`lib/quality.ts` 按视口 + 硬件信号（hardwareConcurrency / deviceMemory）选档，`components/useAdaptiveTier.ts` 在进入视口后采样帧间隔，连续两个慢窗口降档且不升回；纯函数状态机与 DOM 副作用分离，E2E 用 `window.__qualityTier` 只读探针验证，不写 dataset。
 
 ### 3.3 降级路径
 代码中必须实现三层降级，并与 PRD 的验收标准对应：

@@ -4,7 +4,8 @@ import { Component, useCallback, useEffect, useRef, useState, type ReactNode } f
 import dynamic from 'next/dynamic';
 import { Canvas } from '@react-three/fiber';
 import { isWebGLAvailable } from '@/lib/webgl';
-import { getQualityTier } from '@/lib/quality';
+import { readViewportQuality, type QualityTier } from '@/lib/quality';
+import { useAdaptiveTier } from '@/components/useAdaptiveTier';
 import {
   attachPointerTracker,
   clamp,
@@ -40,7 +41,7 @@ class SceneErrorBoundary extends Component<{ children: ReactNode }, { failed: bo
 }
 
 export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
-  const [tier, setTier] = useState<{ particles: number; pixelRatio: number } | null>(null);
+  const [baseTier, setBaseTier] = useState<QualityTier | null>(null);
   const [inView, setInView] = useState(true);
   // US-006h：页面变长后 hero 会真正滚出视口；离屏且滚动转场已收敛时才暂停渲染，
   // 否则 damp 未收敛就冻结状态会让相机/粒子/面板转场停在中途。
@@ -62,10 +63,12 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
   const restoreAttempted = useRef(false);
   // US-006h：渲染帧计数，用于实测「离屏且转场收敛后暂停渲染」
   const frameCountRef = useRef(0);
+  // US-021b：渲染用档位可因持续掉帧自动降一档；初始探测仍只在 WebGL 可用时发生
+  const tier = useAdaptiveTier(baseTier, Boolean(baseTier && inView && !reducedMotion));
 
   useEffect(() => {
     if (!isWebGLAvailable()) return;
-    setTier(getQualityTier(window.innerWidth, window.devicePixelRatio || 1));
+    setBaseTier(readViewportQuality());
   }, []);
 
   // tooltip 尺寸只在文案变化后测量一次，供每帧定位读取缓存值
@@ -99,7 +102,7 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
     });
     observer.observe(el);
     return () => observer.disconnect();
-  }, [tier]);
+  }, [baseTier]);
 
   // ScrollDriver 的 RAF 独立于 R3F，离屏时仍会推进 damp；订阅进度差判断是否仍在收敛
   // 只在布尔值翻转时 setState：每帧无条件 setSettling 会让 React 每帧做一次调度检查
@@ -119,7 +122,7 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
       trackerRef.current?.destroy();
       trackerRef.current = null;
     },
-    [tier],
+    [baseTier],
   );
 
   const performClick = useCallback((id: string) => {
@@ -250,7 +253,7 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
               canvas.addEventListener('webglcontextlost', (event) => {
                 event.preventDefault();
                 if (restoreAttempted.current) {
-                  setTier(null);
+                  setBaseTier(null);
                   return;
                 }
                 restoreAttempted.current = true;
@@ -258,11 +261,11 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
                   try {
                     loseExt?.restoreContext();
                   } catch {
-                    setTier(null);
+                    setBaseTier(null);
                   }
                 }, 250);
                 setTimeout(() => {
-                  if (context.isContextLost()) setTier(null);
+                  if (context.isContextLost()) setBaseTier(null);
                 }, 4000);
               });
               canvas.addEventListener('webglcontextrestored', () => {

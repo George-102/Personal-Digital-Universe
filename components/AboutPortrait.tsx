@@ -11,7 +11,8 @@ import {
 import dynamic from 'next/dynamic';
 import { Canvas, type RootState } from '@react-three/fiber';
 import { isWebGLAvailable } from '@/lib/webgl';
-import { getQualityTier, type QualityTier } from '@/lib/quality';
+import { readViewportQuality, type QualityTier } from '@/lib/quality';
+import { useAdaptiveTier } from '@/components/useAdaptiveTier';
 
 const AboutAvatarScene = dynamic(() => import('@/components/three/AboutAvatarScene'), {
   ssr: false,
@@ -57,12 +58,13 @@ export default function AboutPortrait({ label, alt, fallback }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const frames = useRef(0);
   const restoreAttempted = useRef(false);
-  const [tier, setTier] = useState<QualityTier | null>(null);
+  const [baseTier, setBaseTier] = useState<QualityTier | null>(null);
   const [inView, setInView] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [mode, setMode] = useState<'fallback' | '3d'>('fallback');
   const [reason, setReason] = useState('pending');
   const [reducedMotion, setReducedMotion] = useState(false);
+  const tier = useAdaptiveTier(baseTier, Boolean(baseTier && inView && !reducedMotion));
 
   useEffect(() => {
     const query = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -75,13 +77,13 @@ export default function AboutPortrait({ label, alt, fallback }: Props) {
   // WebGL 探测与画质分档延后到进入视口之后：
   // isWebGLAvailable() 会创建一次性 WebGL 上下文，放在首屏 hydration 阶段是纯 TBT 成本
   useEffect(() => {
-    if (!inView || tier) return;
+    if (!inView || baseTier) return;
     if (!isWebGLAvailable()) {
       setReason('no-webgl');
       return;
     }
-    setTier(getQualityTier(window.innerWidth, window.devicePixelRatio || 1));
-  }, [inView, tier]);
+    setBaseTier(readViewportQuality());
+  }, [inView, baseTier]);
 
   useEffect(() => {
     const el = wrapperRef.current;

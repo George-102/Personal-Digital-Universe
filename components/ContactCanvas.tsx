@@ -4,7 +4,8 @@ import dynamic from 'next/dynamic';
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { isWebGLAvailable } from '@/lib/webgl';
-import { getQualityTier, type QualityTier } from '@/lib/quality';
+import { readViewportQuality, type QualityTier } from '@/lib/quality';
+import { useAdaptiveTier } from '@/components/useAdaptiveTier';
 
 const ContactOrbitScene = dynamic(() => import('@/components/three/ContactOrbitScene'), {
   ssr: false,
@@ -48,9 +49,13 @@ export default function ContactCanvas() {
   const [inView, setInView] = useState(false);
   const [leftHero, setLeftHero] = useState(false);
   const leftHeroRef = useRef(false);
-  const [tier, setTier] = useState<QualityTier | null>(null);
+  const [baseTier, setBaseTier] = useState<QualityTier | null>(null);
   const [mounted, setMounted] = useState(false);
   const [mode, setMode] = useState<'off' | 'pending' | '3d' | 'no-webgl' | 'error'>('off');
+  const tier = useAdaptiveTier(
+    baseTier,
+    Boolean(baseTier && leftHero && desktop && !reducedMotion && inView),
+  );
 
   useEffect(() => {
     const desktopQuery = window.matchMedia('(min-width: 1024px)');
@@ -93,14 +98,14 @@ export default function ContactCanvas() {
 
   // WebGL 探测延后到真正要挂载时，避免首屏创建一次性上下文
   useEffect(() => {
-    if (!leftHero || !desktop || reducedMotion || !inView || tier) return;
+    if (!leftHero || !desktop || reducedMotion || !inView || baseTier) return;
     if (!isWebGLAvailable()) {
       setMode('no-webgl');
       return;
     }
-    setTier(getQualityTier(window.innerWidth, window.devicePixelRatio || 1));
+    setBaseTier(readViewportQuality());
     setMode('pending');
-  }, [leftHero, desktop, reducedMotion, inView, tier]);
+  }, [leftHero, desktop, reducedMotion, inView, baseTier]);
 
   useEffect(() => {
     if (tier && leftHero && desktop && !reducedMotion && inView) setMounted(true);

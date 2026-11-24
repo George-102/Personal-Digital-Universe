@@ -168,7 +168,7 @@ export default function NavBar({ items, labels }: { items: NavLink[]; labels: Na
               aria-expanded={open}
               aria-controls="mobile-nav"
               onClick={() => (open ? closeMenu() : setOpen(true))}
-              className="site-nav-link -mr-2 inline-flex h-9 w-9 items-center justify-center rounded-full"
+              className="site-nav-link -mr-2 inline-flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-full"
             >
               <span aria-hidden="true" className="block h-5 w-5">
                 {open ? (

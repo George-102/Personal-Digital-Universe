@@ -60,7 +60,7 @@
 4. GitHub Token 不进前端 bundle。
 5. i18n 路由用 generateStaticParams 全量预生成；静态导出无 middleware。
 6. 论文状态三值约束：Published | Preprint | In Progress。
-7. 移动端 pixelRatio ≤ 1.5，降粒子、关实时阴影与高成本后处理。
+7. 多设备四档画质：Desktop/Laptop 700 粒子 / dpr≤1.5、Tablet 500、Mobile 350；低硬件信号（并发≤4 或内存≤4GB）与持续低帧率自动降档，dpr 上限始终 ≤1.5，关实时阴影与高成本后处理。采样只读 rAF 时间戳，禁止每帧 DOM 读写。
 
 ### 现状与待办
 

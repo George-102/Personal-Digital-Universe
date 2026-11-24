@@ -105,6 +105,8 @@ CI 中 `.github/workflows/verify.yml` 依次执行：`npm ci` → `lint` / `type
 
 核心原则：文字先于 3D —— 任何路由的静态 HTML 必须含核心文案，Canvas 不得成为 LCP 元素；组件卸载显式 dispose GPU 资源，离开视口暂停渲染；移动端 pixelRatio ≤1.5、降粒子、关实时阴影与高成本后处理。
 
+US-021 多设备画质分档（`lib/quality.ts` / `components/useAdaptiveTier.ts`）：Desktop ≥1280px 与 Laptop 1024~1279px 均 700 粒子 / dpr≤1.5，Tablet 640~1023px 500 粒子，Mobile <640px 350 粒子；`navigator.hardwareConcurrency ≤4` 或 `deviceMemory ≤4` 时再降一档（粒子×0.7、dpr≤1）。场景进入视口后才采样 rAF 帧间隔，连续两个慢窗口（平均 >24ms）自动降档一次，不自动升回；采样只读时间戳、不写 DOM。设备档位可通过只读探针 `window.__deviceTier` / `window.__qualityTier` 查看（E2E 用，不进入产物文案）。
+
 ## 许可证
 
 代码与内容许可证分层：代码 [LICENSE](LICENSE)（PolyForm Noncommercial 1.0.0），内容 [LICENSE-CONTENT](LICENSE-CONTENT)（CC BY-NC-ND 4.0）。两者均仅允许非商业使用，内容另禁止演绎。站点 Footer 有版权声明与许可证链接；构建时由 `scripts/sync-licenses.mjs` 把根目录文件同步到 `public/`，使线上 `/LICENSE` 与 `/LICENSE-CONTENT` 可访问（副本已加入 `.gitignore`）。

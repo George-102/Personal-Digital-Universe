@@ -3,7 +3,8 @@
 import dynamic from 'next/dynamic';
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { isWebGLAvailable } from '@/lib/webgl';
-import { getQualityTier, type QualityTier } from '@/lib/quality';
+import { readViewportQuality, type QualityTier } from '@/lib/quality';
+import { useAdaptiveTier } from '@/components/useAdaptiveTier';
 
 /** US-013f：R3F Canvas 与场景在全部门槛满足后才进入首屏之后的 chunk。 */
 const ProductsStage = dynamic(() => import('@/components/ProductsStage'), { ssr: false });
@@ -43,8 +44,12 @@ export default function ProductsCanvas({ count }: { count: number }) {
   const [desktop, setDesktop] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [inView, setInView] = useState(false);
-  const [tier, setTier] = useState<QualityTier | null>(null);
+  const [baseTier, setBaseTier] = useState<QualityTier | null>(null);
   const [mode, setMode] = useState<Mode>('off');
+  const tier = useAdaptiveTier(
+    baseTier,
+    Boolean(baseTier && desktop && !reducedMotion && inView),
+  );
 
   useEffect(() => {
     const desktopQuery = window.matchMedia('(min-width: 1024px)');
@@ -79,7 +84,7 @@ export default function ProductsCanvas({ count }: { count: number }) {
       setMode('no-webgl');
       return;
     }
-    setTier(getQualityTier(window.innerWidth, window.devicePixelRatio || 1));
+    setBaseTier(readViewportQuality());
     setMode('pending');
   }, [desktop, reducedMotion, inView]);
 

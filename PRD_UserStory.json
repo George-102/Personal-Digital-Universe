@@ -334,7 +334,7 @@
       "DoD": "五条验收逐条通过并留证（整体验收，跨全部已实现模块复核）；npm run verify:local 通过 + 云端 verify job 全绿并回写 CI run URL。",
       "status": "not_started",
       "evidence": [],
-      "notes": "基础适配已随 US-001b/US-001e 落地（overflow 5 视口、quality.ts 三档画质、移动端粒子 350/dpr≤1.5）；本故事为全站整体验收，随内容模块齐全后执行。"
+      "notes": "基础适配已随 US-001b/US-001e 落地（overflow 5 视口、quality.ts 三档画质、移动端粒子 350/dpr≤1.5）；本故事为全站整体验收，随内容模块齐全后执行。2026-11-24：拆为 US-021a~i 共 9 任务，本地验收全部完成（四档画质 + 硬件信号与运行时降档、8 视口双语溢出矩阵、移动端触摸专项、八处 3D 降级复核、verify:local 与 Lighthouse 全绿）；云端 verify CI run URL 待 push 后回写，回写前本故事不转 passing。"
     },
     {
       "id": "US-022",
