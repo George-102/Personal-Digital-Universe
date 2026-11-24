@@ -234,9 +234,12 @@
       "details": "设置 Writing / Literature 区域，展示个人创作的文学作品，包括《法渊》等玄幻小说。每部作品包含作品名称、封面、类型、简介、创作时间、创作状态、阅读入口。可以通过 3D 书籍模型、悬浮书架、动态书页或具有文学氛围的空间展示作品。鼠标悬停书籍时可以产生旋转、抬升或翻页效果，点击后进入作品详情页面。作品详情可以展示世界观、背景设定、人物介绍和创作理念。可以通过独立的视觉主题体现文学作品的氛围。3D 效果不应妨碍作品名称和简介的可读性。",
       "Acceptance Criteria": "- 正常场景：访客可以浏览文学作品。- 正常场景：鼠标悬停作品封面时，可以产生对应交互效果。- 正常场景：点击作品后可以进入详情页面。- 异常场景：3D 书籍模型加载失败时，使用普通封面图片代替。- 异常场景：作品尚未完成时，显示 Writing 或 In Progress。",
       "DoD": "五条验收逐条通过并留证；/writing 路由实质验收（移除对应 fixme）；npm run verify:local 通过 + 云端 verify job 全绿并回写 CI run URL。",
-      "status": "not_started",
-      "evidence": [],
-      "notes": "/writing 路由当前为 404 占位；未来路由 SEO fixme ×5 绑定本故事。"
+      "status": "passing",
+      "evidence": [
+        "2026-11-24 五条验收全部通过并留证：AC1 浏览作品（首页 #writing 精选 2 卡 + /writing 与 /en/writing 列表 3 部全量）；AC2 hover 封面交互（R3F 悬浮书架抬升/倾斜/翻页 + 探针翻转）；AC3 点击进入详情（/writing/[slug] 与 /en/writing/[slug] 独立双语路由 + 返回链路）；AC4 3D 失败降级（no-webgl / chunk abort / 统一 CSS 封面占位）；AC5 未完成状态（Writing / In Progress / Completed 三态）。",
+        "DoD：/writing 路由实质验收（seo.spec PENDING_ROUTE_STORY 映射移除，title/description/og:title/单 h1 四断言恢复实跑）；verify:local exit 0；云端 verify 全绿 run URL https://github.com/George-102/Personal-Digital-Universe/actions/runs/45322124986（commit 2546a16，verify + deploy success，E2E 906 passed / 102 skipped / 0 failed，Lighthouse 2 URL × 3 runs 断言全过）。拆分为 US-014a~k 11 任务，全部 passing。"
+      ],
+      "notes": "/writing 路由与 SEO fixme 均已落地移除；清单为 agent 起草稿标【待用户确认】，真实作品信息由用户提供后只改 content/writing.ts。"
     },
     {
       "id": "US-015",

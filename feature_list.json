@@ -2508,7 +2508,7 @@
     },
     {
       "area": "文学创作",
-      "status": "in_progress",
+      "status": "passing",
       "verification": [
         "PRD 五条 AC 逐条留证：AC1 浏览文学作品（首页精选 + 列表全量）、AC2 hover 封面交互效果（3D 抬升/旋转/翻页探针）、AC3 点击进入详情页面（独立路由 + 返回链路）、AC4 3D 书籍模型加载失败用普通封面代替（no-webgl/chunk abort/context-lost 三路径）、AC5 未完成显示 Writing 或 In Progress（三态标签与 data 属性）。",
         "DoD：/writing 路由实质验收（seo.spec 映射已移除）；npm run verify:local 通过；push 后云端 verify job 全绿并回写 CI run URL 到 evidence、PRD_UserStory.json 与 claude-progress.md（CI run URL 未回写前不得标 passing）。",
@@ -2516,7 +2516,8 @@
       ],
       "evidence": [
         "2026-11-23 五条 AC 本地逐条留证：AC1 浏览文学作品（首页 2 精选 + /writing 3 全量，chromium 与 chromium-no-webgl 两项目通过）；AC2 hover 封面交互（3D 书架抬升/倾斜/翻页，__writingActive/__writingHover 探针翻转与复位）；AC3 点击进入详情（/writing/[slug] 与 /en/writing/[slug] 独立路由，列表→详情→返回、未知 slug 404）；AC4 3D 失败用普通封面代替（chromium-no-webgl 16/16 含降级用例、chunk abort 无未捕获异常、统一 CSS 占位）；AC5 未完成显示 Writing / In Progress（《法渊》in-progress、《坠星书简》writing 标签与 data 属性实测）。",
-        "DoD 本地部分：/writing 路由实质验收（seo.spec fixme 移除，11/11 SEO 断言实跑）；verify:local exit 0；全套四项目 E2E 904 passed / 102 skipped / 2 flaky（单跑复核通过）；CI=1 Lighthouse 两轮 exit 0。云端 verify run URL 尚未产生，按 AGENTS.md 本任务保持 in_progress，PRD US-014 不提前标 passing。"
+        "DoD：/writing 路由实质验收（seo.spec fixme 移除，11/11 SEO 断言实跑）；verify:local exit 0；全套四项目 E2E 904 passed / 102 skipped / 2 flaky（单跑复核通过）；CI=1 Lighthouse 两轮 exit 0。",
+        "2026-11-24 云端 verify 全绿并回写 CI run URL https://github.com/George-102/Personal-Digital-Universe/actions/runs/45322124986（commit 2546a16f9bb81dcb29c73642dcd1dfc83f4f08e1 与本地 HEAD 一致，push main 触发）：verify success（18m26s）+ deploy success（1m6s）+ preview skipped；E2E 四项目 906 passed / 102 skipped / 0 failed；Lighthouse 2 URL × 3 runs 断言全过（TBT ≤200 / LCP ≤2500 / CLS ≤0.1 / perf ≥0.85 / a11y ≥0.95 / SEO ≥0.95 / best-practices ≥0.90），All results processed。先前本地全套的 2 项 flaky 在云端未复现。US-014a~k 11 任务全部 passing，roadmap 不含 US-014。"
       ],
       "notes": "一次只做一个任务；最后一个任务在云端 CI run URL 回写后才可转 passing。",
       "id": "US-014k",
