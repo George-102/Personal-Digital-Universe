@@ -307,3 +307,8 @@ run 44277517360 仍挂 Lighthouse：中文 TBT 最优 232（三次 407/296/232�
 - **e 同步**：README、`docs/Development.md`（四处 + 后续段）、CI workflow Unit tests 注释更新为 Vitest（命令 `npm test` 不变）。feature_list.json 的历史 notes 保留原措辞不改写。
 - **f 验收（本地）**：`./init.ps1` exit 0（Node v26.13.1 / npm 11.20.0，1224 E2E 用例可列出，pre-push 门禁未激活）；`npm run verify:local` exit 0（lint / typecheck / build / npm test 24 files 186 tests + coverage / audit 0 high / i18n 144 键 100% / size 467.35kB）；E2E 抽样 core + seo 的 chromium 项目 15 passed / 0 failed。未删断言、未降阈值、无新增 fixme、未改应用代码。
 - **待用户操作**：push main 触发云端 verify，回写全绿 CI run URL 到 `feature_list.json` 的 T-003f.evidence 与本文件；URL 回写前 T-003f 保持 in_progress、T-003 不标 passing。提交只含预期文件，显式排除 `.tmp-t003-*`（未跟踪）、`.workbuddy/`、`test-out.txt`、`vendor/`；本轮工作区无 `AGENTS.md` / `docs/PRD.md` 并行改动。
+
+## T-003 完成回写（2026-11-25 22:00）
+
+- 云端 verify 全绿 run https://github.com/George-102/Personal-Digital-Universe/actions/runs/45611093419（commit `6f8c0ce`，verify 1317s + deploy 35s + preview skipped，所有 step success）。Unit tests：Vitest 24 files / 186 tests passed + coverage 阈值全过；E2E 四项目 1062 passed / 161 skipped / 1 flaky（mobile-safari 头像上下文恢复用例重试通过）/ 0 failed；Lighthouse 2 URL × 3 runs 全过（All results processed）。
+- T-003a~f 全 passing，T-003 技术债关闭，CI run URL 已回写 `feature_list.json` T-003f.evidence。下一步：按 `feature_list.json` 下一个最高优先级未完成项执行（roadmap 首位 US-023 内容维护验收），开工先 `./init.ps1`。

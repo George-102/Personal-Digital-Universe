@@ -362,5 +362,6 @@
       "evidence": [],
       "notes": "核心机制已由 T-002a/b/c 覆盖并 passing（content/ 九类类型 + prebuild 校验、public 过滤统一出口、缺字段容错），剩余验收随 US-006/010/012/014 等内容区块落地时复验，故整体状态保持 not_started。"
     }
-  ]
+  ],
+  "notes": "T-003 已于 2026-11-25 完成 Vitest 迁移（24 文件 / 186 用例 + coverage v8 门禁），云端 verify 全绿 run https://github.com/George-102/Personal-Digital-Universe/actions/runs/45611093419；PRD 各故事中“T-003 仍 not_started”为当时历史记录，不改写。"
 }
