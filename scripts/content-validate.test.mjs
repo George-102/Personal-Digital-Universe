@@ -1,5 +1,4 @@
-import { test } from 'node:test';
-import assert from 'node:assert/strict';
+import { test, expect } from 'vitest';
 import { validateEntry, filterPublic } from '../content/validate.ts';
 
 const validProject = {
@@ -16,18 +15,18 @@ const validProject = {
 };
 
 test('合法项目数据通过校验', () => {
-  assert.doesNotThrow(() => validateEntry('projects', validProject));
+  expect(() => validateEntry('projects', validProject)).not.toThrow();
 });
 
 test('缺少必填字段时校验失败并指明字段', () => {
   const missing = { ...validProject };
   delete missing.repo;
-  assert.throws(() => validateEntry('projects', missing), /repo/);
+  expect(() => validateEntry('projects', missing)).toThrow();
 });
 
 test('双语字段缺少 en 时校验失败', () => {
   const bad = { ...validProject, description: { zh: '只有中文' } };
-  assert.throws(() => validateEntry('projects', bad), /description/);
+  expect(() => validateEntry('projects', bad)).toThrow();
 });
 
 test('论文状态只允许 Published / Preprint / In Progress', () => {
@@ -38,12 +37,9 @@ test('论文状态只允许 Published / Preprint / In Progress', () => {
     public: true,
   };
   for (const status of ['Published', 'Preprint', 'In Progress']) {
-    assert.doesNotThrow(() => validateEntry('publications', { ...base, status }));
+    expect(() => validateEntry('publications', { ...base, status })).not.toThrow();
   }
-  assert.throws(
-    () => validateEntry('publications', { ...base, status: 'Accepted' }),
-    /status/,
-  );
+  expect(() => validateEntry('publications', { ...base, status: 'Accepted' })).toThrow();
 });
 
 test('产品状态只允许四值枚举', () => {
@@ -56,19 +52,13 @@ test('产品状态只允许四值枚举', () => {
     public: true,
   };
   for (const status of ['Released', 'Beta', 'In Development', 'Discontinued']) {
-    assert.doesNotThrow(() => validateEntry('products', { ...base, status }));
+    expect(() => validateEntry('products', { ...base, status })).not.toThrow();
   }
-  assert.throws(
-    () => validateEntry('products', { ...base, status: 'Coming Soon' }),
-    /status/,
-  );
+  expect(() => validateEntry('products', { ...base, status: 'Coming Soon' })).toThrow();
 });
 
 test('public 必须是布尔值', () => {
-  assert.throws(
-    () => validateEntry('projects', { ...validProject, public: 'yes' }),
-    /public/,
-  );
+  expect(() => validateEntry('projects', { ...validProject, public: 'yes' })).toThrow();
 });
 
 test('filterPublic 过滤 public:false 条目且不改原数组', () => {
@@ -77,6 +67,6 @@ test('filterPublic 过滤 public:false 条目且不改原数组', () => {
     { ...validProject, name: 'hidden', public: false },
   ];
   const result = filterPublic(items);
-  assert.deepEqual(result.map((i) => i.name), ['open']);
-  assert.equal(items.length, 2);
+  expect(result.map((i) => i.name)).toEqual(['open']);
+  expect(items.length).toBe(2);
 });

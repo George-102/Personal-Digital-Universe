@@ -1,5 +1,4 @@
-import { test } from 'node:test';
-import assert from 'node:assert/strict';
+import { test, expect } from 'vitest';
 import { spawnSync } from 'node:child_process';
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -25,7 +24,7 @@ test('键完全一致时通过（含嵌套键）', () => {
     'zh.json': { nav: { home: '首页' }, hero: { explore: '探索' } },
     'en.json': { nav: { home: 'Home' }, hero: { explore: 'Explore' } },
   });
-  assert.equal(res.status, 0, res.stderr);
+  expect(res.status, res.stderr).toBe(0);
 });
 
 test('en 缺少键时失败并指出缺失键', () => {
@@ -33,8 +32,8 @@ test('en 缺少键时失败并指出缺失键', () => {
     'zh.json': { nav: { home: '首页', about: '关于' } },
     'en.json': { nav: { home: 'Home' } },
   });
-  assert.equal(res.status, 1);
-  assert.match(res.stderr, /nav\.about/);
+  expect(res.status).toBe(1);
+  expect(res.stderr).toMatch(/nav\.about/);
 });
 
 test('en 多余键时失败并指出多余键', () => {
@@ -42,12 +41,12 @@ test('en 多余键时失败并指出多余键', () => {
     'zh.json': { nav: { home: '首页' } },
     'en.json': { nav: { home: 'Home', about: 'About' } },
   });
-  assert.equal(res.status, 1);
-  assert.match(res.stderr, /nav\.about/);
+  expect(res.status).toBe(1);
+  expect(res.stderr).toMatch(/nav\.about/);
 });
 
 test('语言文件缺失时失败并指出文件名', () => {
   const res = runChecker({ 'zh.json': { a: '甲' } });
-  assert.equal(res.status, 1);
-  assert.match(res.stderr, /en\.json/);
+  expect(res.status).toBe(1);
+  expect(res.stderr).toMatch(/en\.json/);
 });

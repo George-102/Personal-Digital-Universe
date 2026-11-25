@@ -1,5 +1,4 @@
-import { test } from 'node:test';
-import assert from 'node:assert/strict';
+import { test, expect } from 'vitest';
 import {
   parseGithubCache,
   mergeGithubCache,
@@ -21,14 +20,14 @@ const project = (overrides = {}) => ({
 });
 
 test('parseGithubCache 接受合法缓存与空对象', () => {
-  assert.deepEqual(parseGithubCache(null), { fetchedAt: null, repos: {} });
-  assert.deepEqual(parseGithubCache({}), { fetchedAt: null, repos: {} });
+  expect(parseGithubCache(null)).toEqual({ fetchedAt: null, repos: {} });
+  expect(parseGithubCache({})).toEqual({ fetchedAt: null, repos: {} });
   const parsed = parseGithubCache({
     fetchedAt: '2026-11-18T00:00:00.000Z',
     repos: { 'Owner/Example': { stars: 12, language: 'TypeScript', archived: false } },
   });
-  assert.equal(parsed.repos['Owner/Example'].stars, 12);
-  assert.equal(parsed.fetchedAt, '2026-11-18T00:00:00.000Z');
+  expect(parsed.repos['Owner/Example'].stars).toBe(12);
+  expect(parsed.fetchedAt).toBe('2026-11-18T00:00:00.000Z');
 });
 
 test('parseGithubCache 拒绝畸形 repo 条目（不污染合并）', () => {
@@ -41,10 +40,10 @@ test('parseGithubCache 拒绝畸形 repo 条目（不污染合并）', () => {
       nullEntry: null,
     },
   });
-  assert.equal(parsed.fetchedAt, null);
-  assert.deepEqual(Object.keys(parsed.repos).sort(), ['evil', 'good']);
-  assert.equal(parsed.repos.bad, undefined);
-  assert.equal(parsed.repos.evil.token, undefined);
+  expect(parsed.fetchedAt).toBe(null);
+  expect(Object.keys(parsed.repos).sort()).toEqual(['evil', 'good']);
+  expect(parsed.repos.bad).toBe(undefined);
+  expect(parsed.repos.evil.token).toBe(undefined);
 });
 
 test('mergeGithubCache 仅覆盖动态字段，静态内容以 content 为准', () => {
@@ -55,11 +54,11 @@ test('mergeGithubCache 仅覆盖动态字段，静态内容以 content 为准', 
       'Owner/Example': { stars: 99, language: 'TypeScript', archived: true },
     },
   });
-  assert.equal(merged[0].name, '静态名');
-  assert.equal(merged[0].stars, 99);
-  assert.equal(merged[0].language, 'TypeScript');
-  assert.equal(merged[0].archived, true);
-  assert.equal(list[0].stars, 1, '不修改原始 content 数据');
+  expect(merged[0].name).toBe('静态名');
+  expect(merged[0].stars).toBe(99);
+  expect(merged[0].language).toBe('TypeScript');
+  expect(merged[0].archived).toBe(true);
+  expect(list[0].stars, '不修改原始 content 数据').toBe(1);
 });
 
 test('mergeGithubCache 对无缓存/私有条目保留手写 fallback', () => {
@@ -68,10 +67,10 @@ test('mergeGithubCache 对无缓存/私有条目保留手写 fallback', () => {
     project({ slug: 'private', repo: 'Owner/Secret', stars: 0, repoPrivate: true }),
   ];
   const merged = mergeGithubCache(list, { fetchedAt: 'now', repos: {} });
-  assert.equal(merged[0].stars, 4);
-  assert.equal(merged[1].stars, 0);
-  assert.equal(githubStars(merged[0]), 4);
-  assert.equal(githubStars({ ...merged[0], stars: undefined }), 0);
+  expect(merged[0].stars).toBe(4);
+  expect(merged[1].stars).toBe(0);
+  expect(githubStars(merged[0])).toBe(4);
+  expect(githubStars({ ...merged[0], stars: undefined })).toBe(0);
 });
 
 test('mergeGithubCache 忽略未知 repo 与非法缓存字段', () => {
@@ -80,7 +79,7 @@ test('mergeGithubCache 忽略未知 repo 与非法缓存字段', () => {
     fetchedAt: 'now',
     repos: { 'Owner/Other': { stars: 500 }, 'Owner/Example': { stars: 'NaN' } },
   });
-  assert.equal(merged[0].stars, 2);
+  expect(merged[0].stars).toBe(2);
 });
 
 // ---------- 构建期抓取（US-012c） ----------
@@ -108,19 +107,19 @@ test('collectGithubCache 调用 GitHub API 并只取白名单字段（Token 不�
     { fetchedAt: 'old', repos: {} },
     { token: 'FAKE-TOKEN', fetchImpl },
   );
-  assert.equal(calls.length, 1);
-  assert.equal(calls[0].url, 'https://api.github.com/repos/Owner/Example');
-  assert.equal(calls[0].headers.Authorization, 'Bearer FAKE-TOKEN');
-  assert.deepEqual(result.repos['Owner/Example'], {
+  expect(calls.length).toBe(1);
+  expect(calls[0].url).toBe('https://api.github.com/repos/Owner/Example');
+  expect(calls[0].headers.Authorization).toBe('Bearer FAKE-TOKEN');
+  expect(result.repos['Owner/Example']).toEqual({
     stars: 7,
     language: 'TypeScript',
     archived: false,
     updatedAt: '2026-11-18T00:00:00Z',
   });
-  assert.equal(result.repos['Owner/Secret'], undefined, '私有仓库不抓取');
-  assert.ok(!JSON.stringify(result).includes('SECRET-VALUE'));
-  assert.ok(!JSON.stringify(result).includes('FAKE-TOKEN'));
-  assert.ok(typeof result.fetchedAt === 'string');
+  expect(result.repos['Owner/Secret'], '私有仓库不抓取').toBe(undefined);
+  expect(!JSON.stringify(result).includes('SECRET-VALUE')).toBeTruthy();
+  expect(!JSON.stringify(result).includes('FAKE-TOKEN')).toBeTruthy();
+  expect(typeof result.fetchedAt === 'string').toBeTruthy();
 });
 
 test('collectGithubCache API 失败时沿用旧缓存，不抛错、构建可继续', async () => {
@@ -130,8 +129,8 @@ test('collectGithubCache API 失败时沿用旧缓存，不抛错、构建可继
     previous,
     { token: '', fetchImpl: async () => ({ ok: false, status: 403 }) },
   );
-  assert.deepEqual(result.repos['Owner/Example'], { stars: 3 });
-  assert.equal(result.fetchedAt, 'old', '失败时不刷新时间戳');
+  expect(result.repos['Owner/Example']).toEqual({ stars: 3 });
+  expect(result.fetchedAt, '失败时不刷新时间戳').toBe('old');
 });
 
 test('collectGithubCache 网络异常时回退 content 手写 stars（无缓存条目）', async () => {
@@ -145,5 +144,5 @@ test('collectGithubCache 网络异常时回退 content 手写 stars（无缓存�
       },
     },
   );
-  assert.deepEqual(result, { fetchedAt: null, repos: {} });
+  expect(result).toEqual({ fetchedAt: null, repos: {} });
 });

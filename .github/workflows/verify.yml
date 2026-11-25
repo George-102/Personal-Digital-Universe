@@ -44,7 +44,7 @@ jobs:
         env:
           NEXT_TELEMETRY_DISABLED: '1'
 
-      # 产物级单测（home-text / profile-data）读取 out/*.html，必须在 build 之后
+      # Vitest 单测（home-text / profile-data 产物级用例读取 out/*.html，必须在 build 之后）
       - name: Unit tests
         run: npm test
 

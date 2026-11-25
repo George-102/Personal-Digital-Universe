@@ -13,7 +13,7 @@
 | 技术 | 持续集成 | 持续集成服务器 | ✅ 已跑通（Verify 全量门禁全绿） | .github/workflows/verify.yml、T-004a/b |
 | 技术 | 持续集成 | 持续集成监视器 | ✅ 已落地 | T-004b（CI 徽章）、T-005b（UptimeRobot 5 分钟监控 + Cloudflare Web Analytics） |
 | 技术 | 持续集成 | 构建脚本 | ✅ 已建 | package.json（verify 系列 + dev/build/start）；Node 26 固定随 T-004a |
-| 技术 | 测试 | 单元测试和集成测试 | ⏳ 待落地 | T-003（Vitest，未提前） |
+| 技术 | 测试 | 单元测试和集成测试 | ✅ 已落地 | T-003（Vitest + coverage v8，24 文件 / 186 用例） |
 | 技术 | 测试 | 端到端测试 | ✅ 已建并运行 | playwright.config.ts、e2e/（12 个 spec） |
 | 技术 | 发布 | 发布脚本 | ✅ 已落地 | T-005a（deploy + preview job，Wrangler 直传） |
 
@@ -128,7 +128,7 @@
 | `npm run audit` | ✅ 已建 | 0 高危及以上漏洞（脚本指定官方 registry，npmmirror 不支持 audit 端点） |
 | `npm run check:i18n` | ✅ 已建 | zh/en 键覆盖率 100%（messages/ 建立后实测） |
 | `npm run size` | ✅ 已建 | JS 总量 ≤1MB gzip（T-001 产出 out/ 后实测） |
-| `npm test` | ✅ 已建 | node:test 运行 scripts/ 测试；T-003 迁移 Vitest（未提前，CI 暂用 node:test） |
+| `npm test` | ✅ 已建 | Vitest 运行 scripts/*.test.mjs（24 文件 / 186 用例）+ v8 覆盖率门禁；产物级用例需先 build |
 | `npm run dev` / `build` / `start` | ✅ 已建 | 本地开发与静态导出 |
 
 ### CI/CD 流水线（.github/workflows/verify.yml，定稿待落地）
@@ -149,7 +149,7 @@
 
 | 层 | 工具 | 覆盖 | 执行主体 | 状态 |
 | --- | --- | --- | --- | --- |
-| 单元 / 集成 | Vitest（+ Testing Library） | content/ 数据校验（缺字段、public 过滤、论文状态枚举）、工具函数、组件渲染 | 本地 `verify:local` + 云端 CI | ⏳ T-003 |
+| 单元 / 集成 | Vitest（+ v8 覆盖率门禁） | content/ 数据校验（缺字段、public 过滤、论文状态枚举）、工具函数、产物级断言 | 本地 `verify:local` + 云端 CI | ✅ T-003（186 用例 / 阈值 stmts 80 / branch 82 / func 85 / line 82） |
 | E2E | Playwright（4 项目：桌面 / 无 WebGL / 移动 Chrome / 移动 Safari） | 核心可用性、WebGL 与资源降级、i18n、主题、a11y/reduced-motion、SEO、横向溢出、外链 | **仅云端 CI**（本地不跑） | ✅ e2e/ 9 个 spec 已建 |
 | 性能 / SEO 门禁 | Lighthouse CI | 性能 ≥0.85、可访问性 ≥0.95、SEO ≥0.95、最佳实践 ≥0.90；LCP ≤2.5s、CLS ≤0.1、TBT ≤200ms | **仅云端 CI**（本地不跑） | ✅ lighthouserc.js 已建 |
 | 质量指标门禁 | npm audit / check-i18n.mjs / size-limit | 0 高危漏洞；zh/en 键覆盖率 100%；JS 总量 ≤1MB gzip | 本地 `verify:local` + 云端 CI | ✅ T-006 已建（size 实测待 T-001） |
@@ -157,7 +157,7 @@
 
 注：audit 脚本指定官方 registry（npmmirror 无 audit 端点）；basic-ftp / compression / postcss 经 package.json overrides 固定至修复版（^6.2.6 / ^1.8.2 / ^8.5.32），均为工具链间接依赖，不进前端 bundle。postcss override 于 2026-11-11 加入（three 依赖链引入 high 漏洞 GHSA-qx2v-qp2m-jg93 等）。@typescript-eslint 的 6 个 moderate 暂无修复版，仅 dev 依赖，门禁卡 high 不受影响。picomatch 经 overrides + `vendor/picomatch/`（4.0.7 + CVE-2026-112366 补丁，版本声明 4.0.8，详见该目录 SECURITY-PATCH.md）整体替换——官方 advisory ≤4.0.7 全受影响且无修复版（2026-11-18），官方 ≥4.0.8 发布后移除 vendor 与对应 overrides。注意：新增/修改 overrides 后 `npm install` 会全树重解析，可能把 basic-ftp 等钉版包降级回漏洞版，装完务必复跑 `npm run audit` 并检查 lockfile diff 只含预期条目。
 
-**TDD 原则（AGENTS.md）：每个功能先写失败测试，再实现。** 单元测试随 T-003 基础设施落地后成为默认流程；E2E 验收标准已先行存在，功能实现以通过对应 spec 为准。
+**TDD 原则（AGENTS.md）：每个功能先写失败测试，再实现。** T-003 已将单元测试迁至 Vitest 并成为默认流程（`npm test` 带覆盖率门禁）；E2E 验收标准已先行存在，功能实现以通过对应 spec 为准。
 
 门禁逻辑：`npm run verify` 全部通过才可合并/发布——由云端 `.github/workflows/verify.yml` 的 `verify` job 逐条执行等价全链（push main / PR 自动触发），CI run URL 为证据；本地默认只跑 `npm run verify:local`，不替代云端门禁。不得为通过验收而悄悄改弱断言或阈值（AGENTS.md）。
 
@@ -181,7 +181,7 @@
 - **T-004a / T-004b / T-005a 均已 passing**：Node 26 前置修复；`verify` 全量门禁（lint / typecheck / build / 单测 / 质量指标 / Playwright / Lighthouse）；首次推送与分支保护、README 徽章实测 passing；`deploy` + `preview` job 用 Wrangler Direct Upload 上传被验证的同一份 `out/`。生产 `https://personal-digital-universe.pages.dev` 实测 HTTP 200。
 - **T-005b 代码部分已落地**：`LICENSE`（PolyForm Noncommercial 1.0.0）、`LICENSE-CONTENT`（CC BY-NC-ND 4.0）、双语 Footer 版权、`lib/site.ts` 真实域名与 sitemap/robots、`scripts/sync-licenses.mjs`、`docs/DoD.md` D 组已验证项打勾。
 - **监控（已验证）**：Cloudflare Web Analytics 在 Pages 项目 → Metrics 一键开启；run 42999448346 部署后实测 `/` 与 `/en/` 的 HTML 均含 `cloudflareinsights.com/beacon.min.js` + `data-cf-beacon`，无需改代码。UptimeRobot HTTPS monitor `804633325`（type=1、interval=300、告警联系人 `9024699_0_0`）回查 `status=2`（Up）。两项均由用户在控制台/本机终端配置，agent 未接触第三方账号密钥；证据见 `feature_list.json` T-005b。
-- **后续**：T-003（Vitest 基础设施）→ US-004 → 其余 roadmap。
+- **后续**：T-003（Vitest 基础设施）已落地（2026-11-25，见文末 T-003 章节）→ 其余 roadmap。
 
 ---
 

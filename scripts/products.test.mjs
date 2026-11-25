@@ -1,5 +1,4 @@
-import { test } from 'node:test';
-import assert from 'node:assert/strict';
+import { test, expect } from 'vitest';
 import {
   PRODUCT_STATUS,
   isValidProductSlug,
@@ -29,7 +28,7 @@ const entry = (overrides = {}) => ({
 });
 
 test('PRODUCT_STATUS 严格限定 PRD 四态', () => {
-  assert.deepEqual([...PRODUCT_STATUS].sort(), [
+  expect([...PRODUCT_STATUS].sort()).toEqual([
     'Beta',
     'Discontinued',
     'In Development',
@@ -38,105 +37,86 @@ test('PRODUCT_STATUS 严格限定 PRD 四态', () => {
 });
 
 test('isValidProductSlug 只允许小写 kebab-case', () => {
-  assert.equal(isValidProductSlug('smart-scheduler'), true);
-  assert.equal(isValidProductSlug('note-keeper-2'), true);
-  assert.equal(isValidProductSlug('Bad Slug'), false);
-  assert.equal(isValidProductSlug('UPPER'), false);
-  assert.equal(isValidProductSlug('-lead'), false);
-  assert.equal(isValidProductSlug('trail-'), false);
-  assert.equal(isValidProductSlug(''), false);
+  expect(isValidProductSlug('smart-scheduler')).toBe(true);
+  expect(isValidProductSlug('note-keeper-2')).toBe(true);
+  expect(isValidProductSlug('Bad Slug')).toBe(false);
+  expect(isValidProductSlug('UPPER')).toBe(false);
+  expect(isValidProductSlug('-lead')).toBe(false);
+  expect(isValidProductSlug('trail-')).toBe(false);
+  expect(isValidProductSlug('')).toBe(false);
 });
 
 test('isValidProductUrl 只接受 https 或站内路径，拒绝 javascript/协议相对', () => {
-  assert.equal(isValidProductUrl('https://example.com/app'), true);
-  assert.equal(isValidProductUrl('/products/demo'), true);
-  assert.equal(isValidProductUrl('http://example.com'), false);
-  assert.equal(isValidProductUrl('javascript:alert(1)'), false);
-  assert.equal(isValidProductUrl('//example.com'), false);
-  assert.equal(isValidProductUrl('ftp://example.com'), false);
+  expect(isValidProductUrl('https://example.com/app')).toBe(true);
+  expect(isValidProductUrl('/products/demo')).toBe(true);
+  expect(isValidProductUrl('http://example.com')).toBe(false);
+  expect(isValidProductUrl('javascript:alert(1)')).toBe(false);
+  expect(isValidProductUrl('//example.com')).toBe(false);
+  expect(isValidProductUrl('ftp://example.com')).toBe(false);
 });
 
 test('isValidProductRepo 只接受 owner/name 形式', () => {
-  assert.equal(isValidProductRepo('George-102/smart-scheduler'), true);
-  assert.equal(isValidProductRepo('George-102'), false);
-  assert.equal(isValidProductRepo('/repo'), false);
-  assert.equal(isValidProductRepo('own er/repo'), false);
-  assert.equal(isValidProductRepo('javascript:alert(1)'), false);
+  expect(isValidProductRepo('George-102/smart-scheduler')).toBe(true);
+  expect(isValidProductRepo('George-102')).toBe(false);
+  expect(isValidProductRepo('/repo')).toBe(false);
+  expect(isValidProductRepo('own er/repo')).toBe(false);
+  expect(isValidProductRepo('javascript:alert(1)')).toBe(false);
 });
 
 test('validateProduct 通过合法条目（含可选 detail/logo/cover/url/repo）', () => {
-  assert.deepEqual(
-    validateProduct(
+  expect(validateProduct(
       entry({
         logo: '/images/product-logo.svg',
         cover: 'https://example.com/cover.png',
         url: 'https://example.com/app',
         repo: 'George-102/smart-scheduler',
       }),
-    ),
-    [],
-  );
-  assert.deepEqual(validateProduct(entry({ detail: undefined, url: undefined })), []);
+    )).toEqual([]);
+  expect(validateProduct(entry({ detail: undefined, url: undefined }))).toEqual([]);
 });
 
 test('validateProduct 拒绝非法 slug、status', () => {
-  assert.ok(validateProduct(entry({ slug: 'Bad Slug' })).some((e) => e.includes('slug')));
-  assert.ok(validateProduct(entry({ status: 'Done' })).some((e) => e.includes('status')));
-  assert.ok(
-    validateProduct(entry({ status: 'In progress' })).some((e) => e.includes('status')),
-  );
+  expect(validateProduct(entry({ slug: 'Bad Slug' })).some((e) => e.includes('slug'))).toBeTruthy();
+  expect(validateProduct(entry({ status: 'Done' })).some((e) => e.includes('status'))).toBeTruthy();
+  expect(validateProduct(entry({ status: 'In progress' })).some((e) => e.includes('status'))).toBeTruthy();
 });
 
 test('validateProduct 拒绝单语字段、空功能列表与非法可选字段', () => {
-  assert.ok(
-    validateProduct(entry({ description: { zh: '只有中文' } })).some((e) =>
+  expect(validateProduct(entry({ description: { zh: '只有中文' } })).some((e) =>
       e.includes('description'),
-    ),
-  );
-  assert.ok(validateProduct(entry({ features: [] })).some((e) => e.includes('features')));
-  assert.ok(
-    validateProduct(entry({ features: [{ zh: '只有中文' }] })).some((e) =>
+    )).toBeTruthy();
+  expect(validateProduct(entry({ features: [] })).some((e) => e.includes('features'))).toBeTruthy();
+  expect(validateProduct(entry({ features: [{ zh: '只有中文' }] })).some((e) =>
       e.includes('features'),
-    ),
-  );
-  assert.ok(
-    validateProduct(entry({ detail: { zh: '只有中文' } })).some((e) => e.includes('detail')),
-  );
-  assert.ok(
-    validateProduct(entry({ url: 'javascript:alert(1)' })).some((e) => e.includes('url')),
-  );
-  assert.ok(
-    validateProduct(entry({ repo: 'javascript:alert(1)' })).some((e) => e.includes('repo')),
-  );
-  assert.ok(
-    validateProduct(entry({ logo: 'javascript:alert(1)' })).some((e) => e.includes('logo')),
-  );
-  assert.ok(validateProduct(entry({ featured: 'yes' })).some((e) => e.includes('featured')));
-  assert.ok(validateProduct(entry({ public: 'yes' })).some((e) => e.includes('public')));
+    )).toBeTruthy();
+  expect(validateProduct(entry({ detail: { zh: '只有中文' } })).some((e) => e.includes('detail'))).toBeTruthy();
+  expect(validateProduct(entry({ url: 'javascript:alert(1)' })).some((e) => e.includes('url'))).toBeTruthy();
+  expect(validateProduct(entry({ repo: 'javascript:alert(1)' })).some((e) => e.includes('repo'))).toBeTruthy();
+  expect(validateProduct(entry({ logo: 'javascript:alert(1)' })).some((e) => e.includes('logo'))).toBeTruthy();
+  expect(validateProduct(entry({ featured: 'yes' })).some((e) => e.includes('featured'))).toBeTruthy();
+  expect(validateProduct(entry({ public: 'yes' })).some((e) => e.includes('public'))).toBeTruthy();
 });
 
 test('validateProduct 缺必填字段时报错', () => {
   const missing = entry();
   delete missing.slug;
-  assert.ok(validateProduct(missing).some((e) => e.includes('slug')));
+  expect(validateProduct(missing).some((e) => e.includes('slug'))).toBeTruthy();
   const missingFeatures = entry();
   delete missingFeatures.features;
-  assert.ok(validateProduct(missingFeatures).some((e) => e.includes('features')));
+  expect(validateProduct(missingFeatures).some((e) => e.includes('features'))).toBeTruthy();
 });
 
 test('validateProductList 空列表合法，重复 slug 与全非公开被拒绝', () => {
-  assert.deepEqual(validateProductList([]), []);
-  assert.deepEqual(validateProductList([entry()]), []);
+  expect(validateProductList([])).toEqual([]);
+  expect(validateProductList([entry()])).toEqual([]);
   const dup = validateProductList([entry(), entry({ name: 'Another' })]);
-  assert.ok(dup.some((e) => e.includes('slug') && e.includes('重复')));
-  assert.ok(
-    validateProductList([entry({ public: false })]).some((e) => e.includes('public')),
-  );
+  expect(dup.some((e) => e.includes('slug') && e.includes('重复'))).toBeTruthy();
+  expect(validateProductList([entry({ public: false })]).some((e) => e.includes('public'))).toBeTruthy();
 });
 
 test('validateProductList featured 条目必须 public', () => {
   const errors = validateProductList([entry({ public: false, featured: true })]);
-  assert.ok(errors.some((e) => e.includes('featured')));
+  expect(errors.some((e) => e.includes('featured'))).toBeTruthy();
 });
 
 test('publicProducts 过滤非公开条目，findProductBySlug 按 slug 查找', () => {
@@ -144,23 +124,20 @@ test('publicProducts 过滤非公开条目，findProductBySlug 按 slug 查找',
     entry(),
     entry({ slug: 'hidden-product', name: 'Hidden', public: false, featured: false }),
   ];
-  assert.deepEqual(
-    publicProducts(list).map((item) => item.slug),
-    ['smart-scheduler'],
-  );
-  assert.equal(findProductBySlug(list, 'smart-scheduler')?.name, 'Smart Scheduler');
-  assert.equal(findProductBySlug(list, 'nope'), undefined);
-  assert.equal(findProductBySlug(list, ''), undefined);
+  expect(publicProducts(list).map((item) => item.slug)).toEqual(['smart-scheduler']);
+  expect(findProductBySlug(list, 'smart-scheduler')?.name).toBe('Smart Scheduler');
+  expect(findProductBySlug(list, 'nope')).toBe(undefined);
+  expect(findProductBySlug(list, '')).toBe(undefined);
 });
 
 test('productStatusKey 将四态映射为 data 属性安全的 kebab 值', () => {
-  assert.equal(productStatusKey('Released'), 'released');
-  assert.equal(productStatusKey('Beta'), 'beta');
-  assert.equal(productStatusKey('In Development'), 'in-development');
-  assert.equal(productStatusKey('Discontinued'), 'discontinued');
+  expect(productStatusKey('Released')).toBe('released');
+  expect(productStatusKey('Beta')).toBe('beta');
+  expect(productStatusKey('In Development')).toBe('in-development');
+  expect(productStatusKey('Discontinued')).toBe('discontinued');
 });
 
 test('productHref 构造双语列表页地址', () => {
-  assert.equal(productHref('zh'), '/products/');
-  assert.equal(productHref('en'), '/en/products/');
+  expect(productHref('zh')).toBe('/products/');
+  expect(productHref('en')).toBe('/en/products/');
 });

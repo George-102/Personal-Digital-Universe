@@ -79,7 +79,7 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 | `npm run audit` | 0 高危及以上漏洞（指定官方 registry） |
 | `npm run check:i18n` | zh/en 键覆盖率 100% |
 | `npm run size` | JS 总量 ≤1MB（size-limit） |
-| `npm test` | 单元测试（当前 node:test，T-003 迁移 Vitest；产物级用例需先 `npm run build`） |
+| `npm test` | Vitest 单元/集成测试 + v8 覆盖率门禁（24 文件 / 186 用例；产物级用例需先 `npm run build`） |
 | `npm run lint` / `npm run typecheck` | ESLint / TypeScript 检查 |
 
 本地默认零浏览器：无需 `npx playwright install`、不跑 `lhci`（本地跑 Lighthouse 会生成公开报告链接，见 `lighthouserc.js`）。仅按需做浏览器抽查时才安装浏览器：`npx playwright install`。门禁断言与阈值不得为通过验收而改弱（AGENTS.md）。

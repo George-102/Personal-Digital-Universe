@@ -22,7 +22,7 @@
     "audit": "npm audit --audit-level=high --registry=https://registry.npmjs.org",
     "check:i18n": "node scripts/check-i18n.mjs",
     "size": "size-limit",
-    "test": "node --test scripts/"
+    "test": "vitest run --coverage"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
@@ -43,14 +43,16 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@types/three": "^0.187.0",
+    "@vitest/coverage-v8": "4.1.12",
     "eslint": "^9.0.0",
     "eslint-config-next": "^15.5.0",
+    "picomatch": "file:./vendor/picomatch",
     "serve": "^14.2.0",
     "size-limit": "^11.0.0",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.6.0",
-    "wrangler": "4.160.0",
-    "picomatch": "file:./vendor/picomatch"
+    "vitest": "4.1.12",
+    "wrangler": "4.160.0"
   },
   "overrides": {
     "micromatch": {

@@ -1,5 +1,4 @@
-import { test } from 'node:test';
-import assert from 'node:assert/strict';
+import { test, expect } from 'vitest';
 import { spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync, existsSync, readFileSync, chmodSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -42,7 +41,7 @@ function resolveSh() {
  */
 function runHook(mode) {
   const sh = resolveSh();
-  assert.ok(sh, '需要 POSIX sh 才能执行 pre-push hook');
+  expect(sh).toBeTruthy();
   const dir = mkdtempSync(join(tmpdir(), 'pre-push-gate-'));
   try {
     const binDir = join(dir, 'bin');
@@ -85,29 +84,29 @@ function runHook(mode) {
 
 test('门禁通过时放行（exit 0）且调用 npm run verify:local', () => {
   const res = runHook('ok');
-  assert.equal(res.status, 0, res.stderr);
-  assert.equal(res.npmArgs, 'run verify:local');
-  assert.match(res.stdout, /门禁通过/);
+  expect(res.status, res.stderr).toBe(0);
+  expect(res.npmArgs).toBe('run verify:local');
+  expect(res.stdout).toMatch(/门禁通过/);
 });
 
 test('门禁失败时拒绝 push（exit 1）并提示 --no-verify 豁免', () => {
   const res = runHook('fail');
-  assert.equal(res.status, 1);
-  assert.equal(res.npmArgs, 'run verify:local');
-  assert.match(res.stderr, /已阻止 push/);
-  assert.match(res.stderr, /--no-verify/);
+  expect(res.status).toBe(1);
+  expect(res.npmArgs).toBe('run verify:local');
+  expect(res.stderr).toMatch(/已阻止 push/);
+  expect(res.stderr).toMatch(/--no-verify/);
 });
 
 test('node_modules 缺失时拒绝并提示先运行 init', () => {
   const res = runHook('no-node-modules');
-  assert.equal(res.status, 1);
-  assert.match(res.stderr, /node_modules/);
-  assert.match(res.stderr, /init/);
-  assert.equal(res.npmArgs, null, '不应调用 npm');
+  expect(res.status).toBe(1);
+  expect(res.stderr).toMatch(/node_modules/);
+  expect(res.stderr).toMatch(/init/);
+  expect(res.npmArgs, '不应调用 npm').toBe(null);
 });
 
 test('npm 缺失时拒绝并报错', () => {
   const res = runHook('no-npm');
-  assert.equal(res.status, 1);
-  assert.match(res.stderr, /npm/);
+  expect(res.status).toBe(1);
+  expect(res.stderr).toMatch(/npm/);
 });

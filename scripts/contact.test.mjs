@@ -1,5 +1,4 @@
-import { test } from 'node:test';
-import assert from 'node:assert/strict';
+import { test, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import {
@@ -28,21 +27,21 @@ const link = (overrides = {}) => ({
 });
 
 test('CONTACT_KINDS 覆盖 PRD 详述 2 的联系方式类别', () => {
-  assert.deepEqual([...CONTACT_KINDS], ['github', 'blog', 'social', 'other']);
+  expect([...CONTACT_KINDS]).toEqual(['github', 'blog', 'social', 'other']);
 });
 
 test('isValidEmail 只接受常规邮箱格式', () => {
-  assert.equal(isValidEmail('zhangchaowen@stu.scu.edu.cn'), true);
-  assert.equal(isValidEmail('a@b.co'), true);
+  expect(isValidEmail('zhangchaowen@stu.scu.edu.cn')).toBe(true);
+  expect(isValidEmail('a@b.co')).toBe(true);
   for (const bad of ['', 'no-at', 'a@', '@b.com', 'a b@c.com', 'a@b', null, 42, 'a@b.com<script>']) {
-    assert.equal(isValidEmail(bad), false, `${String(bad)} 应被拒绝`);
+    expect(isValidEmail(bad), `${String(bad)} 应被拒绝`).toBe(false);
   }
 });
 
 test('isValidContactUrl 只允许 https 外链与站内安全路径', () => {
-  assert.equal(isValidContactUrl('https://github.com/example'), true);
-  assert.equal(isValidContactUrl('https://example.com/blog?a=1#x'), true);
-  assert.equal(isValidContactUrl('/blog'), true);
+  expect(isValidContactUrl('https://github.com/example')).toBe(true);
+  expect(isValidContactUrl('https://example.com/blog?a=1#x')).toBe(true);
+  expect(isValidContactUrl('/blog')).toBe(true);
   for (const bad of [
     'javascript:alert(1)',
     'data:text/html,x',
@@ -57,51 +56,48 @@ test('isValidContactUrl 只允许 https 外链与站内安全路径', () => {
     null,
     42,
   ]) {
-    assert.equal(isValidContactUrl(bad), false, `${String(bad)} 应被拒绝`);
+    expect(isValidContactUrl(bad), `${String(bad)} 应被拒绝`).toBe(false);
   }
 });
 
 test('validateContactLinks 拒绝重复 id / 单语 label / 非法 kind / 非法 URL / 非布尔 public', () => {
-  assert.deepEqual(validateContactLinks([link()]), []);
-  assert.deepEqual(validateContactLinks([]), []);
-  assert.ok(validateContactLinks([link(), link()]).some((e) => e.includes('id')));
-  assert.ok(validateContactLinks([link({ label: { zh: '只中文' } })]).some((e) => e.includes('label')));
-  assert.ok(validateContactLinks([link({ kind: 'unknown' })]).some((e) => e.includes('kind')));
-  assert.ok(validateContactLinks([link({ url: 'javascript:alert(1)' })]).some((e) => e.includes('url')));
-  assert.ok(validateContactLinks([link({ public: 'yes' })]).some((e) => e.includes('public')));
-  assert.ok(validateContactLinks('not-an-array').length > 0);
+  expect(validateContactLinks([link()])).toEqual([]);
+  expect(validateContactLinks([])).toEqual([]);
+  expect(validateContactLinks([link(), link()]).some((e) => e.includes('id'))).toBeTruthy();
+  expect(validateContactLinks([link({ label: { zh: '只中文' } })]).some((e) => e.includes('label'))).toBeTruthy();
+  expect(validateContactLinks([link({ kind: 'unknown' })]).some((e) => e.includes('kind'))).toBeTruthy();
+  expect(validateContactLinks([link({ url: 'javascript:alert(1)' })]).some((e) => e.includes('url'))).toBeTruthy();
+  expect(validateContactLinks([link({ public: 'yes' })]).some((e) => e.includes('public'))).toBeTruthy();
+  expect(validateContactLinks('not-an-array').length > 0).toBeTruthy();
 });
 
 test('validateContact 校验 email / links / collaborations，且缺字段可容错', () => {
-  assert.deepEqual(validateContact({}), []);
-  assert.deepEqual(
-    validateContact({ email: 'a@b.com', links: [link()], collaborations: [{ zh: '研究', en: 'Research' }] }),
-    [],
-  );
-  assert.ok(validateContact({ email: 'bad-email' }).some((e) => e.includes('email')));
-  assert.ok(validateContact({ links: [link({ id: '' })] }).some((e) => e.includes('links')));
-  assert.ok(validateContact({ collaborations: [] }).some((e) => e.includes('collaborations')));
-  assert.ok(validateContact({ collaborations: [{ zh: '只中文' }] }).some((e) => e.includes('collaborations')));
-  assert.ok(validateContact(null).length > 0);
+  expect(validateContact({})).toEqual([]);
+  expect(validateContact({ email: 'a@b.com', links: [link()], collaborations: [{ zh: '研究', en: 'Research' }] })).toEqual([]);
+  expect(validateContact({ email: 'bad-email' }).some((e) => e.includes('email'))).toBeTruthy();
+  expect(validateContact({ links: [link({ id: '' })] }).some((e) => e.includes('links'))).toBeTruthy();
+  expect(validateContact({ collaborations: [] }).some((e) => e.includes('collaborations'))).toBeTruthy();
+  expect(validateContact({ collaborations: [{ zh: '只中文' }] }).some((e) => e.includes('collaborations'))).toBeTruthy();
+  expect(validateContact(null).length > 0).toBeTruthy();
 });
 
 test('publicContactLinks 过滤非公开条目且不修改原数组', () => {
   const links = [link(), link({ id: 'hidden', public: false })];
-  assert.deepEqual(publicContactLinks(links).map((item) => item.id), ['github']);
-  assert.equal(links.length, 2);
+  expect(publicContactLinks(links).map((item) => item.id)).toEqual(['github']);
+  expect(links.length).toBe(2);
 });
 
 test('mailtoHref 生成 mailto 链接', () => {
-  assert.equal(mailtoHref('a@b.com'), 'mailto:a@b.com');
+  expect(mailtoHref('a@b.com')).toBe('mailto:a@b.com');
 });
 
 test('默认 profile.contact 通过校验：真实 email + 空 links + 五项双语合作方向', () => {
-  assert.ok(profile.contact, 'profile.contact 缺失');
-  assert.deepEqual(validateContact(profile.contact), []);
-  assert.equal(isValidEmail(profile.contact.email), true);
-  assert.equal(publicContactLinks(profile.contact.links).length, 0);
-  assert.equal(profile.contact.collaborations.length, 5);
-  assert.equal(contact, profile.contact);
+  expect(profile.contact).toBeTruthy();
+  expect(validateContact(profile.contact)).toEqual([]);
+  expect(isValidEmail(profile.contact.email)).toBe(true);
+  expect(publicContactLinks(profile.contact.links).length).toBe(0);
+  expect(profile.contact.collaborations.length).toBe(5);
+  expect(contact).toBe(profile.contact);
 });
 
 test('Contact / Nav.contact 文案键在 zh / en 中一致且非空', () => {
@@ -113,8 +109,8 @@ test('Contact / Nav.contact 文案键在 zh / en 中一致且非空', () => {
         ? flatten(value, `${prefix}${key}.`)
         : [`${prefix}${key}`],
     );
-  assert.deepEqual(flatten(zh.Contact).sort(), flatten(en.Contact).sort());
-  assert.ok(zh.Nav.contact && en.Nav.contact, 'Nav.contact 缺失');
+  expect(flatten(zh.Contact).sort()).toEqual(flatten(en.Contact).sort());
+  expect(zh.Nav.contact && en.Nav.contact).toBeTruthy();
   for (const key of [
     'eyebrow',
     'title',
@@ -131,10 +127,10 @@ test('Contact / Nav.contact 文案键在 zh / en 中一致且非空', () => {
     'routeTitle',
     'routeDescription',
   ]) {
-    assert.ok(zh.Contact[key], `zh.Contact 缺少 ${key}`);
-    assert.ok(en.Contact[key], `en.Contact 缺少 ${key}`);
+    expect(zh.Contact[key]).toBeTruthy();
+    expect(en.Contact[key]).toBeTruthy();
   }
   for (const item of profile.contact.collaborations) {
-    assert.ok(item.zh && item.en, '合作方向必须是双语');
+    expect(item.zh && item.en).toBeTruthy();
   }
 });
