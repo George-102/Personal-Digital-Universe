@@ -2665,7 +2665,7 @@
     },
     {
       "area": "多设备适配",
-      "status": "in_progress",
+      "status": "passing",
       "verification": [
         "PRD 五条 AC 逐条留证（桌面浏览器 / 移动浏览器 / 无横向溢出 / 低性能简化 / WebGL 降级），DoD 跨全部已实现模块复核。",
         "文档同步 README / docs/Development.md / docs/Tech.md / docs/DoD.md，保持与四档画质和低性能降级一致。",
@@ -2673,7 +2673,7 @@
       ],
       "evidence": [
         "2026-11-24 五条 AC 本地逐条留证：AC1 主流桌面浏览器（chromium 全套 + 1440/1920/1280/1024 四视口，700 粒子完整 3D、鼠标视差/悬停用例全绿）；AC2 主流移动浏览器（mobile-chrome + mobile-safari 各跑全量，390/375 视口单列卡片、折叠菜单触摸导航、≥44px 目标、3D 不遮挡 CTA）；AC3 无横向溢出（overflow.spec 8 视口 × 16 双语路由分层矩阵，四项目 352 passed / 0 failed，并加 HTTP 200 断言防 404 空过）；AC4 低性能简化（硬件信号并发≤4 或内存≤4GB 自动降档，30 帧窗口 + 连续两慢窗口运行时自适应，探针实测首页与 /projects 均 reduced=true、粒子<700、dpr≤1）；AC5 WebGL 降级（chromium-no-webgl 13/13，八处 3D 全站中英页面静态降级且正文可读）。DoD：verify:local exit 0（186 单测 / i18n 144 键 / size 467.35kB / audit 0 high）；全套四项目 1063 passed / 161 skipped / 0 failed；Lighthouse 2 URL × 3 runs 全过（TBT 最优 zh 83ms / en 104ms）。文档同步 README / docs/Development.md / docs/Tech.md / docs/DoD.md 已写明四档画质、硬件信号与运行时降档。",
-        "待办：用户 push main 后回写云端 verify CI run URL（verify + deploy 全绿、E2E/Lighthouse 断言达标），再将该任务与 PRD US-021 转 passing；URL 未回写前本任务保持 in_progress。",
+        "云端 verify 全绿回写：CI run https://github.com/George-102/Personal-Digital-Universe/actions/runs/45582352818（commit 0825c071f8aad51c958ef698d38339edc9d25b65 与本地 HEAD 一致，2026-11-25）：verify success（20m18s）+ deploy success + preview skipped；E2E 四项目 1063 passed / 161 skipped / 0 failed（16.0m）；Lighthouse 2 URL × 3 runs 全过（zh TBT 149/141/133、en 123/138/112，全部 ≤200；LCP 207~222ms、CLS 0、perf 0.97~0.99），All results processed。首屏移除 rAF 采样后 TBT 从回归态 214~493 降至 112~149，优于 US-014 基线。US-021a~i 全 passing，roadmap 不含 US-021。",
         "2026-11-25 首次云端 verify run 45390622841（commit d68959d）failure：verify job 的『Run acceptance tests』中 chromium 两项失败——interaction.spec.ts US-002e 粒子排斥 data-particle-x=0（期望 >0）、scroll-transition.spec.ts 粒子壳层 data-particle-shell=1（期望 <0.85），各重试 2 次均失败；1052 passed / 159 skipped / 11 did not run，deploy 与 preview 被跳过。根因：CI runner 的 hardwareConcurrency/deviceMemory 命中 US-021 低性能降档，HeroScene 的 lowQuality 分支按设计关闭粒子排斥与壳层计算，而这两项旧断言假设完整桌面画质。修复（不改产品阈值、不删断言、不降阈值）：helpers.ts 新增 useFullQuality(page)（addInitScript 注入 hardwareConcurrency=8 / deviceMemory=16），仅在 US-002e 与非移动端粒子壳层用例调用；低性能分支仍由 device-adaptation.spec.ts 单独覆盖。本地复验 typecheck/lint 0、interaction + scroll-transition 四项目 59 passed / 41 skipped / 0 failed。另一次 mobile-chrome 相机用例转场进度 0.692 的单次失败经 --repeat-each=3 复跑 3/3 通过，判定为既有时序 flake，未改断言。",
         "2026-11-25 第二次云端 verify run 45569858609（commit 9b49c52）failure：E2E 已全绿，失败在『Run Lighthouse CI』——2 URL × 3 runs 的 TBT 全部超 200（zh 493/311/214.5，en 220.5/231/218）。对比 US-014 全绿 run 45322124986 报告：zh TBT 688/191/155、en 158/156/169，长任务同为 chunk 5305 的 WebGL 初始化；两次 chunk 体积几乎一致（24259 vs 24275 bytes）。结论：非 bundle 体积回归，而是首屏 Hero 新增的 rAF 帧率采样循环在低核 runner 上与 WebGL 初始化争抢主线程，拉长既有长任务约 30~60ms。修复（scope 调整，已记录）：HeroCanvas 首屏不再调用 useAdaptiveTier，只保留硬件信号降档（readViewportQuality 已覆盖性能不足场景）并自己写一次档位探针；运行时帧率自适应限定到非首屏 3D（进入视口后才采样），避开 Lighthouse TBT 窗口。探针类型声明从 useAdaptiveTier.ts 移到 lib/quality.ts。本地复验 build/typecheck/lint 0、device-adaptation + interaction + scroll-transition 四项目 73 passed / 67 skipped / 0 failed；本地 Lighthouse 噪声大（225~309ms）不作判定依据。待 re-push 后云端重跑并回写全绿 CI run URL。"
       ],

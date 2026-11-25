@@ -332,9 +332,9 @@
       "details": "支持 Desktop、Laptop、Tablet 和 Mobile。桌面端：完整 3D 场景、丰富的鼠标交互、多层次视差效果、完整的动态背景。平板端：适当简化 3D 场景、保留主要交互效果、调整卡片和布局。移动端：降低粒子数量、简化复杂 3D 模型、减少高成本光照和后处理效果、使用触摸交互、必要时使用静态或 CSS 动态背景替代复杂场景。设备性能不足时，允许自动降低渲染质量。移动端不能仅仅是桌面端的简单缩放版本。",
       "Acceptance Criteria": "- 正常场景：网站能够在主流桌面浏览器中正常运行。- 正常场景：网站能够在主流移动浏览器中正常运行。- 正常场景：移动端布局不出现横向溢出。- 正常场景：低性能设备可以使用简化渲染模式。- 异常场景：设备不支持 WebGL 时，自动使用降级视觉方案。",
       "DoD": "五条验收逐条通过并留证（整体验收，跨全部已实现模块复核）；npm run verify:local 通过 + 云端 verify job 全绿并回写 CI run URL。",
-      "status": "not_started",
-      "evidence": [],
-      "notes": "基础适配已随 US-001b/US-001e 落地（overflow 5 视口、quality.ts 三档画质、移动端粒子 350/dpr≤1.5）；本故事为全站整体验收，随内容模块齐全后执行。2026-11-24：拆为 US-021a~i 共 9 任务，本地验收全部完成（四档画质 + 硬件信号与运行时降档、8 视口双语溢出矩阵、移动端触摸专项、八处 3D 降级复核、verify:local 与 Lighthouse 全绿）；云端 verify CI run URL 待 push 后回写，回写前本故事不转 passing。2026-11-25：首次云端 run 45390622841 因 CI runner 硬件信号触发低性能降档，两项 chromium 粒子交互断言失败；已通过隔离测试环境修复并在本地复验，待重新 push 后重跑回写。"
+      "status": "passing",
+      "evidence": ["2026-11-25：五条 AC 逐条通过——桌面浏览器（四视口 700 粒子完整 3D）、移动浏览器（mobile-chrome/safari 触摸与单列布局）、无横向溢出（8 视口 × 16 双语路由，四项目 352 passed）、低性能简化（硬件信号 + 非首屏运行时降档，探针实测 reduced）、WebGL 降级（八处 3D 双语路由静态降级，13/13）。npm run verify:local exit 0；云端 verify 全绿 run https://github.com/George-102/Personal-Digital-Universe/actions/runs/45582352818（commit 0825c07）：E2E 1063 passed / 161 skipped / 0 failed，Lighthouse 2 URL × 3 runs 全过（zh TBT 149/141/133、en 123/138/112，LCP 207~222ms、CLS 0、perf 0.97~0.99）。"],
+      "notes": "基础适配已随 US-001b/US-001e 落地（overflow 5 视口、quality.ts 三档画质、移动端粒子 350/dpr≤1.5）；本故事为全站整体验收，随内容模块齐全后执行。2026-11-24：拆为 US-021a~i 共 9 任务，本地验收全部完成（四档画质 + 硬件信号与运行时降档、8 视口双语溢出矩阵、移动端触摸专项、八处 3D 降级复核、verify:local 与 Lighthouse 全绿）；云端 verify CI run URL 已回写（run 45582352818，verify + deploy 全绿）。期间两次失败已修复：首次 run 45390622841 因 CI runner 低核触发降档导致两项粒子交互断言失败（隔离完整画质测试环境）；第二次 run 45569858609 因首屏 rAF 采样在低核 runner 拉长 WebGL 长任务导致 TBT 超标（首屏仅保留硬件信号降档，运行时自适应限定非首屏 3D）。"
     },
     {
       "id": "US-022",
