@@ -36,3 +36,16 @@ export async function waitForSceneReady(page: Page) {
     await canvas.first().waitFor({ timeout: 15_000 });
   }
 }
+
+/**
+ * 固定测试环境为完整桌面画质：CI runner 的 hardwareConcurrency 可能 ≤4，
+ * 会被 US-021 的低性能降档判为低画质，关闭粒子排斥与壳层计算。
+ * 这两类高画质交互断言需明确注入充足信号；低性能分支由 device-adaptation.spec.ts 单独覆盖。
+ * 不修改产品阈值，不降低断言。
+ */
+export async function useFullQuality(page: Page) {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'hardwareConcurrency', { configurable: true, get: () => 8 });
+    Object.defineProperty(navigator, 'deviceMemory', { configurable: true, get: () => 16 });
+  });
+}

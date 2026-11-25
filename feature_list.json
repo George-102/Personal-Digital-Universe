@@ -2673,7 +2673,8 @@
       ],
       "evidence": [
         "2026-11-24 五条 AC 本地逐条留证：AC1 主流桌面浏览器（chromium 全套 + 1440/1920/1280/1024 四视口，700 粒子完整 3D、鼠标视差/悬停用例全绿）；AC2 主流移动浏览器（mobile-chrome + mobile-safari 各跑全量，390/375 视口单列卡片、折叠菜单触摸导航、≥44px 目标、3D 不遮挡 CTA）；AC3 无横向溢出（overflow.spec 8 视口 × 16 双语路由分层矩阵，四项目 352 passed / 0 failed，并加 HTTP 200 断言防 404 空过）；AC4 低性能简化（硬件信号并发≤4 或内存≤4GB 自动降档，30 帧窗口 + 连续两慢窗口运行时自适应，探针实测首页与 /projects 均 reduced=true、粒子<700、dpr≤1）；AC5 WebGL 降级（chromium-no-webgl 13/13，八处 3D 全站中英页面静态降级且正文可读）。DoD：verify:local exit 0（186 单测 / i18n 144 键 / size 467.35kB / audit 0 high）；全套四项目 1063 passed / 161 skipped / 0 failed；Lighthouse 2 URL × 3 runs 全过（TBT 最优 zh 83ms / en 104ms）。文档同步 README / docs/Development.md / docs/Tech.md / docs/DoD.md 已写明四档画质、硬件信号与运行时降档。",
-        "待办：用户 push main 后回写云端 verify CI run URL（verify + deploy 全绿、E2E/Lighthouse 断言达标），再将该任务与 PRD US-021 转 passing；URL 未回写前本任务保持 in_progress。"
+        "待办：用户 push main 后回写云端 verify CI run URL（verify + deploy 全绿、E2E/Lighthouse 断言达标），再将该任务与 PRD US-021 转 passing；URL 未回写前本任务保持 in_progress。",
+        "2026-11-25 首次云端 verify run 45390622841（commit d68959d）failure：verify job 的『Run acceptance tests』中 chromium 两项失败——interaction.spec.ts US-002e 粒子排斥 data-particle-x=0（期望 >0）、scroll-transition.spec.ts 粒子壳层 data-particle-shell=1（期望 <0.85），各重试 2 次均失败；1052 passed / 159 skipped / 11 did not run，deploy 与 preview 被跳过。根因：CI runner 的 hardwareConcurrency/deviceMemory 命中 US-021 低性能降档，HeroScene 的 lowQuality 分支按设计关闭粒子排斥与壳层计算，而这两项旧断言假设完整桌面画质。修复（不改产品阈值、不删断言、不降阈值）：helpers.ts 新增 useFullQuality(page)（addInitScript 注入 hardwareConcurrency=8 / deviceMemory=16），仅在 US-002e 与非移动端粒子壳层用例调用；低性能分支仍由 device-adaptation.spec.ts 单独覆盖。本地复验 typecheck/lint 0、interaction + scroll-transition 四项目 59 passed / 41 skipped / 0 failed。另一次 mobile-chrome 相机用例转场进度 0.692 的单次失败经 --repeat-each=3 复跑 3/3 通过，判定为既有时序 flake，未改断言。待 re-push 后云端重跑并回写全绿 CI run URL。"
       ],
       "notes": "一次只做一个任务；最后一个任务在云端 CI run URL 回写后才可转 passing。",
       "id": "US-021i",

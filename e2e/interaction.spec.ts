@@ -1,5 +1,5 @@
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
-import { settle, waitForSceneReady } from './helpers';
+import { settle, waitForSceneReady, useFullQuality } from './helpers';
 
 const wrapper = (page: Page) => page.locator('[data-interaction-canvas]');
 const tooltip = (page: Page) => page.locator('[data-interaction-tooltip]');
@@ -94,6 +94,8 @@ test.describe('US-002 3D 场景交互', () => {
 
   test('US-002e 指针驱动粒子产生排斥响应', async ({ page }, testInfo) => {
     onlyOn(testInfo, ['chromium']);
+    // 排斥响应只在完整桌面画质开启；CI runner 低核信号会触发 US-021 降档
+    await useFullQuality(page);
     await openWithScene(page);
     const box = await wrapper(page).boundingBox();
     await page.mouse.move(box!.x + box!.width * 0.85, box!.y + box!.height * 0.5);

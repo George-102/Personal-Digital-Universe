@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { settle, waitForSceneReady } from './helpers';
+import { settle, waitForSceneReady, useFullQuality } from './helpers';
 
 /** 读取 <html> 上的滚动段进度（ScrollDriver 写入，0~1） */
 async function readScrollProgress(page: Page): Promise<number | null> {
@@ -150,6 +150,8 @@ test.describe('滚动转场', () => {
   test('粒子壳层随滚动聚集并回稳（低画质档关闭计算）', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name === 'chromium-no-webgl', '仅在支持 WebGL 的项目运行');
 
+    // 壳层计算只在完整桌面画质开启；CI runner 低核信号会触发 US-021 降档
+    if (!testInfo.project.name.startsWith('mobile-')) await useFullQuality(page);
     await page.goto('/');
     await settle(page);
     await waitForSceneReady(page);
