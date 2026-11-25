@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import { Canvas } from '@react-three/fiber';
 import { isWebGLAvailable } from '@/lib/webgl';
 import { readViewportQuality, type QualityTier } from '@/lib/quality';
-import { useAdaptiveTier } from '@/components/useAdaptiveTier';
 import {
   attachPointerTracker,
   clamp,
@@ -63,8 +62,16 @@ export default function HeroCanvas({ labels }: { labels: InteractionLabels }) {
   const restoreAttempted = useRef(false);
   // US-006h：渲染帧计数，用于实测「离屏且转场收敛后暂停渲染」
   const frameCountRef = useRef(0);
-  // US-021b：渲染用档位可因持续掉帧自动降一档；初始探测仍只在 WebGL 可用时发生
-  const tier = useAdaptiveTier(baseTier, Boolean(baseTier && inView && !reducedMotion));
+  // US-021b/h：首屏只用硬件信号降档，不启动 rAF 帧率采样。
+  // 首屏采样在低核 runner 上把 Lighthouse TBT 从 ~106ms 推到 >200ms；
+  // 运行时自适应仅用于非首屏 3D（进入视口后才采样），避开首屏 TBT 窗口。
+  const tier = baseTier;
+
+  useEffect(() => {
+    if (!baseTier) return;
+    window.__deviceTier = baseTier.deviceClass;
+    window.__qualityTier = baseTier;
+  }, [baseTier]);
 
   useEffect(() => {
     if (!isWebGLAvailable()) return;

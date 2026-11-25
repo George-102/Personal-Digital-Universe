@@ -2,16 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { createAdaptiveState, degradeTier, nextAdaptiveState } from '@/lib/adaptive-quality';
-import type { DeviceClass, QualityTier } from '@/lib/quality';
-
-declare global {
-  interface Window {
-    /** 设备分类探针（E2E 只读，不写 dataset） */
-    __deviceTier?: DeviceClass;
-    /** 实际生效的画质档位（含运行时降档） */
-    __qualityTier?: QualityTier;
-  }
-}
+import type { QualityTier } from '@/lib/quality';
 
 /**
  * 共享运行时画质自适应 hook。

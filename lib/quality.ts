@@ -1,5 +1,14 @@
 export type DeviceClass = 'mobile' | 'tablet' | 'laptop' | 'desktop';
 
+declare global {
+  interface Window {
+    /** 设备分类探针（E2E 只读，不写 dataset） */
+    __deviceTier?: DeviceClass;
+    /** 实际生效的画质档位（含运行时降档） */
+    __qualityTier?: QualityTier;
+  }
+}
+
 export type QualityTier = {
   particles: number;
   pixelRatio: number;
