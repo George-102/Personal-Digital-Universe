@@ -24,20 +24,38 @@ function Invoke-Checked {
     }
 }
 
+# 项目工具链优先由 mise 提供（.mise.toml）；未安装 mise 时保持系统 Node 回退路径。
+$MiseAvailable = $null -ne (Get-Command mise -ErrorAction SilentlyContinue)
+function Invoke-Tool {
+    param(
+        [Parameter(Mandatory = $true)][string[]]$Command
+    )
+    if ($script:MiseAvailable) {
+        Invoke-Checked (@('mise', 'exec', '--') + $Command)
+    } else {
+        Invoke-Checked $Command
+    }
+}
+
+if ($MiseAvailable) {
+    Write-Host "== mise 工具链 =="
+    Invoke-Checked @('mise', 'install', 'node')
+}
+
 Write-Host "== 环境检查 =="
-Invoke-Checked @('node', '--version')
-Invoke-Checked @('npm', '--version')
+Invoke-Tool -Command @('node', '--version')
+Invoke-Tool -Command @('npm', '--version')
 
 Write-Host "== 依赖安装 =="
 if (Test-Path -LiteralPath 'package-lock.json') {
-    Invoke-Checked @('npm', 'ci')
+    Invoke-Tool -Command @('npm', 'ci')
 } else {
-    Invoke-Checked @('npm', 'install')
+    Invoke-Tool -Command @('npm', 'install')
 }
 
 Write-Host "== 配置冒烟验证 =="
-Invoke-Checked @('node', 'scripts/smoke-config.mjs')
-Invoke-Checked @('npx', 'playwright', 'test', '--list')
+Invoke-Tool -Command @('node', 'scripts/smoke-config.mjs')
+Invoke-Tool -Command @('npx', 'playwright', 'test', '--list')
 
 Write-Host "== pre-push 门禁状态 =="
 $hookConfig = git config core.hooksPath
@@ -51,3 +69,5 @@ if (($hookConfig -eq 'githooks') -and (Test-Path -LiteralPath (Join-Path $RootDi
 
 Write-Host "== 完成 =="
 Write-Host "本地轻验证请运行 npm run verify:local（lint/typecheck/build/单测/质量指标，不启动浏览器）；Playwright 与 Lighthouse 重验证由云端 CI 在 push/PR 时执行，勿在本地运行 npm run verify（见 README 验收命令）。"
+# 到达此处即所有检查通过；避免最后一步 git config 查询留下非 0 的 LASTEXITCODE。
+$global:LASTEXITCODE = 0
