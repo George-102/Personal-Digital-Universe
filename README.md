@@ -79,6 +79,7 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 | `npm run verify:e2e` | Playwright 四项目：桌面 / 无 WebGL / 移动 Chrome / 移动 Safari |
 | `npm run verify:lighthouse` | Lighthouse CI（性能 ≥0.85、a11y ≥0.95、SEO ≥0.95、最佳实践 ≥0.90） |
 | `npm run verify:metrics` | audit + check:i18n + size 三个质量指标 |
+| `npm run verify:content` | 内容维护四条验收：临时工作区注入内容夹具并构建，验证文案更新、新增项目、缺字段容错与资源降级；不修改真实 `content/`，已纳入 `verify:local` |
 | `npm run audit` | 0 高危及以上漏洞（指定官方 registry） |
 | `npm run check:i18n` | zh/en 键覆盖率 100% |
 | `npm run size` | JS 总量 ≤1MB（size-limit） |

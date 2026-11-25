@@ -1,5 +1,9 @@
 # Claude Progress — Personal Digital Universe
 
+## 当前阶段（2026-11-25）
+
+**工具链 + US-023（内容维护整体验收）**：项目已接入 mise（`.mise.toml` 固定 Node 26.13.1，`.nvmrc` 同步；`init.sh` / `init.ps1` 检测到 mise 后走 `mise install node` + `mise exec`，无 mise 时回退系统 Node），提交 `4e9b203`。US-023 拆为 US-023a~f（priority 144-149）；用户决策：新增常驻验收脚本、仅修真实 blocker、完成后推送 main 回写 CI run URL。US-023a~e 已 passing：TDD 新增 `scripts/content-maintenance.test.mjs`（5/5）与 `scripts/verify-content-maintenance.mjs`，`npm run verify:content` 在临时工作区注入内容夹具并构建，四条验收（文案更新 / 新增项目 / 缺字段容错 / 资源降级）全过，真实 `content/` 未改动；`npm run verify:local` exit 0（25 文件 191 用例 + coverage / 0 high / i18n 100% / size 467.37kB / verify:content）。**下一步：US-023f 待 push main 后回写云端 verify run URL，URL 未回写前不得标 passing。**
+
 ## 当前阶段（2026-11-11）
 
 **迭代1 首个需求 US-001（3D 首页）已完成**：feature_list.json 中 11 个拆分任务（T-001a/b/c、T-002a/b/c、US-001a~e）全部 passing，证据逐条记录。应用骨架、中英双语静态导出、content/ 数据架构、3D 首页与三层降级均已落地并验证。
