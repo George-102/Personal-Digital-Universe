@@ -326,6 +326,18 @@ run 44277517360 仍挂 Lighthouse：中文 TBT 最优 232（三次 407/296/232�
 - **整体验收与回写（f）**：`npm run verify:local` exit 0（25 文件 191 用例 + coverage / audit 0 high 仅 6 moderate / i18n 144 键 / size 467.37kB / verify:content）。云端 run [45637330329](https://github.com/George-102/Personal-Digital-Universe/actions/runs/45637330329)（commit e6ed579，与本地 HEAD / origin/main 一致）verify success + deploy success + preview skipped；Vitest 25 文件/191 用例、Playwright 四项目 1063 passed / 161 skipped / 0 failed、Lighthouse 2 URL × 3 runs 全过（All results processed）。CI run URL 已回写 `feature_list.json` US-023f.evidence、`PRD_UserStory.json` US-023 与本文件；US-023a~f 与 PRD US-023 全部 passing。全程未删断言、未降阈值、未新增 fixme。
 - **提交注意**：工作区存在并行会话未提交改动——`AGENTS.md`（M）、`.mise.toml`（D）与 `mise.toml`（新，未跟踪，疑似 mise 配置改名）、`.tmp-t003-*`（未跟踪临时文件）。本轮回写提交只含 `feature_list.json` / `PRD_UserStory.json` / `claude-progress.md`，显式排除上述文件。
 
+## US-005 迭代（2026-11-26，US-005a~h passing，US-005i 待云端 CI 回写）
+
+**用户指定下一需求为 US-005（动态滚动反馈，P1 首位）并要求先拆分再逐个实现。** 四项决策：①指示器用导航栏下沿顶部细线；②视觉状态用 DOM + 3D，3D 只复用已有场景、不新建 Canvas；③进度覆盖整页，在现有 ScrollDriver 同一滚动链路计算，不新开循环；④3D 状态由共享模块状态驱动，useFrame 零布局读写、零 setState。拆为 US-005a~i 共 9 任务 priority 150-158，roadmap 移除 US-005。
+
+- **a/b/c 数据与指示器**：`lib/scroll.ts` 的 `ScrollState` 增 `overall` / `activeSection` 与一次通知的 `applyScroll`；`attachScrollDriver` 缓存 target/section 几何（ResizeObserver + passive scroll），整页进度用即时 raw 值，段进度仍 damp；`<html>` 同步 `--page-progress` / `data-page-progress` / `data-active-section`。`components/ScrollProgress.tsx` 渲染固定细线 + `role=progressbar` / `aria-valuenow`，由 SiteNav 在所有路由挂载；ScrollDriver 从 HomeSections 提升到 SiteNav。`scripts/scroll.test.mjs`（9/9）与 `scripts/section-state.test.mjs`（5/5）TDD RED→GREEN；`lib/section-state.ts` 以 navItems 为单一来源，非法配色注入 `validate-content.mjs` exit 1、恢复 exit 0。
+- **d/e 视觉状态与 3D 复用**：根状态 + 当前 section 的 `data-section-active` + CSS 1px 内阴影；`lib/use-section-tint.ts` 用 `useSyncExternalStore` 订阅模块，8 个既有 R3F 场景只在切换时改灯光色与 `canvas.dataset.sectionTint`，不新增 Canvas、不在 useFrame 读布局/write dataset/setState。
+- **f/g E2E**：新增 `e2e/scroll-feedback.spec.ts` 六用例 × 四项目。chromium 6/6；四项目 **23 passed / 1 skipped**（无 WebGL 项目跳过 3D 用例）/ 0 failed。三条 AC 逐条覆盖：进度同步（含 aria / transform）、模块状态同步（根 / 指示器 / nav / section）、快速跳变误差 <0.05；另含 reduced-motion、无 JS、WebGL 复用与不新增 Canvas。
+- **h 门禁**：`./init.ps1` exit 0（Node v26.13.1 / 197 E2E listed）。`verify:local` exit 0：lint / typecheck / build / Vitest 26 文件 197 用例 + coverage / audit 0 high（仅 6 moderate）/ i18n 145 键 100% / size 464.19kB / verify:content 四条全过。`CI=1 verify:lighthouse` exit 0：6 runs 全过，中文 TBT 102 / 114.8 / 118ms（最优 102），英文 113 / 94 / 109ms（最优 94），LCP 254~288ms、CLS 0。回归批次：scroll-transition + navigation + core + a11y 174 passed / 6 skipped；about + degradation + i18n + overflow 412 passed / 38 skipped，2 个 mobile-safari `/projects` 并行超时单跑复核通过（30.5s / 14.1s），未删断言、未降阈值、无新增 fixme。
+- **i 待办**：本地证据已逐条回写 `feature_list.json`；**用户 push main 后需回写云端 verify CI run URL 到 `feature_list.json` US-005i.evidence、`PRD_UserStory.json` US-005 与本文件**，之后 US-005a~i 与 PRD US-005 才可转 passing；当前 US-005i 保持 in_progress。
+- **提交注意**：工作区仍有并行会话的 `AGENTS.md` 未提交改动与 `.tmp-t003-*`（未跟踪临时文件）；本轮提交只含 US-005 应用代码、单测、E2E、i18n、`feature_list.json` 与本文件，显式排除上述文件。
+
+
 ## T-009 本地实现（2026-11-26，mise tasks 统一自动化入口）
 
 - **用户请求**：把自动化脚本写入 `mise.toml` 的 `[tasks]`，用 mise 管理整个项目。用户选择「全部统一入口」范围。

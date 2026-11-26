@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { clamp, damp, repelFactor, type Vec2, type PointerTracker } from '@/lib/pointer';
 import { findInteractiveObject, type InteractiveObject } from '@/lib/interactive';
 import { sharedScrollState } from '@/lib/scroll';
+import { useSectionTint } from '@/lib/use-section-tint';
 import { cameraTargets, findTransitionSegment, shellFactor, transitionSegments } from '@/lib/transitions';
 
 /** 每帧上报给 DOM 层的可观察状态（E2E 断言与 tooltip 定位都以此为准） */
@@ -157,6 +158,7 @@ export default function HeroScene({
 }: HeroSceneProps) {
   const camera = useThree((s) => s.camera);
   const gl = useThree((s) => s.gl);
+  const tint = useSectionTint();
   const ready = useRef(false);
   const coreGroup = useRef<THREE.Group>(null);
   const coreMaterial = useRef<THREE.MeshStandardMaterial>(null);
@@ -309,8 +311,8 @@ export default function HeroScene({
     <>
       <DisposeOnUnmount />
       <ambientLight intensity={0.5} />
-      <pointLight position={[4, 3, 5]} intensity={30} color="#7c6cff" />
-      <pointLight position={[-5, -2, 3]} intensity={16} color="#22d3ee" />
+      <pointLight position={[4, 3, 5]} intensity={30} color={tint.glow} />
+      <pointLight position={[-5, -2, 3]} intensity={16} color={tint.accent} />
       <group
         ref={coreGroup}
         onPointerOver={(event) => {

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useSectionTint } from '@/lib/use-section-tint';
 
 export type JourneyOrbitSceneProps = {
   count: number;
@@ -50,6 +51,7 @@ export default function JourneyOrbitScene({
   reducedMotion,
   onFrame,
 }: JourneyOrbitSceneProps) {
+  const tint = useSectionTint();
   const group = useRef<THREE.Group>(null);
   const nodes = useRef<Array<THREE.Mesh | null>>([]);
   const scaleTarget = useRef(new THREE.Vector3());
@@ -90,8 +92,8 @@ export default function JourneyOrbitScene({
     <>
       <DisposeOnUnmount />
       <ambientLight intensity={0.55} />
-      <pointLight position={[2.5, 3, 3]} intensity={16} color="#7c6cff" />
-      <pointLight position={[-2.5, -2, 2]} intensity={9} color="#22d3ee" />
+      <pointLight position={[2.5, 3, 3]} intensity={16} color={tint.glow} />
+      <pointLight position={[-2.5, -2, 2]} intensity={9} color={tint.accent} />
 
       <group ref={group} rotation={[0, 0.4, 0]}>
         {/* 轨道本体：低分段 tube，低画质档再降一半 */}

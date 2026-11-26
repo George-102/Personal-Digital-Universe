@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useSectionTint } from '@/lib/use-section-tint';
 
 export type AboutAvatarSceneProps = {
   lowQuality: boolean;
@@ -45,6 +46,7 @@ export default function AboutAvatarScene({
   reducedMotion,
   onFrame,
 }: AboutAvatarSceneProps) {
+  const tint = useSectionTint();
   const core = useRef<THREE.Group>(null);
   const rings = useRef<THREE.Group>(null);
 
@@ -64,8 +66,8 @@ export default function AboutAvatarScene({
     <>
       <DisposeOnUnmount />
       <ambientLight intensity={0.6} />
-      <pointLight position={[3, 2, 4]} intensity={22} color="#7c6cff" />
-      <pointLight position={[-3, -1, 3]} intensity={12} color="#22d3ee" />
+      <pointLight position={[3, 2, 4]} intensity={22} color={tint.glow} />
+      <pointLight position={[-3, -1, 3]} intensity={12} color={tint.accent} />
 
       <group ref={core}>
         <mesh>

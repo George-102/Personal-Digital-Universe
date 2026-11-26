@@ -1,6 +1,24 @@
 import { test, expect } from 'vitest';
 import { normalizeProgress, ScrollState } from '../lib/scroll.ts';
 
+test('applyScroll 批量更新整页进度与当前模块，只通知一次', () => {
+  const state = new ScrollState();
+  const seen = [];
+  state.subscribe((snapshot) => seen.push({ ...snapshot }));
+  state.applyScroll({ raw: 0.2, overall: 0.4, activeSection: 'about' });
+  expect(seen).toHaveLength(1);
+  expect(seen[0].raw).toBe(0.2);
+  expect(seen[0].overall).toBe(0.4);
+  expect(seen[0].activeSection).toBe('about');
+  // 同值重复写入不通知，避免每帧 DOM 写入
+  state.applyScroll({ raw: 0.2, overall: 0.4, activeSection: 'about' });
+  expect(seen).toHaveLength(1);
+  state.setOverall(2);
+  expect(state.getSnapshot().overall).toBe(1);
+  state.setActiveSection('');
+  expect(state.getSnapshot().activeSection).toBe('');
+});
+
 test('normalizeProgress 把区间映射到 0~1 且两端 clamp', () => {
   expect(normalizeProgress(0, 0, 100)).toBe(0);
   expect(normalizeProgress(50, 0, 100)).toBe(0.5);

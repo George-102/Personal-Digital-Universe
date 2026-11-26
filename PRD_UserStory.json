@@ -90,9 +90,13 @@
       "details": "设置页面滚动进度指示器，可以使用细线、光点或轨道展示整体浏览进度。页面滚动时，背景场景可以产生轻微变化，当前内容模块可以通过文字、光效或其他标识突出。不同模块可以具有独立的动态背景状态。滚动效果不得影响正常页面操作。",
       "Acceptance Criteria": "- 正常场景：页面滚动时，进度指示器能够同步更新。- 正常场景：进入不同模块时，视觉状态能够正确切换。- 异常场景：快速滚动时，进度指示器不会出现明显延迟或错位。",
       "DoD": "三条验收逐条通过并留证；滚动效果不影响正常页面操作；npm run verify:local 通过 + 云端 verify job 全绿并回写 CI run URL。",
-      "status": "not_started",
-      "evidence": [],
-      "notes": "滚动进度源（US-003a 的 lib/scroll.ts）可复用。"
+      "status": "in_progress",
+      "evidence": [
+        "2026-11-26：拆为 US-005a~i 共 9 任务 priority 150-158；US-005a~h 本地 passing，US-005i 保持 in_progress（待云端 verify CI run URL 回写），逐条证据见 feature_list.json。",
+        "2026-11-26 三条 AC 本地留证：①顶部细线整页进度与 aria-valuenow / transform 同步（scroll-feedback.spec.ts AC1，四项目）；②进入 about/journey/contact 时根状态、指示器、nav 激活态与 section 标识一致（AC2）；③高频跳变 [0.95,0.05,0.8,0.2,1,0] 进度与 aria 误差 <0.05（AC3）。",
+        "2026-11-26 门禁：verify:local exit 0（Vitest 26 文件 197 用例 + coverage / i18n 145 键 100% / size 464.19kB / audit 0 high）；CI=1 Lighthouse 6 runs 全过（中文 TBT 最优 102ms / 英文 94ms，CLS 0）；scroll-feedback 四项目 23 passed / 1 skipped / 0 failed；受影响回归批次无新增失败，2 个本地 WebKit /projects 溢出超时单跑复核通过，未删断言、未降阈值、无新增 fixme。"
+      ],
+      "notes": "滚动进度源（US-003a 的 lib/scroll.ts）已复用并扩展为整页进度；DOM 高亮与 8 个既有 R3F 场景灯光复用模块状态，不新增 Canvas；顶部细线在所有路由由 SiteNav 挂载。云端 verify run URL 未回写前不得标 passing。"
     },
     {
       "id": "US-006",
@@ -333,7 +337,9 @@
       "Acceptance Criteria": "- 正常场景：网站能够在主流桌面浏览器中正常运行。- 正常场景：网站能够在主流移动浏览器中正常运行。- 正常场景：移动端布局不出现横向溢出。- 正常场景：低性能设备可以使用简化渲染模式。- 异常场景：设备不支持 WebGL 时，自动使用降级视觉方案。",
       "DoD": "五条验收逐条通过并留证（整体验收，跨全部已实现模块复核）；npm run verify:local 通过 + 云端 verify job 全绿并回写 CI run URL。",
       "status": "passing",
-      "evidence": ["2026-11-25：五条 AC 逐条通过——桌面浏览器（四视口 700 粒子完整 3D）、移动浏览器（mobile-chrome/safari 触摸与单列布局）、无横向溢出（8 视口 × 16 双语路由，四项目 352 passed）、低性能简化（硬件信号 + 非首屏运行时降档，探针实测 reduced）、WebGL 降级（八处 3D 双语路由静态降级，13/13）。npm run verify:local exit 0；云端 verify 全绿 run https://github.com/George-102/Personal-Digital-Universe/actions/runs/45582352818（commit 0825c07）：E2E 1063 passed / 161 skipped / 0 failed，Lighthouse 2 URL × 3 runs 全过（zh TBT 149/141/133、en 123/138/112，LCP 207~222ms、CLS 0、perf 0.97~0.99）。"],
+      "evidence": [
+        "2026-11-25：五条 AC 逐条通过——桌面浏览器（四视口 700 粒子完整 3D）、移动浏览器（mobile-chrome/safari 触摸与单列布局）、无横向溢出（8 视口 × 16 双语路由，四项目 352 passed）、低性能简化（硬件信号 + 非首屏运行时降档，探针实测 reduced）、WebGL 降级（八处 3D 双语路由静态降级，13/13）。npm run verify:local exit 0；云端 verify 全绿 run https://github.com/George-102/Personal-Digital-Universe/actions/runs/45582352818（commit 0825c07）：E2E 1063 passed / 161 skipped / 0 failed，Lighthouse 2 URL × 3 runs 全过（zh TBT 149/141/133、en 123/138/112，LCP 207~222ms、CLS 0、perf 0.97~0.99）。"
+      ],
       "notes": "基础适配已随 US-001b/US-001e 落地（overflow 5 视口、quality.ts 三档画质、移动端粒子 350/dpr≤1.5）；本故事为全站整体验收，随内容模块齐全后执行。2026-11-24：拆为 US-021a~i 共 9 任务，本地验收全部完成（四档画质 + 硬件信号与运行时降档、8 视口双语溢出矩阵、移动端触摸专项、八处 3D 降级复核、verify:local 与 Lighthouse 全绿）；云端 verify CI run URL 已回写（run 45582352818，verify + deploy 全绿）。期间两次失败已修复：首次 run 45390622841 因 CI runner 低核触发降档导致两项粒子交互断言失败（隔离完整画质测试环境）；第二次 run 45569858609 因首屏 rAF 采样在低核 runner 拉长 WebGL 长任务导致 TBT 超标（首屏仅保留硬件信号降档，运行时自适应限定非首屏 3D）。"
     },
     {

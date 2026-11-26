@@ -11,6 +11,7 @@ import { interests } from '../content/interests.ts';
 import { heroInteractiveObjects, validateInteractiveObjects } from '../lib/interactive.ts';
 import { transitionSegments, validateTransitionSegments } from '../lib/transitions.ts';
 import { navItems, validateNavItems } from '../lib/nav.ts';
+import { sectionVisuals, validateSectionVisuals } from '../lib/section-state.ts';
 import { validateJourneyEntries } from '../lib/journey.ts';
 import { validateContact } from '../lib/contact.ts';
 import { validateResearchList } from '../lib/research.ts';
@@ -39,6 +40,13 @@ if (transitionErrors.length > 0) {
 const navErrors = validateNavItems(navItems);
 if (navErrors.length > 0) {
   console.error(`nav 配置校验失败：\n${navErrors.join('\n')}`);
+  process.exit(1);
+}
+
+// US-005c：模块视觉状态注册表与导航模块一一对应，非法颜色构建期拒绝
+const sectionVisualErrors = validateSectionVisuals(sectionVisuals, navItems);
+if (sectionVisualErrors.length > 0) {
+  console.error(`sectionVisuals 配置校验失败：\n${sectionVisualErrors.join('\n')}`);
   process.exit(1);
 }
 

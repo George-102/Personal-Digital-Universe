@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useSectionTint } from '@/lib/use-section-tint';
 
 export type ResearchAirspaceSceneProps = {
   lowQuality: boolean;
@@ -62,6 +63,7 @@ export default function ResearchAirspaceScene({
   reducedMotion,
   onFrame,
 }: ResearchAirspaceSceneProps) {
+  const tint = useSectionTint();
   const group = useRef<THREE.Group>(null);
   const hovered = useRef<number>(-1);
 
@@ -206,8 +208,8 @@ export default function ResearchAirspaceScene({
     <>
       <DisposeOnUnmount />
       <ambientLight intensity={0.55} />
-      <pointLight position={[2.5, 3.2, 2.5]} intensity={12} color="#7c6cff" />
-      <pointLight position={[-2.6, -1.6, 2]} intensity={7} color="#22d3ee" />
+      <pointLight position={[2.5, 3.2, 2.5]} intensity={12} color={tint.glow} />
+      <pointLight position={[-2.6, -1.6, 2]} intensity={7} color={tint.accent} />
 
       <group ref={group}>
         {/* 空间网格 */}

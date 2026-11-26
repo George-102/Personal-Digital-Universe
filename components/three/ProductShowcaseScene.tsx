@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useSectionTint } from '@/lib/use-section-tint';
 
 export type ProductShowcaseSceneProps = {
   count: number;
@@ -61,6 +62,7 @@ export default function ProductShowcaseScene({
   reducedMotion,
   onFrame,
 }: ProductShowcaseSceneProps) {
+  const tint = useSectionTint();
   const items = useMemo(() => {
     const panelGeometry = new THREE.BoxGeometry(PODIUM_W, PODIUM_H, 0.05);
     const baseGeometry = new THREE.CylinderGeometry(0.42, 0.5, 0.08, 20);
@@ -139,8 +141,8 @@ export default function ProductShowcaseScene({
     <>
       <DisposeOnUnmount />
       <ambientLight intensity={0.6} />
-      <pointLight position={[2.4, 2.6, 3]} intensity={12} color="#a78bfa" />
-      <pointLight position={[-2.4, -1.8, 2]} intensity={8} color="#22d3ee" />
+      <pointLight position={[2.4, 2.6, 3]} intensity={12} color={tint.glow} />
+      <pointLight position={[-2.4, -1.8, 2]} intensity={8} color={tint.accent} />
       {items.map(({ panel, base, edges }, index) => (
         <group key={index}>
           <primitive object={base} />

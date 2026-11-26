@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useSectionTint } from '@/lib/use-section-tint';
 
 export type ProjectsCardsSceneProps = {
   count: number;
@@ -61,6 +62,7 @@ export default function ProjectsCardsScene({
   reducedMotion,
   onFrame,
 }: ProjectsCardsSceneProps) {
+  const tint = useSectionTint();
   const group = useRef<THREE.Group>(null);
 
   const cards = useMemo(() => {
@@ -125,8 +127,8 @@ export default function ProjectsCardsScene({
     <>
       <DisposeOnUnmount />
       <ambientLight intensity={0.6} />
-      <pointLight position={[2.4, 2.6, 3]} intensity={12} color="#a78bfa" />
-      <pointLight position={[-2.4, -1.8, 2]} intensity={8} color="#22d3ee" />
+      <pointLight position={[2.4, 2.6, 3]} intensity={12} color={tint.glow} />
+      <pointLight position={[-2.4, -1.8, 2]} intensity={8} color={tint.accent} />
       <group ref={group}>
         {cards.map(({ mesh, edges }, index) => (
           <group key={index}>

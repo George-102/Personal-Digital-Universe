@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useSectionTint } from '@/lib/use-section-tint';
 
 export type WritingShelfSceneProps = {
   count: number;
@@ -57,6 +58,7 @@ export default function WritingShelfScene({
   reducedMotion,
   onFrame,
 }: WritingShelfSceneProps) {
+  const tint = useSectionTint();
   const items = useMemo(() => {
     const coverGeometry = new THREE.BoxGeometry(0.62, 0.86, 0.1);
     const pageGeometry = new THREE.BoxGeometry(0.56, 0.8, 0.06);
@@ -132,8 +134,8 @@ export default function WritingShelfScene({
     <>
       <DisposeOnUnmount />
       <ambientLight intensity={0.65} />
-      <pointLight position={[2.2, 2.4, 3]} intensity={12} color="#a78bfa" />
-      <pointLight position={[-2.2, -1.6, 2]} intensity={8} color="#22d3ee" />
+      <pointLight position={[2.2, 2.4, 3]} intensity={12} color={tint.glow} />
+      <pointLight position={[-2.2, -1.6, 2]} intensity={8} color={tint.accent} />
       {items.map(({ cover, pages, edges }, index) => (
         <group key={index}>
           <primitive object={pages} />

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useSectionTint } from '@/lib/use-section-tint';
 
 export type ContactOrbitSceneProps = {
   lowQuality: boolean;
@@ -46,6 +47,7 @@ export default function ContactOrbitScene({
   reducedMotion,
   onFrame,
 }: ContactOrbitSceneProps) {
+  const tint = useSectionTint();
   const group = useRef<THREE.Group>(null);
   const core = useRef<THREE.Mesh>(null);
   const segments = lowQuality ? 32 : 64;
@@ -64,8 +66,8 @@ export default function ContactOrbitScene({
     <>
       <DisposeOnUnmount />
       <ambientLight intensity={0.6} />
-      <pointLight position={[2.5, 3, 3]} intensity={15} color="#7c6cff" />
-      <pointLight position={[-2.5, -2, 2]} intensity={9} color="#22d3ee" />
+      <pointLight position={[2.5, 3, 3]} intensity={15} color={tint.glow} />
+      <pointLight position={[-2.5, -2, 2]} intensity={9} color={tint.accent} />
 
       <group ref={group} rotation={[0.35, 0.4, 0]}>
         <mesh ref={core}>
