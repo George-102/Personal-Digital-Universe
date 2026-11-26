@@ -1,0 +1,107 @@
+[tools]
+node = "26.13.1"  # 与 .nvmrc / package.json engines 一致
+
+# 统一入口：所有自动化都通过 `mise run <task>` 调用。
+# package.json scripts 与云端 CI 保持原样；这里只做薄封装，逻辑不重复。
+# 用法：mise run init / mise run verify:local / mise tasks ls
+
+# ── 启动与环境 ────────────────────────────────────────────────────
+
+[tasks.init]
+description = "启动：mise 工具链 + npm 依赖 + 配置冒烟验证（等价 init.sh / init.ps1）"
+run = "bash init.sh"
+run_windows = "powershell.exe -NoProfile -ExecutionPolicy Bypass -File init.ps1"
+
+[tasks.smoke]
+description = "配置冒烟：校验 feature_list.json / lighthouserc.js"
+run = "node scripts/smoke-config.mjs"
+
+[tasks.gate]
+description = "push 前本地门禁（等价 pre-push hook）：verify:local，零浏览器"
+run = "sh scripts/pre-push-gate.sh"
+
+# ── 开发与构建（镜像 package.json）────────────────────────────────
+
+[tasks.dev]
+description = "开发服务器 http://localhost:3000"
+run = "npm run dev"
+
+[tasks.build]
+description = "next build（静态导出到 out/）"
+run = "npm run build"
+
+[tasks.start]
+description = "启动构建产物"
+run = "npm run start"
+
+[tasks.lint]
+description = "ESLint"
+run = "npm run lint"
+
+[tasks.typecheck]
+description = "TypeScript 检查"
+run = "npm run typecheck"
+
+[tasks.test]
+description = "Vitest 单测 + v8 覆盖率门禁"
+run = "npm test"
+
+[tasks.audit]
+description = "npm audit（high+，官方 registry）"
+run = "npm run audit"
+
+[tasks."check:i18n"]
+description = "zh/en 键覆盖率 100%"
+run = "npm run check:i18n"
+
+[tasks.size]
+description = "size-limit：JS 总量 ≤1MB"
+run = "npm run size"
+
+# ── 验证链 ────────────────────────────────────────────────────────
+
+[tasks.verify]
+description = "完整门禁（build + Playwright 四项目 + Lighthouse + metrics）；实际由云端 CI 执行，勿本地跑"
+run = "npm run verify"
+
+[tasks."verify:local"]
+description = "本地默认：lint + typecheck + build + test + metrics + content，零浏览器"
+run = "npm run verify:local"
+
+[tasks."verify:build"]
+description = "仅 next build"
+run = "npm run verify:build"
+
+[tasks."verify:e2e"]
+description = "Playwright 四项目（重验证，云端）"
+run = "npm run verify:e2e"
+
+[tasks."verify:lighthouse"]
+description = "Lighthouse CI（重验证，云端）"
+run = "npm run verify:lighthouse"
+
+[tasks."verify:quick"]
+description = "单项目浏览器抽查：build + chromium-no-webgl"
+run = "npm run verify:quick"
+
+[tasks."verify:metrics"]
+description = "质量指标：audit + check:i18n + size"
+run = "npm run verify:metrics"
+
+[tasks."verify:content"]
+description = "内容维护四条验收（临时工作区，不改真实 content/）"
+run = "npm run verify:content"
+
+# ── 独立工具脚本 ──────────────────────────────────────────────────
+
+[tasks."github:cache"]
+description = "抓取 GitHub 公开仓库数据到 content/github-cache.json（GITHUB_TOKEN 可选）"
+run = "node scripts/fetch-github.mjs"
+
+[tasks."licenses:sync"]
+description = "同步根目录许可证到 public/"
+run = "node scripts/sync-licenses.mjs"
+
+[tasks."content:validate"]
+description = "校验 content/ 结构（prebuild 步骤）"
+run = "node scripts/validate-content.mjs"

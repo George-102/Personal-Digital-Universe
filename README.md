@@ -8,17 +8,18 @@
 
 ## 本地启动
 
-要求 Node.js 26.13.1（`.mise.toml` / `.nvmrc` / CI 的 `setup-node` 对齐；`package.json` 的 `engines` 保持 26.x；`scripts/*.mjs` 直接 import `.ts`，需 Node 22.18+ 原生类型剥离，Node 20 会在 `prebuild` 报 `ERR_UNKNOWN_FILE_EXTENSION`）。
+要求 Node.js 26.13.1（`mise.toml` / `.nvmrc` / CI 的 `setup-node` 对齐；`package.json` 的 `engines` 保持 26.x；`scripts/*.mjs` 直接 import `.ts`，需 Node 22.18+ 原生类型剥离，Node 20 会在 `prebuild` 报 `ERR_UNKNOWN_FILE_EXTENSION`）。
 
-本地推荐用 mise 管理工具链：进入仓库后 `mise install` 即按 `.mise.toml` 准备 Node 26.13.1（自带 npm 11.20.0）。`init.sh` / `init.ps1` 检测到 mise 会自动执行 `mise install` 并通过 `mise exec` 调用 `node` / `npm` / `npx`；未安装 mise 时回退到系统 Node。CI 仍用 `.nvmrc` + `setup-node`，无需 mise。
+本地推荐用 mise 管理工具链与自动化任务：`mise.toml` 固定 Node 26.13.1（自带 npm 11.20.0）并在 `[tasks]` 中提供全部脚本的统一入口；进入仓库后 `mise install` 即准备好工具链。`init.sh` / `init.ps1` 检测到 mise 会自动执行 `mise install` 并通过 `mise exec` 调用 `node` / `npm` / `npx`；未安装 mise 时回退到系统 Node。CI 仍用 `.nvmrc` + `setup-node`，无需 mise。
 
 ```bash
-mise install      # 可选但推荐：安装 .mise.toml 固定的 Node
-bash init.sh      # 统一入口：环境检查 + npm ci + 配置冒烟验证
-npm run dev       # 开发服务器 http://localhost:3000
+mise install              # 安装 mise.toml 固定的 Node
+mise run init             # 统一入口：环境检查 + npm ci + 配置冒烟验证
+mise run dev              # 开发服务器 http://localhost:3000
+mise tasks ls             # 列出全部 mise 任务
 ```
 
-Windows PowerShell 下用 `./init.ps1`，与 `init.sh` 等价（mise 工具链 → 环境检查 → `npm ci` → 配置冒烟验证）。WSL 中若未安装 Linux 版 Node 且未装 mise，`bash init.sh` 会自动委托 Windows PowerShell 执行同一流程。
+`mise run <task>` 与 `npm run <script>` 等价（薄封装，逻辑不重复），任务清单见 `mise.toml`：`init` / `smoke` / `gate` / `dev` / `build` / `start` / `lint` / `typecheck` / `test` / `audit` / `check:i18n` / `size` / `verify` / `verify:*` / `github:cache` / `licenses:sync` / `content:validate`。`mise run init` 在 Windows 上委托 `init.ps1`、其它平台委托 `init.sh`；WSL 中若未安装 Linux 版 Node 且未装 mise，`bash init.sh` 会自动委托 Windows PowerShell 执行同一流程。也可继续直接用 `bash init.sh` / `./init.ps1`。
 
 构建与预览静态产物：
 
@@ -69,6 +70,8 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 - 验证：run `42999448346` 部署后 `/` 与 `/en/` 均返回含 beacon 的 HTML；UptimeRobot monitor `804633325` 回查 `status=2`（Up）。
 
 ## 验收命令
+
+所有命令均可通过 `mise run <task>` 调用（去掉 `npm run` 前缀；`npm test` → `mise run test`）。例如 `mise run verify:local`。
 
 | 命令 | 用途 |
 | --- | --- |
