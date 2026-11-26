@@ -2862,7 +2862,7 @@
     },
     {
       "area": "内容维护",
-      "status": "in_progress",
+      "status": "passing",
       "verification": [
         "npm run verify:local 通过（含 verify:content），无新增 fixme、无删断言、无降阈值。",
         "push main 后云端 verify 全绿并回写 CI run URL；URL 未回写前不得标 passing。"
@@ -2873,7 +2873,7 @@
       "user_visible_behavior": "四条内容维护验收在云端全链验证通过并留证。",
       "evidence": [
         "2026-11-25 本地整体验收：npm run verify:local exit 0（lint / typecheck / build / npm test 25 文件 191 用例 + coverage / audit 0 high 仅既有 6 moderate / i18n 144 键 100% / size 467.37kB ≤1MB / verify:content 四条验收通过）。无新增 fixme、无删断言、无降阈值。",
-        "云端 verify 待回写：push main 后需记录 CI run URL 与 verify/deploy 状态；URL 未回写前本任务保持 in_progress。"
+        "2026-11-26 云端回写：run [45637330329](https://github.com/George-102/Personal-Digital-Universe/actions/runs/45637330329)（commit e6ed579，与本地 HEAD / origin/main 一致）verify success（约 19m）+ deploy success + preview skipped；Vitest 25 文件 / 191 用例全过，Playwright 四项目 1063 passed / 161 skipped / 0 failed，Lighthouse 2 URL × 3 runs 全过（All results processed）；verify:content 四条验收随 build 纳入云端全链。CI run URL 已回写，本任务与 PRD US-023 转 passing。"
       ]
     }
   ],

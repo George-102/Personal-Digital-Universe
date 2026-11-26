@@ -358,9 +358,12 @@
       "details": "个人内容与页面展示逻辑分离。项目、论文、文章、经历、书籍和兴趣采用结构化数据维护，优先支持 Markdown、JSON 或 TypeScript 数据文件。每个数据对象包含必要的标题、描述、时间、分类、图片和链接字段。新增项目或论文时，页面能够自动生成对应内容。支持设置首页精选项目，支持设置内容的公开状态，支持未来迁移至 CMS。",
       "Acceptance Criteria": "- 正常场景：修改结构化内容后，页面能够正确更新。- 正常场景：新增一条项目数据后，项目列表能够自动展示。- 异常场景：某条数据字段缺失时，不应导致整个页面崩溃。- 异常场景：链接或图片资源不可用时，应提供合理的降级显示。",
       "DoD": "四条验收逐条通过并留证（随各内容区块落地时逐项复验）；npm run verify:local 通过 + 云端 verify job 全绿并回写 CI run URL。",
-      "status": "not_started",
-      "evidence": [],
-      "notes": "核心机制已由 T-002a/b/c 覆盖并 passing（content/ 九类类型 + prebuild 校验、public 过滤统一出口、缺字段容错），剩余验收随 US-006/010/012/014 等内容区块落地时复验，故整体状态保持 not_started。"
+      "status": "passing",
+      "evidence": [
+        "2026-11-25 常驻验收脚本落地：scripts/verify-content-maintenance.mjs + content-maintenance.test.mjs（TDD 5/5），npm run verify:content 在临时工作区注入内容夹具并构建，四条验收（AC1 修改文案页面更新 / AC2 新增项目自动展示 / AC3 可选字段缺失不崩溃 / AC4 缺图占位 + 非法链接构建期拒绝）全过，真实 content/ 未改动；逐条证据见 feature_list.json US-023a~e。",
+        "2026-11-26 整体验收回写：npm run verify:local exit 0；云端 run [45637330329](https://github.com/George-102/Personal-Digital-Universe/actions/runs/45637330329)（commit e6ed579）verify + deploy success，Vitest 191 用例 / Playwright 四项目 1063 passed / 161 skipped / 0 failed，Lighthouse 全过；CI run URL 已回写，US-023a~f 全 passing。"
+      ],
+      "notes": "核心机制由 T-002a/b/c 覆盖（content/ 九类类型 + prebuild 校验、public 过滤统一出口、缺字段容错），四条验收由 US-023a~e 常驻脚本逐条留证，US-023f 完成云端回写，整体转 passing。"
     }
   ],
   "notes": "T-003 已于 2026-11-25 完成 Vitest 迁移（24 文件 / 186 用例 + coverage v8 门禁），云端 verify 全绿 run https://github.com/George-102/Personal-Digital-Universe/actions/runs/45611093419；PRD 各故事中“T-003 仍 not_started”为当时历史记录，不改写。"

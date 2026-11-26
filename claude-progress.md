@@ -1,8 +1,8 @@
 # Claude Progress — Personal Digital Universe
 
-## 当前阶段（2026-11-25）
+## 当前阶段（2026-11-26）
 
-**工具链 + US-023（内容维护整体验收）**：项目已接入 mise（`.mise.toml` 固定 Node 26.13.1，`.nvmrc` 同步；`init.sh` / `init.ps1` 检测到 mise 后走 `mise install node` + `mise exec`，无 mise 时回退系统 Node），提交 `4e9b203`。US-023 拆为 US-023a~f（priority 144-149）；用户决策：新增常驻验收脚本、仅修真实 blocker、完成后推送 main 回写 CI run URL。US-023a~e 已 passing：TDD 新增 `scripts/content-maintenance.test.mjs`（5/5）与 `scripts/verify-content-maintenance.mjs`，`npm run verify:content` 在临时工作区注入内容夹具并构建，四条验收（文案更新 / 新增项目 / 缺字段容错 / 资源降级）全过，真实 `content/` 未改动；`npm run verify:local` exit 0（25 文件 191 用例 + coverage / 0 high / i18n 100% / size 467.37kB / verify:content）。**下一步：US-023f 待 push main 后回写云端 verify run URL，URL 未回写前不得标 passing。**
+**US-023（内容维护整体验收）已完成**：项目已接入 mise 管理 Node 26.13.1（与 `.nvmrc` / `package.json` engines 对齐，`init.sh` / `init.ps1` 检测到 mise 后走 `mise install node` + `mise exec`，无 mise 时回退系统 Node），提交 `4e9b203`。US-023 拆为 US-023a~f（priority 144-149）；用户决策：新增常驻验收脚本、仅修真实 blocker、完成后推送 main 回写 CI run URL。US-023a~e 已 passing：TDD 新增 `scripts/content-maintenance.test.mjs`（5/5）与 `scripts/verify-content-maintenance.mjs`，`npm run verify:content` 在临时工作区注入内容夹具并构建，四条验收（文案更新 / 新增项目 / 缺字段容错 / 资源降级）全过，真实 `content/` 未改动；`npm run verify:local` exit 0（25 文件 191 用例 + coverage / 0 high / i18n 100% / size 467.37kB / verify:content）。**US-023f 已收尾**：云端 run [45637330329](https://github.com/George-102/Personal-Digital-Universe/actions/runs/45637330329)（commit e6ed579）verify + deploy success（Vitest 191 / E2E 1063 passed / Lighthouse 全过），CI run URL 已回写 feature_list.json、PRD_UserStory.json 与本文件，US-023a~f 与 PRD US-023 全部 passing。**下一步：按 `feature_list.json` roadmap 优先级最高未完成项（US-005 动态滚动反馈为 P1 首位，或用户另行指定）；开工先 `./init.ps1`。**
 
 ## 当前阶段（2026-11-11）
 
@@ -316,3 +316,12 @@ run 44277517360 仍挂 Lighthouse：中文 TBT 最优 232（三次 407/296/232�
 
 - 云端 verify 全绿 run https://github.com/George-102/Personal-Digital-Universe/actions/runs/45611093419（commit `6f8c0ce`，verify 1317s + deploy 35s + preview skipped，所有 step success）。Unit tests：Vitest 24 files / 186 tests passed + coverage 阈值全过；E2E 四项目 1062 passed / 161 skipped / 1 flaky（mobile-safari 头像上下文恢复用例重试通过）/ 0 failed；Lighthouse 2 URL × 3 runs 全过（All results processed）。
 - T-003a~f 全 passing，T-003 技术债关闭，CI run URL 已回写 `feature_list.json` T-003f.evidence。下一步：按 `feature_list.json` 下一个最高优先级未完成项执行（roadmap 首位 US-023 内容维护验收），开工先 `./init.ps1`。
+
+## US-023 完成回写（2026-11-26）
+
+**US-023（网站所有者维护个人内容）全部完成：US-023a~f 与 PRD US-023 转 passing。** 用户在 2026-11-26 提出「下一需求 US-023，先拆分再逐个实现」，核对持久化文件后发现该需求已在上一轮会话（2026-11-25，commit `e6ed579`）完成拆分、实现与云端验证，唯一缺口为最终证据回写——故不重复拆分/实现，仅补齐收尾。
+
+- **拆分（已完成）**：US-023a~f（priority 144-149），roadmap 移除 US-023；用户三项决策：①新增常驻验收脚本（非一次性手工复验），临时工作区注入夹具并构建、四条验收可重复执行；②只在验收暴露真实 blocker 时做最小修复，不删断言/降阈值/改无关代码；③完成后 push main 触发云端 verify/deploy 并回写 CI run URL。
+- **实现（a~e 已 passing）**：TDD 新增 `scripts/content-maintenance.test.mjs`（5/5）与 `scripts/verify-content-maintenance.mjs`；`npm run verify:content` 纳入 `verify:local`，在 OS 临时目录复制仓库、软链 node_modules、注入内容夹具后 next build，finally 清理，真实 `content/` 无 git diff。四条验收逐条留证（AC1 改文案页面更新 / AC2 新增项目自动展示 / AC3 可选字段缺失不崩溃 / AC4 缺图占位 + 非法链接构建期拒绝）；逐条证据见 `feature_list.json` US-023a~e。
+- **整体验收与回写（f）**：`npm run verify:local` exit 0（25 文件 191 用例 + coverage / audit 0 high 仅 6 moderate / i18n 144 键 / size 467.37kB / verify:content）。云端 run [45637330329](https://github.com/George-102/Personal-Digital-Universe/actions/runs/45637330329)（commit e6ed579，与本地 HEAD / origin/main 一致）verify success + deploy success + preview skipped；Vitest 25 文件/191 用例、Playwright 四项目 1063 passed / 161 skipped / 0 failed、Lighthouse 2 URL × 3 runs 全过（All results processed）。CI run URL 已回写 `feature_list.json` US-023f.evidence、`PRD_UserStory.json` US-023 与本文件；US-023a~f 与 PRD US-023 全部 passing。全程未删断言、未降阈值、未新增 fixme。
+- **提交注意**：工作区存在并行会话未提交改动——`AGENTS.md`（M）、`.mise.toml`（D）与 `mise.toml`（新，未跟踪，疑似 mise 配置改名）、`.tmp-t003-*`（未跟踪临时文件）。本轮回写提交只含 `feature_list.json` / `PRD_UserStory.json` / `claude-progress.md`，显式排除上述文件。
