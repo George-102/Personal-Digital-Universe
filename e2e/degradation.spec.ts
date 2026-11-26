@@ -63,6 +63,9 @@ test.describe('WebGL / 3D 降级', () => {
     { route: '/en/products', visual: '[data-products-3d]', mode: 'data-products-mode', items: '[data-product-item]' },
     { route: '/writing', visual: '[data-writing-3d]', mode: 'data-writing-mode', items: '[data-writing-item]' },
     { route: '/en/writing', visual: '[data-writing-3d]', mode: 'data-writing-mode', items: '[data-writing-item]' },
+    // US-007f：技能星图同样是无 WebGL 降级的纯视觉层（列表页四重门槛，无 requireLeftHero）
+    { route: '/skills', visual: '[data-skills-3d]', mode: 'data-skills-mode', items: '[data-skill-item]' },
+    { route: '/en/skills', visual: '[data-skills-3d]', mode: 'data-skills-mode', items: '[data-skill-item]' },
   ];
 
   for (const target of LIST_ROUTES) {

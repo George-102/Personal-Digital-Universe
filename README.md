@@ -32,7 +32,7 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 
 ## 内容维护方式
 
-内容与展示逻辑分离：个人数据在 `content/` 下以 TypeScript 数据文件维护（profile / journey / research / publications / projects / products / writing / reading / interests，随 T-002 落地）。约定：
+内容与展示逻辑分离：个人数据在 `content/` 下以 TypeScript 数据文件维护（profile / journey / research / publications / projects / products / writing / skills / reading / interests，随 T-002 落地）。约定：
 
 - 简介类字段双语 `{ zh, en }`；论文与项目名称保留原文。
 - 每条数据含 `public: boolean`，`false` 的条目构建时被过滤。

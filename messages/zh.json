@@ -23,7 +23,34 @@
     "research": "研究",
     "projects": "项目",
     "products": "产品",
-    "writing": "写作"
+    "writing": "写作",
+    "skills": "技能"
+  },
+  "Skills": {
+    "eyebrow": "SKILLS & EXPERTISE",
+    "title": "技术能力",
+    "intro": "按领域列出实际使用的语言、框架、算法与工具。这里只记录客观经验，不提供熟练度百分比。",
+    "listLabel": "技术能力分类列表",
+    "listIntro": "点击技能展开说明；配置关联内容时显示对应的项目或科研方向。",
+    "routeTitle": "技术能力 — 苏子豪",
+    "routeDescription": "苏子豪的技术能力：计算机科学、软件工程、全栈开发、人工智能、科研与科学计算、工具与技术。",
+    "viewAll": "查看全部技术能力",
+    "expand": "展开技能说明",
+    "collapse": "收起技能说明",
+    "detailLabel": "使用场景",
+    "tagsLabel": "相关技术",
+    "relatedLabel": "关联内容",
+    "noRelated": "暂未配置关联内容。",
+    "featuredLabel": "精选",
+    "conceptNote": "技能星图为概念性可视化，不代表熟练度评级。",
+    "categories": {
+      "computer-science": "计算机科学",
+      "software-engineering": "软件工程",
+      "full-stack": "全栈开发",
+      "artificial-intelligence": "人工智能",
+      "research-computing": "科研与科学计算",
+      "tools-technologies": "工具与技术"
+    }
   },
   "About": {
     "eyebrow": "01 / ABOUT ME",

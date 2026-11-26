@@ -6,6 +6,7 @@ import { publications } from '../content/publications.ts';
 import { projects } from '../content/projects.ts';
 import { products } from '../content/products.ts';
 import { writing } from '../content/writing.ts';
+import { skills } from '../content/skills.ts';
 import { reading } from '../content/reading.ts';
 import { interests } from '../content/interests.ts';
 import { heroInteractiveObjects, validateInteractiveObjects } from '../lib/interactive.ts';
@@ -18,6 +19,7 @@ import { validateResearchList } from '../lib/research.ts';
 import { validateProjectList } from '../lib/projects.ts';
 import { validateProductList } from '../lib/products.ts';
 import { validateWritingList } from '../lib/writing.ts';
+import { validateSkillList } from '../lib/skills.ts';
 
 const journeyErrors = validateJourneyEntries(journey);
 if (journeyErrors.length > 0) {
@@ -86,6 +88,13 @@ if (writingErrors.length > 0) {
   process.exit(1);
 }
 
+// US-007a：技能整表校验（六领域枚举、slug 唯一、熟练度字段禁用、关联链接白名单）
+const skillErrors = validateSkillList(skills);
+if (skillErrors.length > 0) {
+  console.error(`skills 配置校验失败：\n${skillErrors.join('\n')}`);
+  process.exit(1);
+}
+
 const data = {
   journey,
   research,
@@ -95,6 +104,7 @@ const data = {
   writing,
   reading,
   interests,
+  skills,
 };
 
 validateEntry('profile', profile);

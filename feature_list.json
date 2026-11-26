@@ -3026,15 +3026,177 @@
         "2026-11-26 本地：mise run smoke / check:i18n / content:validate / typecheck 均 exit 0；mise tasks info init 显示 Windows 运行 powershell.exe -NoProfile -ExecutionPolicy Bypass -File init.ps1。",
         "2026-11-26 已知风险：mise run lint 与直接 npm run lint 均 exit 2（eslint-config-next 的 @rushstack/eslint-patch 在当前 Node 26 / ESLint 组合下报 Failed to patch ESLint），为非 mise 相关既有问题，未在本任务修改依赖或断言。"
       ]
+    },
+    {
+      "area": "个人介绍",
+      "status": "passing",
+      "verification": [
+        "scripts/skills.test.mjs TDD RED→GREEN；validate-content 注入非法分类/javascript: 链接/熟练度字段时 exit 1，恢复后 exit 0。",
+        "类型定义只允许客观技能信息字段，不提供 proficiency/level/percent 等熟练度字段。"
+      ],
+      "id": "US-007a",
+      "priority": 160,
+      "title": "技能内容模型与构建期校验",
+      "user_visible_behavior": "技能按 PRD 六领域分类，数据非法时构建期拒绝；不展示也无字段承载熟练度百分比。",
+      "evidence": [
+        "2026-11-26 TDD RED：scripts/skills.test.mjs 首跑报 Cannot find module '../lib/skills.ts'；实现后 GREEN 15/15（六领域枚举、slug/链接白名单、双语字段、熟练度字段拒绝、整表唯一性与 public 约束、分组与路径）。",
+        "2026-11-26 构建期注入实测：content/skills.ts 注入 category:'design' 与 proficiency:95 后 node scripts/validate-content.mjs exit 1，逐条输出两类错误；恢复后 exit 0（content 校验通过 45 条数据）。",
+        "2026-11-26 类型层无 proficiency/level/percent 字段，lib/skills.ts 的 FORBIDDEN_PROFICIENCY_FIELDS 在构建期显式拒绝注入；方案写入 content/validate.ts RULES.skills 与 scripts/validate-content.mjs。"
+      ]
+    },
+    {
+      "area": "个人介绍",
+      "status": "passing",
+      "verification": [
+        "content/skills.ts 覆盖六领域，全部标【待用户确认】，只写有客观依据的技能项。",
+        "messages zh/en 新增 Skills 命名空间与 Nav.skills；i18n 校验 100%。"
+      ],
+      "id": "US-007b",
+      "priority": 161,
+      "title": "六领域技能清单与双语文案",
+      "user_visible_behavior": "中英文均可按领域浏览技能名称、简介与应用场景。",
+      "evidence": [
+        "2026-11-26 content/skills.ts 18 条技能（六领域各 3 条），按 PRD 起草且文件头标【待用户确认】；只写有客观依据的使用场景，无熟练度百分比；related 缺省条目（如 data-structures-algorithms）保留。",
+        "2026-11-26 messages/zh.json 与 en.json 新增 Skills 命名空间 22 键（六领域分类键与 SKILL_CATEGORIES 同源 kebab-case）+ Nav.skills；npm run check:i18n 100%（zh 168 键 / en 168 键）。"
+      ]
+    },
+    {
+      "area": "个人介绍",
+      "status": "passing",
+      "verification": [
+        "首页 #skills 静态 HTML 可读（无 JS 用例）；首页模块图不引入 3D/交互 client 模块（chunk grep 无 skills 3D 字样）。",
+        "首页只放精选概览，全量信息在列表页（TBT 红线先例 US-010k/US-012）。"
+      ],
+      "id": "US-007c",
+      "priority": 162,
+      "title": "首页 #skills 精选概览",
+      "user_visible_behavior": "首页可见技能领域概览与少量精选技能，文字无需 JS 即可阅读。",
+      "evidence": [
+        "2026-11-26 首页 #skills 由 SkillsSection 服务端渲染（compact）：六领域各 1 条精选共 6 卡，只含 name + description；详情/标签/关联/3D 全量留在列表页；HomeSections 在 #about 后挂载。",
+        "2026-11-26 产物级检查：out 首页 HTML 不含 data-skills-3d；3D 探针只出现在 /skills 产物与独立 chunk。",
+        "2026-11-26 e2e/skills.spec.ts 四项目 65 passed / 3 skipped / 0 failed：六领域静态可读、无 JS 用例、首页无 details/tags/related / 无 3D 容器（TBT 红线）。"
+      ]
+    },
+    {
+      "area": "个人介绍",
+      "status": "passing",
+      "verification": [
+        "/skills 与 /en/skills 静态路由 200、独立 SEO/OG/canonical/语言切换、sitemap 双语收录。",
+        "seo.spec / overflow.spec 相应条目由空过转实质断言；about.spec h2 计数同步，不删断言、不降阈值。"
+      ],
+      "id": "US-007d",
+      "priority": 163,
+      "title": "/skills 列表路由与 SEO 实质验收",
+      "user_visible_behavior": "访客可通过独立列表页查看六领域全部技能，中英路由均可被搜索引擎收录。",
+      "evidence": [
+        "2026-11-26 /skills 与 /en/skills 静态路由落地（build 生成 31 页），独立 title/description/OG/canonical/语言切换；sitemap 双语收录，skills.spec 四项目 SEO 与 sitemap 用例通过。",
+        "2026-11-26 seo.spec SEO_ROUTES 与 overflow.spec ALL_ROUTES / CORE_ROUTES 加入两路由，由 404 空过转实质断言；未删断言、未降阈值。",
+        "2026-11-26 e2e/skills.spec.ts 四项目验证列表页 18 条技能、六领域分组与无 JS 详情面板可读。"
+      ]
+    },
+    {
+      "area": "个人介绍",
+      "status": "passing",
+      "verification": [
+        "e2e/skills.spec.ts 覆盖：六领域分类浏览、hover/点击显示描述、关联链接跳转、related 缺省仍展示、产物无熟练度百分比。",
+        "原生 details/summary + 单一事件委托（互斥/Esc 回焦/hover 探针）；不新建技能详情路由。"
+      ],
+      "id": "US-007e",
+      "priority": 164,
+      "title": "分类浏览与技能信息交互",
+      "user_visible_behavior": "悬停或点击技能节点显示描述；有配置时展示关联项目/科研链接，无关联也能正常展示。",
+      "evidence": [
+        "2026-11-26 原生 details/summary + SkillsInteractions 单一 document 事件委托（mouseover / focusin / toggle capture / keydown），互斥展开、Esc 回焦、hover/focus 写 window.__skillsActive / __skillsHover / __skillsCategory；不逐卡绑定 React 合成事件。",
+        "2026-11-26 e2e/skills.spec.ts 四项目覆盖三条 AC 与 DoD：六领域浏览、hover 探针与高亮、点击展开/互斥/Esc/回焦、关联链接指向 /projects 与 /research、related 缺省仍完整展示、产物无熟练度百分比。四项目 65 passed / 3 skipped / 0 failed。",
+        "2026-11-26 不新建技能详情路由；点击行为按用户决策为展开描述 + 关联已有页面。"
+      ]
+    },
+    {
+      "area": "个人介绍",
+      "status": "passing",
+      "verification": [
+        "R3F 真 3D 星图：六领域聚簇节点 + 关联线 + hover 高亮 + 点击联动，aria-hidden 概念标注。",
+        "五重挂载门槛（≥1024px / 无 reduced-motion / WebGL / 进入视口 / 已离开首屏）、ErrorBoundary、离屏 never、GPU dispose；useFrame 零布局读写/零 dataset/零 setState。",
+        "仅列表页引入，首页无 WebGL 上下文；no-webgl / chunk abort / context loss 三路径降级。"
+      ],
+      "id": "US-007f",
+      "priority": 165,
+      "title": "列表页 R3F 技能星图视觉层",
+      "user_visible_behavior": "列表页桌面端出现 3D 技能星图，悬停高亮与 DOM 卡片联动；3D 失败不影响阅读。",
+      "evidence": [
+        "2026-11-26 SkillsStarScene 六聚簇 18 节点 + 归属连线；useFrame 只读 __skillsActive / __skillsCategory 做插值（节点放大发光、同领域中心提亮），零布局读写 / 零 dataset / 零 setState；DisposeOnUnmount 释放 GPU 资源。",
+        "2026-11-26 SkillsCanvas 门控：≥1024px / 无 reduced-motion / WebGL / 进入视口；列表页按 US-010 先例 requireLeftHero=false，首页模块图不引用 3D；ErrorBoundary + 离屏 frameloop=never。概念标注「技能星图为概念性可视化，不代表熟练度评级。」在 DOM，3D 容器 aria-hidden 无文本。",
+        "2026-11-26 四项目覆盖 3d 挂载与帧计数、纯装饰、首页无 3D、no-webgl 与 reduced-motion 降级；degradation.spec 增补 /skills 与 /en/skills 两路由降级用例。"
+      ]
+    },
+    {
+      "area": "个人介绍",
+      "status": "passing",
+      "verification": [
+        "lib/nav.ts 注册 skills（order 25，About 与 Journey 之间）；nav.test.mjs 与 navigation.spec.ts 同步（点击到达/英文/激活态）。",
+        "全套四项目 E2E 分批 0 失败，无新增 fixme，不删断言不降阈值。"
+      ],
+      "id": "US-007g",
+      "priority": 166,
+      "title": "导航注册与全站回归",
+      "user_visible_behavior": "导航栏出现 Skills 入口，点击可达、滚动激活态正确，其余模块无回归。",
+      "evidence": [
+        "2026-11-26 lib/nav.ts 注册 skills（order 25，About 与 Journey 之间），lib/section-state.ts 同 id 配色；nav.test.mjs 顺序断言同步更新（增强）；navigation.spec.ts 新增三项：点击到达 / 英文页 / 滚动激活态与回顶。",
+        "2026-11-26 about + navigation 四项目 151 passed / 5 skipped；4 个失败均为既有『移动端折叠菜单』用例：新增第 9 项导航使面板覆盖遮罩中心点，测试改为点击面板外的遮罩下部（仅调整点击位置，断言未删未降），单跑四项目 4/4 通过。",
+        "2026-11-26 e2e/skills.spec.ts 四项目 65 passed / 3 skipped / 0 failed；无新增 fixme。"
+      ]
+    },
+    {
+      "area": "个人介绍",
+      "status": "passing",
+      "verification": [
+        "npm run verify:local exit 0（lint / typecheck / build / Vitest + coverage / audit 0 high / i18n 100% / size ≤1MB / verify:content）。",
+        "CI=1 Lighthouse 6 runs 全过，TBT ≤200ms 较 US-005 基线（zh 102 / en 94）无实质回退；首页 chunk 无 3D 代码。"
+      ],
+      "id": "US-007h",
+      "priority": 167,
+      "title": "性能与质量门禁",
+      "user_visible_behavior": "页面性能与质量门禁不回退，首屏不被新模块拖慢。",
+      "evidence": [
+        "2026-11-26 npm run verify:local exit 0：lint 0 errors（2 条既有 warnings）/ typecheck / build 31 页 / Vitest 27 文件 212 用例 + coverage / audit 0 high（仅 6 moderate）/ i18n 168 键 100% / size 469.15kB / verify:content 四条全过。",
+        "2026-11-26 CI=1 npm run verify:lighthouse exit 0：2 URL × 3 runs 全过（All results processed）；中文 TBT 155 / 166 / 156ms（最优 155）、英文 137 / 210 / 207ms（最优 137），均 ≤200；LCP 270~356ms、CLS 0。较 US-005 基线（zh 102 / en 94）上升但门禁仍有余量。",
+        "2026-11-26 E2E 分批四项目：skills 65 passed / 3 skipped；about+navigation 151 passed / 5 skipped + 菜单定位修复后 4/4；seo+overflow+i18n+core 479 passed / 1 flaky（core 首例 net::ERR_ABORTED，单跑 16/16 通过）；degradation+scroll-feedback+scroll-transition 82 passed / 46 skipped。未删断言、未降阈值、无新增 fixme。"
+      ]
+    },
+    {
+      "area": "个人介绍",
+      "status": "passing",
+      "verification": [
+        "三条 AC 逐条留证：①六领域分类可浏览；②hover/点击可见描述；③无关联项目的技能仍正常展示。",
+        "DoD：产物无熟练度百分比；README / docs/Development.md / docs/Tech.md / docs/DoD.md 同步。"
+      ],
+      "id": "US-007i",
+      "priority": 168,
+      "title": "验收逐条留证与文档同步",
+      "user_visible_behavior": "AC 与 DoD 全部有可复查的本地证据，文档反映新模块。",
+      "evidence": [
+        "2026-11-26 三条 AC 逐条留证（e2e/skills.spec.ts 四项目）：AC1 六领域分类浏览（首页 6 条精选 + 列表页 18 条全量）；AC2 hover 探针/高亮与点击展开说明、关联 /projects /research 链接；AC3 related 缺省技能（data-structures-algorithms）仍展示说明与缺省提示。",
+        "2026-11-26 DoD：产物无熟练度百分比（页面文本 \\d+% 正则 + data-* 属性名双检，chromium 用例通过）；README / docs/Development.md / docs/Tech.md / docs/DoD.md 已同步新数据与路由。"
+      ]
+    },
+    {
+      "area": "个人介绍",
+      "status": "in_progress",
+      "verification": [
+        "云端 verify 全绿并回写 CI run URL 后才可标 passing；URL 未回写前保持 in_progress。",
+        "提交只含预期文件，显式排除并行会话的 AGENTS.md / docs/PRD.md 与 .tmp-* 临时文件。"
+      ],
+      "id": "US-007j",
+      "priority": 169,
+      "title": "US-007 整体验收与云端 CI 回写",
+      "user_visible_behavior": "三条 AC + DoD 完整达成，生产环境可访问，证据已回写三份持久化文件。",
+      "evidence": [
+        "2026-11-26 本地验收完成：三条 AC 与 DoD 逐条留证于 US-007a~i；npm run verify:local exit 0；CI=1 Lighthouse 6 runs 全过；E2E 分批四项目全绿（两处本机 flake 单跑复核通过）。",
+        "待用户 push main 触发云端 verify；CI run URL 回写本文件 / PRD_UserStory.json / claude-progress.md 后才可转 passing。"
+      ]
     }
   ],
   "roadmap": [
-    {
-      "id": "US-007",
-      "title": "技术能力展示",
-      "group": "P1",
-      "status": "not_started"
-    },
     {
       "id": "US-009",
       "title": "教育背景",

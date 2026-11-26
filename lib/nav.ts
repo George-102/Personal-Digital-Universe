@@ -18,6 +18,8 @@ export type NavItem = {
 export const navItems: readonly NavItem[] = [
   { id: 'home', labelKey: 'Nav.home', href: '#home', order: 10 },
   { id: 'about', labelKey: 'Nav.about', href: '#about', order: 20 },
+  // US-007g：技能属于个人介绍范畴，排在 About 与 Journey 之间
+  { id: 'skills', labelKey: 'Nav.skills', href: '#skills', order: 25 },
   { id: 'journey', labelKey: 'Nav.journey', href: '#journey', order: 30 },
   { id: 'research', labelKey: 'Nav.research', href: '#research', order: 35 },
   { id: 'projects', labelKey: 'Nav.projects', href: '#projects', order: 37 },

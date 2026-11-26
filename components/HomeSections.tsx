@@ -3,6 +3,7 @@ import { profile } from '@/content/profile';
 import HeroBackground from '@/components/HeroBackground';
 import HeroCanvas from '@/components/three/HeroCanvas';
 import AboutSection from '@/components/AboutSection';
+import SkillsSection from '@/components/SkillsSection';
 import JourneySection from '@/components/JourneySection';
 import ResearchSection from '@/components/ResearchSection';
 import ProjectsSection from '@/components/ProjectsSection';
@@ -59,6 +60,7 @@ export default async function HomeSections({ lang }: { lang: 'zh' | 'en' }) {
         </div>
       </section>
       <AboutSection lang={lang} />
+      <SkillsSection lang={lang} compact />
       <JourneySection lang={lang} />
       <ResearchSection lang={lang} compact />
       <ProjectsSection lang={lang} compact />

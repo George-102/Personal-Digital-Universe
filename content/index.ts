@@ -9,6 +9,7 @@ import { products as rawProducts } from './products.ts';
 import { writing as rawWriting } from './writing.ts';
 import { reading as rawReading } from './reading.ts';
 import { interests as rawInterests } from './interests.ts';
+import { skills as rawSkills } from './skills.ts';
 import { githubCache, mergeGithubCache } from '../lib/github-cache.ts';
 
 export function publicOnly<T extends { public: boolean }>(_category: string, items: T[]): T[] {
@@ -30,3 +31,5 @@ export const products = filterPublic(rawProducts);
 export const writing = filterPublic(rawWriting);
 export const reading = filterPublic(rawReading);
 export const interests = filterPublic(rawInterests);
+/** US-007：技能统一出口（已过滤 public），页面不直接 import content/skills.ts */
+export const skills = filterPublic(rawSkills);

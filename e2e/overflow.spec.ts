@@ -27,6 +27,8 @@ const ALL_ROUTES = [
   '/en/products',
   '/writing',
   '/en/writing',
+  '/skills',
+  '/en/skills',
   '/writing/fayuan',
   '/en/writing/fayuan',
   '/contact',
@@ -34,7 +36,7 @@ const ALL_ROUTES = [
 ];
 
 /** 边界视口跑核心路由，控制用例数量同时覆盖档位边界 */
-const CORE_ROUTES = ['/', '/en', '/research', '/projects', '/writing', '/contact'];
+const CORE_ROUTES = ['/', '/en', '/research', '/projects', '/writing', '/skills', '/contact'];
 
 test.describe('响应式无横向溢出', () => {
   for (const viewport of VIEWPORTS) {

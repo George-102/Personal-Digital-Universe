@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { settle } from './helpers';
 
-const SEO_ROUTES = ['/', '/en', '/research', '/en/research', '/projects', '/products', '/writing', '/contact'];
+const SEO_ROUTES = ['/', '/en', '/research', '/en/research', '/projects', '/products', '/writing', '/skills', '/en/skills', '/contact'];
 
 // 未实现路由 → roadmap 故事 ID。对应故事落地后删除映射项即可恢复原有断言。
 // US-014 已落地：/writing 映射已移除，断言恢复实跑；当前无 pending 路由。

@@ -348,3 +348,22 @@ run 44277517360 仍挂 Lighthouse：中文 TBT 最优 232（三次 407/296/232�
 - **本地验证**：`mise tasks validate` ✓ 23/23；`mise tasks --no-header` 列出 23 项；`mise run smoke` / `check:i18n` / `content:validate` / `typecheck` exit 0；`mise tasks info init` 显示 Windows 覆盖命令。README 增加 mise 统一入口说明，内容维护与门禁章节补 `mise run` 等价写法。
 - **风险**：`mise run lint` 与直接 `npm run lint` 均 exit 2（eslint-config-next 的 @rushstack/eslint-patch 在当前 Node 26 / ESLint 组合下报 `Failed to patch ESLint`），非 mise 引入；本次未改依赖与断言。`feature_list.json` T-009 保持 `in_progress`，待云端 verify 全绿并回写 CI run URL 后转 passing。
 - **提交注意**：显式排除 `AGENTS.md`（并行会话 M）、`.tmp-t003-*`、`vendor/`、`.workbuddy/`；只提交 `mise.toml` / `.mise.toml`（删除）/ `README.md` / `feature_list.json` / `claude-progress.md`。
+
+## US-007 规划（2026-11-26，仅拆分，未写实现代码）
+
+**用户指定下一需求为 US-007（技术能力展示）并要求先拆分再逐个实现。** 四项决策：①双轨——首页 `#skills` 精选概览 + `/skills` / `/en/skills` 独立列表页，导航注册 Skills；②DOM 信息主体 + 列表页 R3F 3D 技能星图，首页不加载 3D（沿用五重挂载门槛），3D 仅视觉层 `aria-hidden`；③技能清单由 agent 按 PRD 六领域（Computer Science / Software Engineering / Full-Stack Development / Artificial Intelligence / Research & Scientific Computing / Tools & Technologies）起草，标【待用户确认】，只写有客观依据的技能；④点击技能节点展开描述并按配置展示关联 `/projects` / `/research` 链接，不新建技能详情路由，`related` 缺省仍正常展示。**硬约束**：不展示熟练度百分比（类型层不提供字段 + 构建期拒绝注入）。
+
+**已写入 `feature_list.json`**：US-007a~j 共 10 任务（priority 160-169，全 not_started），roadmap 移除 US-007。Node 解析校验：169 features、10 个新任务 priority 连续唯一、roadmap 无 US-007。任务链：a 内容模型/构建期校验 → b 六领域清单与双语 → c 首页 #skills 概览 → d 列表路由与 SEO 实质验收 → e 分类浏览与交互 → f 列表页 R3F 星图 → g 导航与全站回归 → h 性能与质量门禁 → i AC 逐条留证与文档同步 → j 云端 CI 回写（URL 未回写前不得标 passing）。
+
+**本轮文件改动**：`feature_list.json`、`claude-progress.md`（本段）。工作区仍有并行会话的 `AGENTS.md`（M）与 `.tmp-t003-*`（未跟踪），提交时显式排除。
+
+## US-007 本地实现（2026-11-26，US-007a~i passing，US-007j 待云端 CI）
+
+**用户四项决策**：①双轨——首页 `#skills` 精选概览 + `/skills` / `/en/skills` 独立列表页；②DOM 信息主体 + 列表页 R3F 3D 技能星图（首页不加载 3D）；③技能清单由 agent 按 PRD 六领域起草，标【待用户确认】；④点击技能展开描述并按配置关联 `/projects` / `/research`，不新建详情路由。**硬约束**：不展示熟练度百分比（类型层无字段 + 构建期拒绝注入）。
+
+- **a/b 数据与文案**：新增 `content/types.ts` 的 SkillCategory 六值与 Skill（无熟练度字段）、`lib/skills.ts`（`SKILL_CATEGORIES` / `FORBIDDEN_PROFICIENCY_FIELDS` / 整表校验 / 六领域分组 / 双语路径）；`scripts/skills.test.mjs` TDD RED（模块不存在）→ GREEN 15/15；注入 `category:'design'` + `proficiency:95` 实测 `validate-content.mjs` exit 1、恢复 exit 0。`content/skills.ts` 18 条（六领域各 3 条），messages zh/en 新增 Skills 22 键 + Nav.skills（168 键 100%）。
+- **c/d/e 页面与交互**：`SkillsSection.tsx` 服务端渲染（首页 compact 每领域 1 精选共 6 卡，列表页 18 条全量）；HomeSections 在 `#about` 后挂 `#skills`；双语独立路由 + 独立 SEO/canonical + sitemap；`SkillsInteractions.tsx` 单一事件委托（互斥展开 / Esc 回焦 / hover 探针），原生 details 面板展示说明与关联链接，related 缺省仍完整展示。
+- **f 3D**：`SkillsStarScene`（六聚簇 18 节点 + 归属连线，hover 放大发光 / 同领域中心提亮，useFrame 零布局读写 / 零 dataset / 零 setState，DisposeOnUnmount）+ `SkillsStage` / `SkillsCanvas` / `SkillsVisual`（门控 ≥1024px / 无 reduced-motion / WebGL / 进入视口；列表页 `requireLeftHero=false` 同 US-010 先例；ErrorBoundary、离屏 never、aria-hidden 概念标注）。仅列表页加载，首页模块图不引用 3D。
+- **g/h/i 回归与门禁**：nav 注册 skills（order 25）+ 同 id 配色 + 三项导航 E2E；全套 E2E 分批四项目：skills 65/3、about+navigation 151/5（4 个旧用例因菜单增至 9 项覆盖遮罩中心，改为点击面板外遮罩区域后 4/4）、seo+overflow+i18n+core 479/1（core 首例 `net::ERR_ABORTED`，单跑 16/16）、degradation+scroll-feedback+scroll-transition 82/46，均 0 failed。`verify:local` exit 0（27 文件 212 用例、size 469.15kB、verify:content 四条）；`CI=1 verify:lighthouse` exit 0（中文 TBT 最优 155ms / 英文 137ms）。文档 README / Development / Tech / DoD 同步。
+- **j 收尾（待用户操作）**：用户 push main 触发云端 verify 后，回写 CI run URL 到 `feature_list.json` US-007j.evidence、`PRD_UserStory.json` US-007 与本文件；URL 回写前 US-007j 保持 `in_progress`，PRD US-007 不标 passing。
+- **本机注意**：`.next` 存量目录在本机触发 `uncaughtException [TypeError: Cannot read properties of undefined (reading 'length')]`，需先移走 `.next` 再构建（已移至 `/tmp/pdu-us007-next-bak*`）；这是本机环境问题，验证脚本与断言均未改。提交时显式排除 `AGENTS.md`（并行会话 M）与 `.tmp-*`。

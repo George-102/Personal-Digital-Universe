@@ -971,3 +971,66 @@ section[data-section-active='true'] {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
+
+/* US-007c：首页技能概览基础样式（列表页全量卡与 3D 视觉见 components/skills-page.css，
+   仅 /skills 路由加载；TBT 红线，与 US-013c / US-014c 同构） */
+.skills-section {
+  position: relative;
+}
+
+.skill-groups {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.skill-group {
+  min-width: 0;
+}
+
+.skill-group-title {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #a78bfa;
+}
+
+.skill-list {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+.skill-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.9rem;
+  border: 1px solid rgba(232, 234, 246, 0.12);
+  border-radius: 0.9rem;
+  background: rgba(12, 14, 32, 0.68);
+}
+
+.skill-name {
+  font-size: 1rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.skill-description {
+  font-size: 0.84rem;
+  line-height: 1.55;
+  opacity: 0.8;
+}
+
+.skills-all-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #a78bfa;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}

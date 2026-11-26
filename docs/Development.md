@@ -92,6 +92,7 @@
 | products.ts | 独立软件产品（US-013，4 款起草稿待用户确认） | slug, name, description{zh,en}, features[]{zh,en}, detail?{zh,en}, status（四值 Released/Beta/In Development/Discontinued）, featured, logo?, cover?, url?, repo?（owner/name）, public；首页 #products 精选 + /products 与 /en/products 列表页，3D 展台仅列表页挂载 |
 | writing.ts | 文学作品（US-014，3 部起草稿待用户确认） | slug, title/description{zh,en}, type（novel/article）, status（三值 Writing/In Progress/Completed）, featured, writtenAt?, worldview?{zh,en}, background?/characters?/detail?[]{zh,en}, concept?{zh,en}, cover?, readingUrl?, externalUrl?, public；首页 #writing 精选 + /writing 与 /en/writing 列表页 + /writing/[slug] 详情路由，3D 书架仅列表页挂载 |
 | writing.ts | 文学作品与文章 | title{zh,en}, type, status, cover?, externalUrl?, public |
+| skills.ts | 技术能力（US-007，18 条起草稿待用户确认） | slug, name, category（六领域 kebab）, description/detail{zh,en}, tags[], related?[]{label{zh,en}, href}, featured, public；不设熟练度字段；首页 #skills 精选 + /skills /en/skills 列表页，3D 星图仅列表页挂载 |
 | reading.ts | 书单 | title, author, rating?, note{zh,en}?, public |
 | interests.ts | 跨领域兴趣 | field, description{zh,en}?, related[]?, public |
 

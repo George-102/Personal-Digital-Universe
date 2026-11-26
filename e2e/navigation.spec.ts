@@ -242,7 +242,8 @@ test.describe('空间化导航', () => {
     // 遮罩点击关闭
     await button.click();
     await expect(panel).toBeVisible();
-    await page.locator('[data-nav-overlay]').click();
+    // 菜单增至 9 项后面板覆盖遮罩中心；点击面板外的遮罩下部（真实用户操作路径）
+    await page.locator('[data-nav-overlay]').click({ position: { x: 100, y: 600 } });
     await expect(panel).toHaveCount(0);
     await expect(button).toHaveAttribute('aria-expanded', 'false');
     await expect(button).toBeFocused();
@@ -523,6 +524,37 @@ test('US-014h 滚动到 Writing 时激活态唯一，回到顶部收回到 home'
     document.getElementById('writing')?.scrollIntoView({ behavior: 'instant', block: 'start' }),
   );
   await expect.poll(() => activeIds(page)).toEqual(['writing']);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await expect.poll(() => activeIds(page)).toEqual(['home']);
+});
+
+// ---------- US-007g：Skills 导航 ----------
+
+test('US-007g 点击 Skills 准确到达 #skills 并同步 URL hash', async ({ page }) => {
+  await page.goto('/');
+  await settle(page);
+  await clickNav(page, 'skills');
+  await expect(page.locator('#skills')).toBeInViewport({ timeout: 10_000 });
+  await expect.poll(() => new URL(page.url()).hash).toBe('#skills');
+  await expect.poll(() => activeIds(page)).toEqual(['skills']);
+});
+
+test('US-007g 英文页 Skills 导航同样到达并激活', async ({ page }) => {
+  await page.goto('/en');
+  await settle(page);
+  await clickNav(page, 'skills');
+  await expect(page.locator('#skills')).toBeInViewport({ timeout: 10_000 });
+  await expect.poll(() => new URL(page.url()).hash).toBe('#skills');
+  await expect.poll(() => activeIds(page)).toEqual(['skills']);
+});
+
+test('US-007g 滚动到 Skills 时激活态唯一，回到顶部收回到 home', async ({ page }) => {
+  await page.goto('/');
+  await settle(page);
+  await page.evaluate(() =>
+    document.getElementById('skills')?.scrollIntoView({ behavior: 'instant', block: 'start' }),
+  );
+  await expect.poll(() => activeIds(page)).toEqual(['skills']);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
   await expect.poll(() => activeIds(page)).toEqual(['home']);
 });

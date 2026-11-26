@@ -23,7 +23,34 @@
     "research": "Research",
     "projects": "Projects",
     "products": "Products",
-    "writing": "Writing"
+    "writing": "Writing",
+    "skills": "Skills"
+  },
+  "Skills": {
+    "eyebrow": "SKILLS & EXPERTISE",
+    "title": "Skills & Expertise",
+    "intro": "Languages, frameworks, algorithms, and tools used in practice. Objective experience only — no proficiency percentages.",
+    "listLabel": "Skill categories",
+    "listIntro": "Expand a skill to read its details; linked projects or research areas appear when configured.",
+    "routeTitle": "Skills & Expertise — Christopher Chang",
+    "routeDescription": "Skills and expertise of Christopher Chang: computer science, software engineering, full-stack development, AI, research computing, and tools.",
+    "viewAll": "View all skills",
+    "expand": "Expand skill details",
+    "collapse": "Collapse skill details",
+    "detailLabel": "Where it is used",
+    "tagsLabel": "Related technologies",
+    "relatedLabel": "Related content",
+    "noRelated": "No related content configured.",
+    "featuredLabel": "Featured",
+    "conceptNote": "The skill star map is a conceptual visualization and does not represent proficiency ratings.",
+    "categories": {
+      "computer-science": "Computer Science",
+      "software-engineering": "Software Engineering",
+      "full-stack": "Full-Stack Development",
+      "artificial-intelligence": "Artificial Intelligence",
+      "research-computing": "Research & Scientific Computing",
+      "tools-technologies": "Tools & Technologies"
+    }
   },
   "About": {
     "eyebrow": "01 / ABOUT ME",

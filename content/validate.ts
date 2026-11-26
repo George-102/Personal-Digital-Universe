@@ -2,6 +2,7 @@ import type { ContentCategory } from './types.ts';
 import { PORTRAIT_PATH, CV_PATH } from '../lib/about.ts';
 import { isValidJourneyLink, normalizeJourneyDate } from '../lib/journey.ts';
 import { validateContact } from '../lib/contact.ts';
+import { SKILL_CATEGORIES } from '../lib/skills.ts';
 
 type Rule = {
   required: string[];
@@ -83,6 +84,12 @@ const RULES: Record<ContentCategory, Rule> = {
   interests: {
     required: ['field', 'public'],
     localeText: [],
+  },
+  skills: {
+    // US-007a：六领域必填；tags / related / 熟练度禁用字段由 lib/skills.ts 强校验
+    required: ['slug', 'name', 'category', 'description', 'detail', 'tags', 'featured', 'public'],
+    localeText: ['description', 'detail'],
+    enums: { category: [...SKILL_CATEGORIES] },
   },
 };
 

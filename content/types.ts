@@ -185,6 +185,40 @@ export interface Interest {
   public: boolean;
 }
 
+/** US-007：PRD 六领域；kebab-case 同时作为 DOM 标识与分组键 */
+export type SkillCategory =
+  | 'computer-science'
+  | 'software-engineering'
+  | 'full-stack'
+  | 'artificial-intelligence'
+  | 'research-computing'
+  | 'tools-technologies';
+
+/** US-007：可选关联入口，指向站内已有内容（不新建技能详情路由） */
+export interface SkillRelated {
+  label: LocaleText;
+  href: string;
+}
+
+/**
+ * US-007：技能只记录客观事实。
+ * 刻意不设 proficiency / level / percent 等字段——DoD 禁止熟练度百分比，
+ * 类型层和构建期校验双重拒绝（FORBIDDEN_PROFICIENCY_FIELDS）。
+ */
+export interface Skill {
+  slug: string;
+  name: string;
+  category: SkillCategory;
+  description: LocaleText;
+  detail: LocaleText;
+  /** 客观技术标签（技术名词无需双语） */
+  tags: string[];
+  /** 缺省时技能仍正常展示（AC3） */
+  related?: SkillRelated[];
+  featured: boolean;
+  public: boolean;
+}
+
 export type ContentCategory =
   | 'profile'
   | 'journey'
@@ -194,4 +228,5 @@ export type ContentCategory =
   | 'products'
   | 'writing'
   | 'reading'
-  | 'interests';
+  | 'interests'
+  | 'skills';

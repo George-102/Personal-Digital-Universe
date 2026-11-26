@@ -19,6 +19,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // US-014d：文学作品列表页双语收录
     { url: `${SITE_URL}/writing/`, lastModified: new Date() },
     { url: `${SITE_URL}/en/writing/`, lastModified: new Date() },
+    // US-007d：技术能力列表页双语收录
+    { url: `${SITE_URL}/skills/`, lastModified: new Date() },
+    { url: `${SITE_URL}/en/skills/`, lastModified: new Date() },
     // US-010e：研究详情页双语收录
     ...research.map((item) => ({
       url: `${SITE_URL}/research/${item.slug}/`,
