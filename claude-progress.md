@@ -2,7 +2,9 @@
 
 ## 当前阶段（2026-11-26）
 
-**US-023（内容维护整体验收）已完成**：项目已接入 mise 管理 Node 26.13.1（与 `.nvmrc` / `package.json` engines 对齐，`init.sh` / `init.ps1` 检测到 mise 后走 `mise install node` + `mise exec`，无 mise 时回退系统 Node），提交 `4e9b203`。US-023 拆为 US-023a~f（priority 144-149）；用户决策：新增常驻验收脚本、仅修真实 blocker、完成后推送 main 回写 CI run URL。US-023a~e 已 passing：TDD 新增 `scripts/content-maintenance.test.mjs`（5/5）与 `scripts/verify-content-maintenance.mjs`，`npm run verify:content` 在临时工作区注入内容夹具并构建，四条验收（文案更新 / 新增项目 / 缺字段容错 / 资源降级）全过，真实 `content/` 未改动；`npm run verify:local` exit 0（25 文件 191 用例 + coverage / 0 high / i18n 100% / size 467.37kB / verify:content）。**US-023f 已收尾**：云端 run [45637330329](https://github.com/George-102/Personal-Digital-Universe/actions/runs/45637330329)（commit e6ed579）verify + deploy success（Vitest 191 / E2E 1063 passed / Lighthouse 全过），CI run URL 已回写 feature_list.json、PRD_UserStory.json 与本文件，US-023a~f 与 PRD US-023 全部 passing。**下一步：按 `feature_list.json` roadmap 优先级最高未完成项（US-005 动态滚动反馈为 P1 首位，或用户另行指定）；开工先 `./init.ps1`。**
+**US-005（动态滚动反馈，P1 首位）已完成**：US-005a~i 共 9 任务与 PRD US-005 全部 passing。用户四项决策：顶部细线指示器、DOM + 复用既有 3D 场景的模块视觉状态、整页进度在现有滚动链路计算、3D 状态由共享模块状态驱动（useFrame 零布局读写 / 零 setState）。本地 `verify:local` exit 0（197 用例 + coverage / i18n 145 键 / size 464.19kB）；云端 run [45824611249](https://github.com/George-102/Personal-Digital-Universe/actions/runs/45824611249)（commit 3710cebd）verify + deploy 全绿（Vitest 26 文件 197 用例；E2E 四项目 1085 passed / 162 skipped / 0 failed；Lighthouse 2 URL × 3 runs 全过），CI run URL 已回写三份持久化文件。
+
+**US-023（内容维护整体验收）此前已完成**：mise 管理 Node 26.13.1；US-023a~f 全 passing，云端 run [45637330329](https://github.com/George-102/Personal-Digital-Universe/actions/runs/45637330329) verify + deploy 全绿。**下一步：T-009 状态由负责会话回写；按 `feature_list.json` roadmap 顺序（US-007 起均 P2）或用户另行指定；开工先 `./init.ps1`。**
 
 ## 当前阶段（2026-11-11）
 
@@ -60,6 +62,7 @@
 13. ~~之后按 roadmap：US-010~~（2026-11-16 实施中，见下方 US-010 章节）。
 14. ~~**US-012 GitHub 开源项目**~~（2026-11-20 **passing**：US-012a~k 共 11 任务全 passing，云端 run [44693684714](https://github.com/George-102/Personal-Digital-Universe/actions/runs/44693684714) verify + deploy 全绿，E2E 718 passed / 94 skipped / 0 failed，Lighthouse TBT 最优 zh 124ms / en 115ms；见文末「US-012 迭代」章节）。审计 blocker（picomatch CVE）与两轮 TBT 回归均已修复，零降阈值。之后：US-013 → US-014 → US-021 → US-023 → P1 故事；T-003（Vitest 迁移）仍为技术债。
 15. ~~**US-013 独立开发的软件产品**~~（2026-11-23 **passing**：US-013a~j 共 10 任务全 passing，云端 run [44772997649](https://github.com/George-102/Personal-Digital-Universe/actions/runs/44772997649) verify + deploy 全绿，E2E 829 passed / 103 skipped / 0 failed，Lighthouse 6 runs 断言全过，本地 TBT 最优 zh 81ms / en 86ms；见文末「US-013 迭代」章节）。已知非阻塞项：1 条 lint warning（ProductShowcaseScene 未使用 useRef import）。之后：US-014 → US-021 → US-023 → P1 故事；T-003 仍为技术债。
+16. ~~**US-005 动态滚动反馈（P1）**~~（2026-11-26 **passing**：US-005a~i 共 9 任务全 passing，云端 run [45824611249](https://github.com/George-102/Personal-Digital-Universe/actions/runs/45824611249) verify + deploy 全绿，Vitest 197 用例 / E2E 1085 passed / 162 skipped / 0 failed / Lighthouse 6 runs 全过；CI run URL 已回写三份持久化文件）。下一步：roadmap 剩余 P2 故事从 US-007 起，或用户另行指定；T-009 状态由负责会话回写。
 
 ## US-010 迭代（2026-11-16~17，US-010a~k 全部 passing，云端 verify 已回写）
 
@@ -326,7 +329,7 @@ run 44277517360 仍挂 Lighthouse：中文 TBT 最优 232（三次 407/296/232�
 - **整体验收与回写（f）**：`npm run verify:local` exit 0（25 文件 191 用例 + coverage / audit 0 high 仅 6 moderate / i18n 144 键 / size 467.37kB / verify:content）。云端 run [45637330329](https://github.com/George-102/Personal-Digital-Universe/actions/runs/45637330329)（commit e6ed579，与本地 HEAD / origin/main 一致）verify success + deploy success + preview skipped；Vitest 25 文件/191 用例、Playwright 四项目 1063 passed / 161 skipped / 0 failed、Lighthouse 2 URL × 3 runs 全过（All results processed）。CI run URL 已回写 `feature_list.json` US-023f.evidence、`PRD_UserStory.json` US-023 与本文件；US-023a~f 与 PRD US-023 全部 passing。全程未删断言、未降阈值、未新增 fixme。
 - **提交注意**：工作区存在并行会话未提交改动——`AGENTS.md`（M）、`.mise.toml`（D）与 `mise.toml`（新，未跟踪，疑似 mise 配置改名）、`.tmp-t003-*`（未跟踪临时文件）。本轮回写提交只含 `feature_list.json` / `PRD_UserStory.json` / `claude-progress.md`，显式排除上述文件。
 
-## US-005 迭代（2026-11-26，US-005a~h passing，US-005i 待云端 CI 回写）
+## US-005 迭代（2026-11-26，US-005a~i 全部 passing，云端 verify 已回写）
 
 **用户指定下一需求为 US-005（动态滚动反馈，P1 首位）并要求先拆分再逐个实现。** 四项决策：①指示器用导航栏下沿顶部细线；②视觉状态用 DOM + 3D，3D 只复用已有场景、不新建 Canvas；③进度覆盖整页，在现有 ScrollDriver 同一滚动链路计算，不新开循环；④3D 状态由共享模块状态驱动，useFrame 零布局读写、零 setState。拆为 US-005a~i 共 9 任务 priority 150-158，roadmap 移除 US-005。
 
@@ -334,7 +337,7 @@ run 44277517360 仍挂 Lighthouse：中文 TBT 最优 232（三次 407/296/232�
 - **d/e 视觉状态与 3D 复用**：根状态 + 当前 section 的 `data-section-active` + CSS 1px 内阴影；`lib/use-section-tint.ts` 用 `useSyncExternalStore` 订阅模块，8 个既有 R3F 场景只在切换时改灯光色与 `canvas.dataset.sectionTint`，不新增 Canvas、不在 useFrame 读布局/write dataset/setState。
 - **f/g E2E**：新增 `e2e/scroll-feedback.spec.ts` 六用例 × 四项目。chromium 6/6；四项目 **23 passed / 1 skipped**（无 WebGL 项目跳过 3D 用例）/ 0 failed。三条 AC 逐条覆盖：进度同步（含 aria / transform）、模块状态同步（根 / 指示器 / nav / section）、快速跳变误差 <0.05；另含 reduced-motion、无 JS、WebGL 复用与不新增 Canvas。
 - **h 门禁**：`./init.ps1` exit 0（Node v26.13.1 / 197 E2E listed）。`verify:local` exit 0：lint / typecheck / build / Vitest 26 文件 197 用例 + coverage / audit 0 high（仅 6 moderate）/ i18n 145 键 100% / size 464.19kB / verify:content 四条全过。`CI=1 verify:lighthouse` exit 0：6 runs 全过，中文 TBT 102 / 114.8 / 118ms（最优 102），英文 113 / 94 / 109ms（最优 94），LCP 254~288ms、CLS 0。回归批次：scroll-transition + navigation + core + a11y 174 passed / 6 skipped；about + degradation + i18n + overflow 412 passed / 38 skipped，2 个 mobile-safari `/projects` 并行超时单跑复核通过（30.5s / 14.1s），未删断言、未降阈值、无新增 fixme。
-- **i 待办**：本地证据已逐条回写 `feature_list.json`；**用户 push main 后需回写云端 verify CI run URL 到 `feature_list.json` US-005i.evidence、`PRD_UserStory.json` US-005 与本文件**，之后 US-005a~i 与 PRD US-005 才可转 passing；当前 US-005i 保持 in_progress。
+- **i 收尾（2026-11-26）**：用户 push main 后云端 run [45824611249](https://github.com/George-102/Personal-Digital-Universe/actions/runs/45824611249)（commit `3710cebd`，与本地 HEAD / origin/main 一致）**verify success + deploy success + preview skipped**：Vitest 26 文件 / 197 用例全过；Playwright 四项目 **1085 passed / 162 skipped / 0 failed**；Lighthouse 2 URL × 3 runs 断言全过（All results processed!）；wrangler 部署 84 文件到 Cloudflare Pages。CI run URL 已回写 `feature_list.json` US-005i.evidence、`PRD_UserStory.json` US-005 与本文件，US-005a~i 与 PRD US-005 全部 passing。全程未删断言、未降阈值、无新增 fixme。
 - **提交注意**：工作区仍有并行会话的 `AGENTS.md` 未提交改动与 `.tmp-t003-*`（未跟踪临时文件）；本轮提交只含 US-005 应用代码、单测、E2E、i18n、`feature_list.json` 与本文件，显式排除上述文件。
 
 

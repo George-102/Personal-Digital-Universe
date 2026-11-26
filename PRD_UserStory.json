@@ -90,12 +90,13 @@
       "details": "设置页面滚动进度指示器，可以使用细线、光点或轨道展示整体浏览进度。页面滚动时，背景场景可以产生轻微变化，当前内容模块可以通过文字、光效或其他标识突出。不同模块可以具有独立的动态背景状态。滚动效果不得影响正常页面操作。",
       "Acceptance Criteria": "- 正常场景：页面滚动时，进度指示器能够同步更新。- 正常场景：进入不同模块时，视觉状态能够正确切换。- 异常场景：快速滚动时，进度指示器不会出现明显延迟或错位。",
       "DoD": "三条验收逐条通过并留证；滚动效果不影响正常页面操作；npm run verify:local 通过 + 云端 verify job 全绿并回写 CI run URL。",
-      "status": "in_progress",
-      "evidence": [
-        "2026-11-26：拆为 US-005a~i 共 9 任务 priority 150-158；US-005a~h 本地 passing，US-005i 保持 in_progress（待云端 verify CI run URL 回写），逐条证据见 feature_list.json。",
-        "2026-11-26 三条 AC 本地留证：①顶部细线整页进度与 aria-valuenow / transform 同步（scroll-feedback.spec.ts AC1，四项目）；②进入 about/journey/contact 时根状态、指示器、nav 激活态与 section 标识一致（AC2）；③高频跳变 [0.95,0.05,0.8,0.2,1,0] 进度与 aria 误差 <0.05（AC3）。",
-        "2026-11-26 门禁：verify:local exit 0（Vitest 26 文件 197 用例 + coverage / i18n 145 键 100% / size 464.19kB / audit 0 high）；CI=1 Lighthouse 6 runs 全过（中文 TBT 最优 102ms / 英文 94ms，CLS 0）；scroll-feedback 四项目 23 passed / 1 skipped / 0 failed；受影响回归批次无新增失败，2 个本地 WebKit /projects 溢出超时单跑复核通过，未删断言、未降阈值、无新增 fixme。"
-      ],
+  "status": "passing",
+  "evidence": [
+    "2026-11-26：拆为 US-005a~i 共 9 任务 priority 150-158；US-005a~h 本地 passing，US-005i 保持 in_progress（待云端 verify CI run URL 回写），逐条证据见 feature_list.json。",
+    "2026-11-26 三条 AC 本地留证：①顶部细线整页进度与 aria-valuenow / transform 同步（scroll-feedback.spec.ts AC1，四项目）；②进入 about/journey/contact 时根状态、指示器、nav 激活态与 section 标识一致（AC2）；③高频跳变 [0.95,0.05,0.8,0.2,1,0] 进度与 aria 误差 <0.05（AC3）。",
+    "2026-11-26 门禁：verify:local exit 0（Vitest 26 文件 197 用例 + coverage / i18n 145 键 100% / size 464.19kB / audit 0 high）；CI=1 Lighthouse 6 runs 全过（中文 TBT 最优 102ms / 英文 94ms，CLS 0）；scroll-feedback 四项目 23 passed / 1 skipped / 0 failed；受影响回归批次无新增失败，2 个本地 WebKit /projects 溢出超时单跑复核通过，未删断言、未降阈值、无新增 fixme。",
+    "2026-11-26 云端 verify 全绿 run [https://github.com/George-102/Personal-Digital-Universe/actions/runs/45824611249]（commit 3710cebd）：verify + deploy success、preview skipped；Vitest 26 文件 / 197 用例；Playwright 四项目 1085 passed / 162 skipped / 0 failed；Lighthouse 2 URL × 3 runs 全过；部署 84 文件到 Cloudflare Pages。CI run URL 已回写 feature_list.json US-005i.evidence、PRD 本条目与 claude-progress.md，US-005a~i 与 PRD US-005 全部 passing。"
+  ],
       "notes": "滚动进度源（US-003a 的 lib/scroll.ts）已复用并扩展为整页进度；DOM 高亮与 8 个既有 R3F 场景灯光复用模块状态，不新增 Canvas；顶部细线在所有路由由 SiteNav 挂载。云端 verify run URL 未回写前不得标 passing。"
     },
     {
