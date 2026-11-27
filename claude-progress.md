@@ -370,3 +370,11 @@ run 44277517360 仍挂 Lighthouse：中文 TBT 最优 232（三次 407/296/232�
 - **g/h/i 回归与门禁**：nav 注册 skills（order 25）+ 同 id 配色 + 三项导航 E2E；全套 E2E 分批四项目：skills 65/3、about+navigation 151/5（4 个旧用例因菜单增至 9 项覆盖遮罩中心，改为点击面板外遮罩区域后 4/4）、seo+overflow+i18n+core 479/1（core 首例 `net::ERR_ABORTED`，单跑 16/16）、degradation+scroll-feedback+scroll-transition 82/46，均 0 failed。`verify:local` exit 0（27 文件 212 用例、size 469.15kB、verify:content 四条）；`CI=1 verify:lighthouse` exit 0（中文 TBT 最优 155ms / 英文 137ms）。文档 README / Development / Tech / DoD 同步。
 - **j 云端回写（已完成）**：用户 push main 后云端 run 45851575761（commit 703e8bf5）verify + deploy success；CI run URL 已回写 `feature_list.json` US-007j.evidence、`PRD_UserStory.json` US-007 与本文件；US-007a~j 与 PRD US-007 全部 passing。
 - **本机注意**：`.next` 存量目录在本机触发 `uncaughtException [TypeError: Cannot read properties of undefined (reading 'length')]`，需先移走 `.next` 再构建（已移至 `/tmp/pdu-us007-next-bak*`）；这是本机环境问题，验证脚本与断言均未改。提交时显式排除 `AGENTS.md`（并行会话 M）与 `.tmp-*`。
+
+## T-009 云端回写（2026-11-27）
+
+- **push 状态**：T-009 commit `9d263de` 已在 `origin/main`（与 US-005 实现 `3710cebd` 同批 push，故无独立触发 run）。本地 main 另领先 1 个未 push 的提交 `7b93011`（US-007 云端回写）——该提交只改证据文件，不影响 T-009 验证。
+- **云端证据**：首个覆盖 `9d263de` 的 run [45824611249](https://github.com/George-102/Personal-Digital-Universe/actions/runs/45824611249)（head `3710cebd`，`git merge-base --is-ancestor 9d263de 3710cebd` = true）verify + deploy success、preview skipped。verify job 全 step success：Lint / Typecheck / Build / Unit tests（Vitest 26 文件 / 197 用例）/ Quality metrics / Playwright 四项目 1085 passed / 162 skipped / 1 flaky / 0 failed / Lighthouse（All results processed!）；deploy 上传 84 文件到 Cloudflare Pages。
+- **回写**：`feature_list.json` T-009 `in_progress` → `passing`，evidence 追加 CI run URL 与上述摘要。本任务全程未删断言、未降阈值、未改 npm scripts 与 CI 命令。
+- **剩余风险**：本地 `mise run lint` / `npm run lint` exit 2（@rushstack/eslint-patch 与 Node 26 / ESLint 组合）在本机复现，云端 Lint step success；为非 mise 引入的本地环境问题，待单独排查。
+- **提交注意**：只提交 `feature_list.json` 与 `claude-progress.md`，显式排除 `AGENTS.md`（并行会话 M）与 `.tmp-*`、`.workbuddy/`。
