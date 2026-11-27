@@ -126,9 +126,11 @@
       "details": "设置 Skills & Expertise 区域，技能按领域分类：Computer Science、Software Engineering、Full-Stack Development、Artificial Intelligence、Research & Scientific Computing、Tools & Technologies。展示实际掌握的编程语言、框架、算法和工具。可以采用空间化技能展示方式，例如 3D 技能星图、动态技术标签、悬浮分类卡片、技术领域之间的关联网络。鼠标悬停技能节点时显示技能名称和相关描述，点击技能节点时可以查看关联项目或研究。不应使用缺乏客观依据的熟练度百分比。",
       "Acceptance Criteria": "- 正常场景：访客可以查看不同领域的技能分类。- 正常场景：悬停或点击技能节点时，可以查看对应信息。- 异常场景：未配置关联项目时，技能仍能够正常展示。",
       "DoD": "三条验收逐条通过并留证；不展示熟练度百分比；npm run verify:local 通过 + 云端 verify job 全绿并回写 CI run URL。",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "passing",
+      "evidence": [
+        "2026-11-27 云端 run 45851575761（commit 703e8bf5）：verify + deploy success；Vitest 27 文件 212 用例；Playwright 四项目 1219 passed / 171 skipped / 0 failed（2 flaky 重试通过）；Lighthouse 2 URL × 3 runs 全过；wrangler 部署 66 文件到 Cloudflare Pages。三条 AC 与 DoD 逐条证据见 feature_list.json US-007a~j。"
+      ],
+      "notes": "用户决策：双轨页面（首页 #skills + /skills /en/skills）；DOM 信息主体 + 列表页 R3F 3D 技能星图（首页不加载 3D）；技能清单由 agent 按 PRD 六领域起草（content/skills.ts 标【待用户确认】）；点击展开描述并关联已有 /projects /research，不新建详情路由。硬约束：不展示熟练度百分比（类型层无字段 + 构建期拒绝注入）。"
     },
     {
       "id": "US-008",
