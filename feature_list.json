@@ -3025,7 +3025,8 @@
         "2026-11-26 本地：mise 2026.11.13 windows-x64；mise.toml 由 [tools] 扩为 23 个 tasks（薄封装 npm scripts 与 scripts/*.mjs，逻辑不重复）；mise tasks validate 输出 ✓ All 23 task(s) validated successfully；mise tasks --no-header 列出 23 项。",
         "2026-11-26 本地：mise run smoke / check:i18n / content:validate / typecheck 均 exit 0；mise tasks info init 显示 Windows 运行 powershell.exe -NoProfile -ExecutionPolicy Bypass -File init.ps1。",
         "2026-11-26 已知风险：mise run lint 与直接 npm run lint 均 exit 2（eslint-config-next 的 @rushstack/eslint-patch 在当前 Node 26 / ESLint 组合下报 Failed to patch ESLint），为非 mise 相关既有问题，未在本任务修改依赖或断言。",
-        "2026-11-27 云端回写：commit 9d263de 已 push 至 origin/main（与 US-005 实现 3710cebd 同批 push，故无独立 run）；首个覆盖该 commit 的云端 run [45824611249](https://github.com/George-102/Personal-Digital-Universe/actions/runs/45824611249)（head 3710cebd，9d263de 为其祖先）verify success + deploy success + preview skipped；verify job 全 step success：Lint / Typecheck / Build / Unit tests（Vitest 26 文件 / 197 用例全过）/ Quality metrics / Playwright 四项目 1085 passed / 162 skipped / 1 flaky / 0 failed / Lighthouse（All results processed!）；deploy 上传 84 文件到 Cloudflare Pages。CI run URL 已回写，T-009 转 passing。"
+        "2026-11-27 云端回写：commit 9d263de 已 push 至 origin/main（与 US-005 实现 3710cebd 同批 push，故无独立 run）；首个覆盖该 commit 的云端 run [45824611249](https://github.com/George-102/Personal-Digital-Universe/actions/runs/45824611249)（head 3710cebd，9d263de 为其祖先）verify success + deploy success + preview skipped；verify job 全 step success：Lint / Typecheck / Build / Unit tests（Vitest 26 文件 / 197 用例全过）/ Quality metrics / Playwright 四项目 1085 passed / 162 skipped / 1 flaky / 0 failed / Lighthouse（All results processed!）；deploy 上传 84 文件到 Cloudflare Pages。CI run URL 已回写，T-009 转 passing。",
+        "2026-11-27 文档同步：AGENTS.md 开工流程 / 工作规则 / 必需文件 / 收尾四处命令统一为 mise run init 与 mise run verify:local（保留等价 npm 脚本说明），mise.toml [tasks] 明确为自动化统一入口；package.json scripts 与 CI 命令仍未改。"
       ]
     },
     {

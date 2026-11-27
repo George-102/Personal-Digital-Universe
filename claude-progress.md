@@ -378,3 +378,9 @@ run 44277517360 仍挂 Lighthouse：中文 TBT 最优 232（三次 407/296/232�
 - **回写**：`feature_list.json` T-009 `in_progress` → `passing`，evidence 追加 CI run URL 与上述摘要。本任务全程未删断言、未降阈值、未改 npm scripts 与 CI 命令。
 - **剩余风险**：本地 `mise run lint` / `npm run lint` exit 2（@rushstack/eslint-patch 与 Node 26 / ESLint 组合）在本机复现，云端 Lint step success；为非 mise 引入的本地环境问题，待单独排查。
 - **提交注意**：只提交 `feature_list.json` 与 `claude-progress.md`，显式排除 `AGENTS.md`（并行会话 M）与 `.tmp-*`、`.workbuddy/`。
+
+## AGENTS.md 脚本命令统一为 mise（2026-11-27）
+
+- 用户要求把 AGENTS.md 中相关脚本改为 mise 运行。改动四处：①开工流程第 7 步 `./init.ps1` → `mise run init`；②工作规则 `npm run verify:local` → `mise run verify:local`；③必需文件条目由 `init.ps1` 改为 `mise.toml`（`[tasks]` 为自动化统一入口，`init.ps1` / `init.sh` 为底层启动脚本）；④收尾第 6 步 `./init.ps1` → `mise run init`。均保留等价原命令说明（括号内），未删断言、未改验证规则。
+- 保留并行会话已加入的 `- 使用mise工具管理项目` 规则。本次提交包含 `AGENTS.md`（用户明确要求）、`feature_list.json`（T-009 evidence 追加）、`claude-progress.md`。
+- 验证：`mise tasks ls` 含 init / verify:local；AGENTS.md 无裸命令残留（仅等价说明括号内保留 npm 脚本）。

@@ -16,7 +16,7 @@
 4. 将从`PRD_UserStory.json`中选择的需求拆分（拆分得越小越好）为多个任务或功能写入`feature_list.json`
 5. 从`feature_list.json`选择本次需要实现的功能或任务后，定义一个“DoD（definition of done）”
 6. 用 `git log --oneline -5` 看最近提交。
-7. 运行 `./init.ps1`。
+7. 运行 `mise run init`（统一入口；等价于 `./init.ps1` / `bash init.sh`）。
 8. 在开始新功能前，先跑必需的 smoke test 或端到端验证。
 9. 在开始一个新功能时，你应该尽可能询问用户一些问题来确保让用户知道你是否完全了解实现这个功能的所有细节
 
@@ -32,15 +32,16 @@
 - 在制定计划时，有任何疑问可以随时询问用户，而不是靠猜
 - 如果中途有新的计划和任务插入，需要先将计划转化为任务并写入feature_list.json中再开始执行。
 - 只提交预期的changes
+- 使用mise工具管理项目
 - TDD测试驱动开发
-- 本地默认只跑 `npm run verify:local`（零浏览器）；Playwright 四项目与 Lighthouse 重验证固定在云端 `verify` job，禁止为省时在脚本或文档中删除、降级任何断言与阈值。
+- 本地默认只跑 `mise run verify:local`（零浏览器；等价于 `npm run verify:local`）；Playwright 四项目与 Lighthouse 重验证固定在云端 `verify` job，禁止为省时在脚本或文档中删除、降级任何断言与阈值。
 
 ## 必需文件
 
 - `PRD_UserStory.json`：项目需求文件，以用户故事呈现，需求和业务验收标准。
 - `feature_list.json`：需求的具体拆分后的任务清单，任务状态及验证结果的唯一来源。
 - `claude-progress.md`：会话进度和当前已验证状态
-- `init.ps1`：统一的启动与验证入口
+- `mise.toml`：`[tasks]` 为自动化统一入口（init / smoke / gate / verify:* / build / lint / typecheck / test 等）；`init.ps1` / `init.sh` 为其底层启动脚本。
 - `session-handoff.md`：较长会话可选的交接摘要
 
 ## 完成定义
@@ -62,6 +63,6 @@
 3. 如果某个需求完成了，更新 `PRD_UserStory.json`
 4. 记录仍未解决的风险或 blocker
 5. 在工作处于安全状态后，用清晰的提交信息提交
-6. 保证下一轮会话可以直接运行 `./init.ps1`
+6. 保证下一轮会话可以直接运行 `mise run init`
 
 > 若云端 `verify` job 的 CI run 尚未生成，在 `claude-progress.md`「下一步」标注「待回写 CI run URL」，不得把未完成的云端重验证标记为 passing。
