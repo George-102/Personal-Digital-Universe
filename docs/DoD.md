@@ -20,7 +20,7 @@
 ## B. 信息可信与可读（访客能在 30 秒内正确理解你）
 
 - [ ] 首页可见姓名（笔名/英文名）、身份描述、Explore 入口。
-- [ ] 教育经历中，考研状态表述为 **Preparing for Graduate Entrance Examination**，不得显示为研究生在读或已获硕士学历。
+- [x] 教育经历中，考研状态表述明确为备考中、尚未入学，不得显示为研究生在读或已获硕士学历。（US-009a/e/g：`education.status` 三态严格 Completed/In Progress/Planned，研究生条目禁 Completed 且必须写 statusNote；构建期注入 `status: 'Completed'` 实测 exit 1；页面研究生条目 `data-education-status="In Progress"` + 「备考中，尚未入学；研究生学历尚未获得」中英双语，四项目 32/32 断言全过）
 - [ ] 论文只展示 **名称 + 状态（Published / Preprint / In Progress）**，未发表论文不得标记为 Published。
 - [x] 产品状态严格四值枚举：Released / Beta / In Development / Discontinued，构建期校验拒绝其他值。（US-013a：`content/types.ts` 的 ProductStatus 四值 + `lib/products.ts` 的 validateProduct/validateProductList 强校验，注入 `status: Done` 实测 build exit 1；清单为 agent 起草稿标【待用户确认】，真实产品状态由用户提供后替换 content/products.ts）
 - [x] 《法渊》等作品未完成时标记 **Writing / In Progress**。（US-014a/e：`WritingStatus` 严格三值 Writing / In Progress / Completed，构建期校验拒绝其他值；《法渊》In Progress、《坠星书简》Writing，列表页与详情页三态徽标 + `data-writing-status` 实测）

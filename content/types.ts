@@ -3,6 +3,9 @@ export type LocaleText = { zh: string; en: string };
 export type PublicationStatus = 'Published' | 'Preprint' | 'In Progress';
 export type ProductStatus = 'Released' | 'Beta' | 'In Development' | 'Discontinued';
 export type WritingStatus = 'Writing' | 'In Progress' | 'Completed';
+/** US-009：学历阶段严格三态；备考研究生只能是 In Progress / Planned */
+export type EducationStatus = 'Completed' | 'In Progress' | 'Planned';
+export type EducationDegreeLevel = 'undergraduate' | 'graduate';
 
 export interface SocialLink {
   label: string;
@@ -219,8 +222,37 @@ export interface Skill {
   public: boolean;
 }
 
+/** US-009：教育背景条目。可选字段缺省时不渲染空字段（AC2）。 */
+export interface EducationEntry {
+  /** 小写 kebab-case，DOM 锚点与测试选择器 */
+  slug: string;
+  /** 学校名称，可选：缺失时不显示空字段 */
+  school?: LocaleText;
+  /** 学院，可选 */
+  college?: LocaleText;
+  /** 专业，可选 */
+  major?: LocaleText;
+  /** 学历阶段（如「本科在读」/「硕士研究生（备考中）」） */
+  degree: LocaleText;
+  degreeLevel: EducationDegreeLevel;
+  status: EducationStatus;
+  /** 入学时间：YYYY 或 YYYY-MM */
+  startDate: string;
+  /** 预计毕业时间，可选 */
+  endDate?: string;
+  /** 当前状态说明，研究生未完成状态必填（如「备考中，尚未入学」） */
+  statusNote?: LocaleText;
+  courses?: LocaleText[];
+  experiences?: LocaleText[];
+  interests?: LocaleText[];
+  detail?: LocaleText[];
+  featured: boolean;
+  public: boolean;
+}
+
 export type ContentCategory =
   | 'profile'
+  | 'education'
   | 'journey'
   | 'research'
   | 'publications'

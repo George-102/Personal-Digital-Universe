@@ -32,11 +32,12 @@ npx serve out -l 4173     # 本地预览，http://localhost:4173
 
 ## 内容维护方式
 
-内容与展示逻辑分离：个人数据在 `content/` 下以 TypeScript 数据文件维护（profile / journey / research / publications / projects / products / writing / skills / reading / interests，随 T-002 落地）。约定：
+内容与展示逻辑分离：个人数据在 `content/` 下以 TypeScript 数据文件维护（profile / education / journey / research / publications / projects / products / writing / skills / reading / interests，随 T-002 落地）。约定：
 
 - 简介类字段双语 `{ zh, en }`；论文与项目名称保留原文。
 - 每条数据含 `public: boolean`，`false` 的条目构建时被过滤。
-- 论文状态严格 `Published | Preprint | In Progress`；产品状态严格 `Released | Beta | In Development | Discontinued`；作品状态严格 `Writing | In Progress | Completed`。
+- 论文状态严格 `Published | Preprint | In Progress`；产品状态严格 `Released | Beta | In Development | Discontinued`；作品状态严格 `Writing | In Progress | Completed`；学历阶段严格 `Completed | In Progress | Planned`，备考研究生只能是 `In Progress | Planned` 且必须写 `statusNote`。
+- 教育背景在 `content/education.ts`：`degreeLevel` 为 undergraduate / graduate，研究生条目禁止标 Completed（构建期拒绝），可选字段缺省不渲染空字段；首页 `#education` 纯 DOM 时间轴。
 - 新增一条数据后重新构建，页面自动展示；可选字段缺失有默认值或条件渲染，不崩。
 - 个人介绍正文在 `content/profile.ts` 的 `about` 字段：`bio` 为叙事段落数组、`highlights` 为要点数组（均双语）；`cvUrl` 省略时不渲染下载入口，`portrait` 省略时使用 3D 抽象头像。
 - 成长时间线在 `content/journey.ts`：`date` 用 `YYYY` 或 `YYYY-MM`，区间加 `endDate`；`detail` 为可选的双语段落数组（省略则该条只展示摘要，不出现空面板）；`link` 只允许站内路径或 `https://` 外链；`category` 限 `education / research / opensource / product / competition / work / writing`。**当前为模板清单，`title` 均带「示例 ·」前缀，替换真实经历后删除前缀即可。** 排序在 `content/index.ts` 统一完成（最新在前），组件不再各自排序。

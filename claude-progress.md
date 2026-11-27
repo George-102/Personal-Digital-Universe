@@ -371,6 +371,16 @@ run 44277517360 仍挂 Lighthouse：中文 TBT 最优 232（三次 407/296/232�
 - **j 云端回写（已完成）**：用户 push main 后云端 run 45851575761（commit 703e8bf5）verify + deploy success；CI run URL 已回写 `feature_list.json` US-007j.evidence、`PRD_UserStory.json` US-007 与本文件；US-007a~j 与 PRD US-007 全部 passing。
 - **本机注意**：`.next` 存量目录在本机触发 `uncaughtException [TypeError: Cannot read properties of undefined (reading 'length')]`，需先移走 `.next` 再构建（已移至 `/tmp/pdu-us007-next-bak*`）；这是本机环境问题，验证脚本与断言均未改。提交时显式排除 `AGENTS.md`（并行会话 M）与 `.tmp-*`。
 
+## US-009 规划（2026-11-27，仅拆分，未写实现代码）
+
+**用户指定下一需求为 US-009（教育背景）并要求先拆分再逐个实现。** 四项决策：①范围只做首页 `#education` section，不建独立路由（内容量小，沿用 #about 先例）；②纯 DOM 时间轴，无 WebGL、无新增 Canvas（符合 PRD「简洁信息卡片或时间节点」，零 TBT 风险）；③内容由 agent 按 PRD 已知信息（计算机科学本科、2023–2027、备考研究生）起草双语并标【待用户确认】，后续只改 `content/education.ts`；④学历阶段严格枚举 Completed / In Progress / Planned，备考研究生用 In Progress 且明确标「备考中，尚未入学」，构建期拒绝不实状态与矛盾时间（PRD §8.3）。
+
+**DoD**：三条 AC 逐条通过并留证；信息未配置不显示空字段；未获得学历不显示为已完成；`npm run verify:local` 通过 + 云端 verify job 全绿并回写 CI run URL。
+
+**已写入 `feature_list.json`**：US-009a~i 共 9 任务（priority 170-178，全 not_started），roadmap 移除 US-009。Node 解析校验：178 features、9 个新任务 priority 连续唯一、roadmap 无 US-009。任务链：a 内容模型/构建期校验 → b 双语清单 → c 首页 #education → d 空字段与移动端 → e 状态真实性硬约束 → f 导航与全站回归 → g 三条 AC 留证 → h 性能门禁与文档 → i 云端 CI 回写（URL 未回写前不得标 passing）。
+
+**本轮文件改动**：`feature_list.json`、`claude-progress.md`（本段）。
+
 ## T-009 云端回写（2026-11-27）
 
 - **push 状态**：T-009 commit `9d263de` 已在 `origin/main`（与 US-005 实现 `3710cebd` 同批 push，故无独立触发 run）。本地 main 另领先 1 个未 push 的提交 `7b93011`（US-007 云端回写）——该提交只改证据文件，不影响 T-009 验证。
@@ -384,3 +394,15 @@ run 44277517360 仍挂 Lighthouse：中文 TBT 最优 232（三次 407/296/232�
 - 用户要求把 AGENTS.md 中相关脚本改为 mise 运行。改动四处：①开工流程第 7 步 `./init.ps1` → `mise run init`；②工作规则 `npm run verify:local` → `mise run verify:local`；③必需文件条目由 `init.ps1` 改为 `mise.toml`（`[tasks]` 为自动化统一入口，`init.ps1` / `init.sh` 为底层启动脚本）；④收尾第 6 步 `./init.ps1` → `mise run init`。均保留等价原命令说明（括号内），未删断言、未改验证规则。
 - 保留并行会话已加入的 `- 使用mise工具管理项目` 规则。本次提交包含 `AGENTS.md`（用户明确要求）、`feature_list.json`（T-009 evidence 追加）、`claude-progress.md`。
 - 验证：`mise tasks ls` 含 init / verify:local；AGENTS.md 无裸命令残留（仅等价说明括号内保留 npm 脚本）。
+
+## US-009 本地实现（2026-11-27，US-009a~h passing，US-009i 待云端 CI 回写）
+
+**用户四项决策**：①只做首页 `#education`，不建独立路由；②纯 DOM 时间轴，无 WebGL/无新增 Canvas；③内容由 agent 按 PRD 起草、文件头标【待用户确认】；④学历三态严格枚举 + 构建期校验，备考研究生用 In Progress 且明确写 statusNote。
+
+- **a/b 模型与内容**：新增 `content/types.ts` 的 `EducationStatus` 三值、`EducationDegreeLevel` 两级与 `EducationEntry`（无伪装学历字段）；`lib/education.ts` 含 FORBIDDEN_EDUCATION_FIELDS、整表校验、公开过滤与时间倒序。`scripts/education.test.mjs` TDD RED（模块不存在）→ GREEN 14/14；注入研究生 `status: 'Completed'` 实测 `validate-content.mjs` exit 1、恢复 exit 0。`content/education.ts` 两条（本科在读 + 研究生备考），messages zh/en 新增 Education 13 键与 Nav.education，i18n 185 键 100%。
+- **c/d/e 页面与交互**：`EducationSection` 服务端渲染挂到 `#about` 后；可选字段条件渲染不出现空标签；`#education` 无 canvas；390px 单列无溢出。研究生条目 `data-education-status="In Progress"` + 「备考中，尚未入学」中英双语，构建期与页面双重约束。
+- **f/g 导航与 E2E**：`lib/nav.ts` 注册 education（order 22），`lib/section-state.ts` 同 id 配色；`nav.test.mjs` 顺序断言 11/11；新增 `education.spec.ts` 8 用例 × 四项目 32/32。navigation.spec 新增三项，四项目单 worker 133 passed / 3 skipped / 0 failed（首次并行 29 failed 经单跑与 workers=1 复核为本机 flake，未删断言未降阈值）。
+- **h 门禁**：`verify:local` exit 0（Vitest 28 文件 226 用例 + coverage、size 469.16kB、verify:content 四条）；`CI=1 verify:lighthouse` exit 0（6 runs 全过，zh TBT 189 / en 最优 88，LCP 263~319、CLS 0、perf 95~99）。README / Development / Tech / DoD 已同步。
+- **本机环境注意**：build 与 vitest coverage 在本机触发 safe-delete 批量删除拦截，需先移走 `out` / `.next` / `coverage` 再跑（未改脚本或断言）。
+- **待用户操作**：push main 触发云端 verify，回写 CI run URL 到 `feature_list.json` US-009i.evidence、`PRD_UserStory.json` US-009 与本文件；URL 回写前 US-009i 保持 in_progress、PRD US-009 不标 passing。
+- **提交注意**：只提交预期文件；工作区若有并行会话 `AGENTS.md` / `docs/PRD.md` 改动须显式排除；`.workbuddy/` / `test-out.txt` / `vendor/` / `.tmp-*` / `lhci-report/` / `test-results/` 保持未跟踪。

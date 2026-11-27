@@ -1,5 +1,6 @@
 import { validateEntry } from '../content/validate.ts';
 import { profile } from '../content/profile.ts';
+import { education } from '../content/education.ts';
 import { journey } from '../content/journey.ts';
 import { research } from '../content/research.ts';
 import { publications } from '../content/publications.ts';
@@ -20,6 +21,7 @@ import { validateProjectList } from '../lib/projects.ts';
 import { validateProductList } from '../lib/products.ts';
 import { validateWritingList } from '../lib/writing.ts';
 import { validateSkillList } from '../lib/skills.ts';
+import { validateEducationList } from '../lib/education.ts';
 
 const journeyErrors = validateJourneyEntries(journey);
 if (journeyErrors.length > 0) {
@@ -95,7 +97,15 @@ if (skillErrors.length > 0) {
   process.exit(1);
 }
 
+// US-009a：教育背景整表校验（研究生备考状态语义、slug 唯一、禁止伪装已获学历字段）
+const educationErrors = validateEducationList(education);
+if (educationErrors.length > 0) {
+  console.error(`education 配置校验失败：\n${educationErrors.join('\n')}`);
+  process.exit(1);
+}
+
 const data = {
+  education,
   journey,
   research,
   publications,

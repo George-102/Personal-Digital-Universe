@@ -24,7 +24,28 @@
     "projects": "Projects",
     "products": "Products",
     "writing": "Writing",
-    "skills": "Skills"
+    "skills": "Skills",
+    "education": "Education"
+  },
+  "Education": {
+    "eyebrow": "01 / EDUCATION",
+    "title": "Education",
+    "intro": "Academic stages in reverse chronological order; degrees not yet earned are clearly marked as in progress.",
+    "listLabel": "Education timeline",
+    "schoolLabel": "University",
+    "collegeLabel": "School",
+    "majorLabel": "Major",
+    "coursesLabel": "Key coursework",
+    "experiencesLabel": "Learning experience",
+    "interestsLabel": "Academic interests",
+    "detailLabel": "Additional notes",
+    "periodLabel": "Enrolled — expected graduation",
+    "present": "In progress",
+    "statuses": {
+      "Completed": "Completed",
+      "InProgress": "In Progress",
+      "Planned": "Planned"
+    }
   },
   "Skills": {
     "eyebrow": "SKILLS & EXPERTISE",

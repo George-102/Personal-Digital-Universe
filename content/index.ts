@@ -1,6 +1,8 @@
 import { filterPublic } from './validate.ts';
 import { sortJourney } from '../lib/journey.ts';
+import { publicEducation, sortEducation } from '../lib/education.ts';
 import { profile as rawProfile } from './profile.ts';
+import { education as rawEducation } from './education.ts';
 import { journey as rawJourney } from './journey.ts';
 import { research as rawResearch } from './research.ts';
 import { publications as rawPublications } from './publications.ts';
@@ -17,6 +19,8 @@ export function publicOnly<T extends { public: boolean }>(_category: string, ite
 }
 
 export const profile = rawProfile;
+/** US-009：教育背景统一出口（已过滤 public），页面不直接 import content/education.ts */
+export const education = sortEducation(publicEducation(rawEducation));
 /** US-006：About 内容走统一出口，页面不直接 import content/profile.ts */
 export const about = rawProfile.about ?? null;
 /** US-018：联系方式走统一出口；links 为空时页面不渲染任何无效入口 */

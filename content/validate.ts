@@ -3,11 +3,14 @@ import { PORTRAIT_PATH, CV_PATH } from '../lib/about.ts';
 import { isValidJourneyLink, normalizeJourneyDate } from '../lib/journey.ts';
 import { validateContact } from '../lib/contact.ts';
 import { SKILL_CATEGORIES } from '../lib/skills.ts';
+import { EDUCATION_DEGREE_LEVELS, EDUCATION_STATUSES } from '../lib/education.ts';
 
 type Rule = {
   required: string[];
   localeText: string[];
   enums?: Record<string, readonly string[]>;
+  /** 可选双语字段路径：存在时必须是含 zh/en 的 LocaleText */
+  optionalLocaleText?: string[];
   /** 可选双语数组路径（如 about.bio）：存在时必须是非空 LocaleText[] */
   optionalLocaleLists?: string[];
   /** 可选站内资源路径 → 允许的格式 */
@@ -21,6 +24,18 @@ type Rule = {
 };
 
 const RULES: Record<ContentCategory, Rule> = {
+  education: {
+    // US-009a：研究生备考状态语义与禁止字段由 lib/education.ts 强校验
+    required: ['slug', 'degree', 'degreeLevel', 'status', 'startDate', 'featured', 'public'],
+    localeText: ['degree'],
+    enums: {
+      degreeLevel: [...EDUCATION_DEGREE_LEVELS],
+      status: [...EDUCATION_STATUSES],
+    },
+    optionalLocaleText: ['school', 'college', 'major', 'statusNote'],
+    optionalLocaleLists: ['courses', 'experiences', 'interests', 'detail'],
+    dateRange: { start: 'startDate', end: 'endDate' },
+  },
   profile: {
     required: ['name', 'tagline', 'status', 'links', 'public'],
     localeText: ['name', 'tagline', 'status'],
@@ -137,6 +152,14 @@ export function validateEntry(category: ContentCategory, entry: unknown): void {
     const value = readField(record, field);
     if (!allowed.includes(value as string)) {
       throw new Error(`${category}: ${field} 非法值 "${String(value)}"，允许: ${allowed.join(' | ')}`);
+    }
+  }
+  // US-009a：可选双语字段一旦配置就必须是含 zh/en 的 LocaleText
+  for (const field of rule.optionalLocaleText ?? []) {
+    const value = readField(record, field);
+    if (value === undefined || value === null) continue;
+    if (!isLocaleText(value)) {
+      throw new Error(`${category}: ${field} 必须是含 zh/en 的双语字段`);
     }
   }
   // US-006a：可选双语数组一旦配置就必须是非空且每条含 zh/en

@@ -15,6 +15,7 @@ export type SectionVisual = {
 const palette: Record<string, { accent: string; glow: string; particle: string }> = {
   home: { accent: '#22d3ee', glow: '#7c6cff', particle: '#8f9bff' },
   about: { accent: '#a78bfa', glow: '#8b5cf6', particle: '#c4b5fd' },
+  education: { accent: '#c4b5fd', glow: '#7c3aed', particle: '#ddd6fe' },
   skills: { accent: '#c084fc', glow: '#a855f7', particle: '#d8b4fe' },
   journey: { accent: '#38bdf8', glow: '#0ea5e9', particle: '#7dd3fc' },
   research: { accent: '#60a5fa', glow: '#3b82f6', particle: '#93c5fd' },

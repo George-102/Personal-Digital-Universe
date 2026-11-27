@@ -24,7 +24,28 @@
     "projects": "项目",
     "products": "产品",
     "writing": "写作",
-    "skills": "技能"
+    "skills": "技能",
+    "education": "教育"
+  },
+  "Education": {
+    "eyebrow": "01 / EDUCATION",
+    "title": "教育背景",
+    "intro": "按时间倒序记录学历阶段；未获得的学历会明确标注当前状态。",
+    "listLabel": "教育背景时间线",
+    "schoolLabel": "学校",
+    "collegeLabel": "学院",
+    "majorLabel": "专业",
+    "coursesLabel": "重要课程",
+    "experiencesLabel": "学习经历",
+    "interestsLabel": "学术兴趣",
+    "detailLabel": "补充说明",
+    "periodLabel": "入学 — 预计毕业",
+    "present": "在读 / 进行中",
+    "statuses": {
+      "Completed": "已完成",
+      "InProgress": "进行中",
+      "Planned": "计划中"
+    }
   },
   "Skills": {
     "eyebrow": "SKILLS & EXPERTISE",

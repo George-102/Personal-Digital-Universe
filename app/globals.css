@@ -1034,3 +1034,120 @@ section[data-section-active='true'] {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
+
+/* US-009 教育背景：纯 DOM 时间轴，无 WebGL，移动端单列 */
+.education-list {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-left: 1.5rem;
+}
+
+.education-list::before {
+  content: '';
+  position: absolute;
+  inset-block: 0.5rem;
+  left: 0.35rem;
+  width: 1px;
+  background: linear-gradient(to bottom, rgba(167, 139, 250, 0.7), rgba(34, 211, 238, 0.25));
+}
+
+.education-item {
+  position: relative;
+  min-width: 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(232, 234, 246, 0.12);
+  border-radius: 0.9rem;
+  background: rgba(12, 14, 32, 0.68);
+}
+
+.education-item::before {
+  content: '';
+  position: absolute;
+  left: -1.35rem;
+  top: 1.5rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 9999px;
+  background: #a78bfa;
+  box-shadow: 0 0 10px rgba(167, 139, 250, 0.7);
+}
+
+.education-item-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.education-degree {
+  font-size: 1.05rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.education-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid rgba(167, 139, 250, 0.45);
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  color: #c4b5fd;
+}
+
+.education-period {
+  margin-top: 0.3rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+  opacity: 0.7;
+}
+
+.education-fields {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.education-field {
+  display: grid;
+  gap: 0.1rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.education-field-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  opacity: 0.55;
+}
+
+.education-status-note {
+  padding: 0.45rem 0.6rem;
+  border-left: 2px solid rgba(167, 139, 250, 0.6);
+  border-radius: 0.3rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  background: rgba(167, 139, 250, 0.08);
+  overflow-wrap: anywhere;
+}
+
+.education-inline-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+}
+
+.education-inline-list li::before {
+  content: '· ';
+  opacity: 0.5;
+}
+
+@media (min-width: 768px) {
+  .education-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

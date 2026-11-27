@@ -111,6 +111,7 @@ Three.js **不会自动回收 GPU 资源**。移除对象时必须显式 `geomet
 ```
 content/
 ├── profile.ts          # 姓名/笔名/英文名、身份描述、社交链接
+├── education.ts        # 教育背景（US-009：三态学历 + 研究生备考语义，首页纯 DOM 时间轴）
 ├── journey.ts          # 经历时间线（教育、科研、开源、产品、文学）
 ├── research.ts         # 研究方向（DAC、LLM、MARL、Agentic AI）
 ├── publications.ts     # 论文（仅名称 + 状态 + 可选链接）

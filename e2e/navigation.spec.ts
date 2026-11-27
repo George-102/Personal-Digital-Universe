@@ -558,3 +558,34 @@ test('US-007g 滚动到 Skills 时激活态唯一，回到顶部收回到 home',
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
   await expect.poll(() => activeIds(page)).toEqual(['home']);
 });
+
+// ---------- US-009f：Education 导航 ----------
+
+test('US-009f 点击 Education 准确到达 #education 并同步 URL hash', async ({ page }) => {
+  await page.goto('/');
+  await settle(page);
+  await clickNav(page, 'education');
+  await expect(page.locator('#education')).toBeInViewport({ timeout: 10_000 });
+  await expect.poll(() => new URL(page.url()).hash).toBe('#education');
+  await expect.poll(() => activeIds(page)).toEqual(['education']);
+});
+
+test('US-009f 英文页 Education 导航同样到达并激活', async ({ page }) => {
+  await page.goto('/en');
+  await settle(page);
+  await clickNav(page, 'education');
+  await expect(page.locator('#education')).toBeInViewport({ timeout: 10_000 });
+  await expect.poll(() => new URL(page.url()).hash).toBe('#education');
+  await expect.poll(() => activeIds(page)).toEqual(['education']);
+});
+
+test('US-009f 滚动到 Education 时激活态唯一，回到顶部收回到 home', async ({ page }) => {
+  await page.goto('/');
+  await settle(page);
+  await page.evaluate(() =>
+    document.getElementById('education')?.scrollIntoView({ behavior: 'instant', block: 'start' }),
+  );
+  await expect.poll(() => activeIds(page)).toEqual(['education']);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await expect.poll(() => activeIds(page)).toEqual(['home']);
+});

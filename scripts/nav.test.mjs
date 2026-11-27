@@ -15,7 +15,7 @@ const loadMessages = (locale) => JSON.parse(readFileSync(path.join(messagesDir, 
 
 test('默认注册表通过校验且只收录真实存在的模块（Home + About + Journey + Research + Projects + Products + Writing + Contact）', () => {
   expect(validateNavItems(navItems)).toEqual([]);
-  expect(navItems.map((item) => item.id)).toEqual(['home', 'about', 'skills', 'journey', 'research', 'projects', 'products', 'writing', 'contact']);
+  expect(navItems.map((item) => item.id)).toEqual(['home', 'about', 'education', 'skills', 'journey', 'research', 'projects', 'products', 'writing', 'contact']);
   for (const item of navItems) {
     expect(item.href).toMatch(/^#[A-Za-z][A-Za-z0-9_-]*$/);
   }
@@ -24,7 +24,7 @@ test('默认注册表通过校验且只收录真实存在的模块（Home + Abou
 test('按 order 升序排序且不修改原数组', () => {
   const original = [...navItems];
   const shuffled = [...navItems].reverse();
-  expect(sortNavItems(shuffled).map((item) => item.id)).toEqual(['home', 'about', 'skills', 'journey', 'research', 'projects', 'products', 'writing', 'contact']);
+  expect(sortNavItems(shuffled).map((item) => item.id)).toEqual(['home', 'about', 'education', 'skills', 'journey', 'research', 'projects', 'products', 'writing', 'contact']);
   expect(navItems).toEqual(original);
 });
 
