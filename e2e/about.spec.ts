@@ -80,8 +80,9 @@ test.describe('US-006 个人介绍', () => {
     await expect(page.locator('#about h2')).toHaveCount(1);
     await expect(page.locator('#about h3')).toHaveCount(1);
     await expect(page.locator('#skills h2')).toHaveCount(1);
-    // US-007 之后每个内容 section 各一个 h2（About + Skills + Journey + Research + Projects + Products + Writing + Contact）
-    await expect(page.locator('h2')).toHaveCount(8);
+    // US-009 后每个内容 section 各一个 h2（About + Education + Skills + Journey + Research + Projects + Products + Writing + Contact）
+    await expect(page.locator('#education h2')).toHaveCount(1);
+    await expect(page.locator('h2')).toHaveCount(9);
     await expect(page.locator('#journey h2')).toHaveCount(1);
     await expect(page.locator('#research h2')).toHaveCount(1);
     await expect(page.locator('#projects h2')).toHaveCount(1);

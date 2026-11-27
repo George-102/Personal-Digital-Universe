@@ -406,3 +406,9 @@ run 44277517360 仍挂 Lighthouse：中文 TBT 最优 232（三次 407/296/232�
 - **本机环境注意**：build 与 vitest coverage 在本机触发 safe-delete 批量删除拦截，需先移走 `out` / `.next` / `coverage` 再跑（未改脚本或断言）。
 - **待用户操作**：push main 触发云端 verify，回写 CI run URL 到 `feature_list.json` US-009i.evidence、`PRD_UserStory.json` US-009 与本文件；URL 回写前 US-009i 保持 in_progress、PRD US-009 不标 passing。
 - **提交注意**：只提交预期文件；工作区若有并行会话 `AGENTS.md` / `docs/PRD.md` 改动须显式排除；`.workbuddy/` / `test-out.txt` / `vendor/` / `.tmp-*` / `lhci-report/` / `test-results/` 保持未跟踪。
+
+## US-009 首次云端 verify 失败与修复（2026-11-27 19:50）
+
+- 用户 push 的 commit `3ab01df` 触发 run [45990166542](https://github.com/George-102/Personal-Digital-Universe/actions/runs/45990166542)：checkout / setup-node / npm ci / Lint / Typecheck / cache / build / Unit tests / Quality metrics / cache browsers / install system deps 全 success；**Run acceptance tests 失败**：`e2e/about.spec.ts:67` 中 `expect(page.locator('h2')).toHaveCount(8)` 实际 9（新增 `#education h2`），四项目各重试 3 次均失败，11:49 job 被取消（The operation was canceled）；Lighthouse / Upload static export skipped，deploy / preview skipped。
+- 根因：US-009 实现时漏同步全页 h2 计数断言。修复：`e2e/about.spec.ts` 补 `expect(page.locator('#education h2')).toHaveCount(1)` 并把总数改为 9（增强断言，未删断言未降阈值）。本地 `npx playwright test e2e/about.spec.ts --workers=1` 四项目 34 passed / 2 skipped / 0 failed。
+- **下一步**：用户重新 push 触发云端 verify，回写新的全绿 CI run URL 到 `feature_list.json` US-009i.evidence、`PRD_UserStory.json` US-009 与本文件；URL 回写前 US-009i 保持 in_progress、PRD US-009 不标 passing。

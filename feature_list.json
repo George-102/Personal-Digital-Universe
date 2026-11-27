@@ -3306,7 +3306,8 @@
       "title": "三条 AC 逐条留证",
       "user_visible_behavior": "三条验收标准均有可复查的自动化证据。",
       "evidence": [
-        "2026-11-27 新增 e2e/education.spec.ts 8 用例 × 四项目 32 passed / 0 failed：AC1 完整查看（中英+无 JS）、AC2 空字段不显示、AC3 未完成学历不误标（中英）、DoD 无 3D、移动端布局。"
+        "2026-11-27 新增 e2e/education.spec.ts 8 用例 × 四项目 32 passed / 0 failed：AC1 完整查看（中英+无 JS）、AC2 空字段不显示、AC3 未完成学历不误标（中英）、DoD 无 3D、移动端布局。",
+        "2026-11-27 云端 run 45990166542 acceptance 失败：about.spec.ts:84 全页 h2 计数仍为 8（实际 9，新增 #education h2），四项目各重试 3 次均失败导致 job cancelled。修复：补 #education h2 断言并把总数改 9（增强非降级），本地 about.spec 四项目单 worker 34 passed / 2 skipped / 0 failed。"
       ]
     },
     {
@@ -3338,7 +3339,8 @@
       "title": "US-009 整体验收与云端 CI 回写",
       "user_visible_behavior": "三条 AC + DoD 完整达成，生产环境可访问，证据回写三份持久化文件。",
       "evidence": [
-        "2026-11-27 本地验收完成：三条 AC 与 DoD 逐条留证于 US-009a~h；verify:local exit 0；CI=1 Lighthouse 6 runs 全过；E2E education 32/32、navigation 单 worker 133/133。待用户 push main 后回写云端 verify CI run URL，URL 回写前不得标 passing。"
+        "2026-11-27 本地验收完成：三条 AC 与 DoD 逐条留证于 US-009a~h；verify:local exit 0；CI=1 Lighthouse 6 runs 全过；E2E education 32/32、navigation 单 worker 133/133。待用户 push main 后回写云端 verify CI run URL，URL 回写前不得标 passing。",
+        "2026-11-27 首次云端 run 45990166542 cancelled（about.spec h2 计数漏同步，非 Lighthouse/deploy 问题）；已修复，待重新 push 后回写新的全绿 CI run URL。"
       ]
     }
   ],
